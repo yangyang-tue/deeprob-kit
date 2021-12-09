@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>deeprob.spn.utils.statistics &mdash; DeeProb-kit 1.0.0 documentation</title>
+      <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../../_static/css/custom.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js"></script>
+        <script src="../../../../_static/jquery.js"></script>
+        <script src="../../../../_static/underscore.js"></script>
+        <script src="../../../../_static/doctools.js"></script>
+    <script src="../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../../../index.html" class="icon icon-home"> DeeProb-kit
+            <img src="../../../../_static/deeprob-logo-minimal.svg" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Read Me</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../markdown/home.html">Abstract</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../markdown/home.html#features">Features</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../markdown/home.html#installation">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../markdown/home.html#project-directories">Project Directories</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../markdown/home.html#related-repositories">Related Repositories</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../markdown/home.html#references">References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../markdown/docs.html">Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../markdown/examples.html">Code Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../markdown/experiments.html">Experiments</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../markdown/benchmark.html">Benchmark</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Modules</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../api/deeprob.html">deeprob package</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">DeeProb-kit</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="../../../index.html">Module code</a> &raquo;</li>
+      <li>deeprob.spn.utils.statistics</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for deeprob.spn.utils.statistics</h1><div class="highlight"><pre>
+<span></span><span class="c1"># MIT License: Copyright (c) 2021 Lorenzo Loconte, Gennaro Gala</span>
+
+<span class="kn">from</span> <span class="nn">deeprob.spn.structure.leaf</span> <span class="kn">import</span> <span class="n">Leaf</span>
+<span class="kn">from</span> <span class="nn">deeprob.spn.structure.node</span> <span class="kn">import</span> <span class="n">Node</span><span class="p">,</span> <span class="n">Sum</span><span class="p">,</span> <span class="n">Product</span><span class="p">,</span> <span class="n">bfs</span>
+<span class="kn">from</span> <span class="nn">deeprob.spn.utils.filter</span> <span class="kn">import</span> <span class="n">collect_nodes</span><span class="p">,</span> <span class="n">filter_nodes_by_type</span>
+
+
+<div class="viewcode-block" id="compute_statistics"><a class="viewcode-back" href="../../../../api/deeprob.spn.utils.html#deeprob.spn.utils.statistics.compute_statistics">[docs]</a><span class="k">def</span> <span class="nf">compute_statistics</span><span class="p">(</span><span class="n">root</span><span class="p">:</span> <span class="n">Node</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Compute some statistics of a SPN given its root.</span>
+<span class="sd">    The computed statistics are the following:</span>
+
+<span class="sd">    - n_nodes, the number of nodes</span>
+<span class="sd">    - n_sum, the number of sum nodes</span>
+<span class="sd">    - n_prod, the number of product nodes</span>
+<span class="sd">    - n_leaves, the number of leaves</span>
+<span class="sd">    - n_edges, the number of edges</span>
+<span class="sd">    - n_params, the number of parameters</span>
+<span class="sd">    - depth, the depth of the network</span>
+
+<span class="sd">    :param root: The root of the SPN.</span>
+<span class="sd">    :return: A dictionary containing the statistics.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">stats</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s1">&#39;n_nodes&#39;</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="n">collect_nodes</span><span class="p">(</span><span class="n">root</span><span class="p">)),</span>
+        <span class="s1">&#39;n_sum&#39;</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="n">filter_nodes_by_type</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">Sum</span><span class="p">)),</span>
+        <span class="s1">&#39;n_prod&#39;</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="n">filter_nodes_by_type</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">Product</span><span class="p">)),</span>
+        <span class="s1">&#39;n_leaves&#39;</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="n">filter_nodes_by_type</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">Leaf</span><span class="p">)),</span>
+        <span class="s1">&#39;n_edges&#39;</span><span class="p">:</span> <span class="n">compute_edges_count</span><span class="p">(</span><span class="n">root</span><span class="p">),</span>
+        <span class="s1">&#39;n_params&#39;</span><span class="p">:</span> <span class="n">compute_parameters_count</span><span class="p">(</span><span class="n">root</span><span class="p">),</span>
+        <span class="s1">&#39;depth&#39;</span><span class="p">:</span> <span class="n">compute_depth</span><span class="p">(</span><span class="n">root</span><span class="p">)</span>
+    <span class="p">}</span>
+    <span class="k">return</span> <span class="n">stats</span></div>
+
+
+<div class="viewcode-block" id="compute_edges_count"><a class="viewcode-back" href="../../../../api/deeprob.spn.utils.html#deeprob.spn.utils.statistics.compute_edges_count">[docs]</a><span class="k">def</span> <span class="nf">compute_edges_count</span><span class="p">(</span><span class="n">root</span><span class="p">:</span> <span class="n">Node</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Get the number of edges of a SPN given its root.</span>
+
+<span class="sd">    :param root: The root of the SPN.</span>
+<span class="sd">    :return: The number of edges.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="nb">sum</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">n</span><span class="o">.</span><span class="n">children</span><span class="p">)</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">filter_nodes_by_type</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="p">(</span><span class="n">Sum</span><span class="p">,</span> <span class="n">Product</span><span class="p">)))</span></div>
+
+
+<div class="viewcode-block" id="compute_parameters_count"><a class="viewcode-back" href="../../../../api/deeprob.spn.utils.html#deeprob.spn.utils.statistics.compute_parameters_count">[docs]</a><span class="k">def</span> <span class="nf">compute_parameters_count</span><span class="p">(</span><span class="n">root</span><span class="p">:</span> <span class="n">Node</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Get the number of parameters of a SPN given its root.</span>
+
+<span class="sd">    :param root:  The root of the SPN.</span>
+<span class="sd">    :return: The number of parameters.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">n_weights</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">n</span><span class="o">.</span><span class="n">weights</span><span class="p">)</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">filter_nodes_by_type</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">Sum</span><span class="p">))</span>
+    <span class="n">n_leaf_params</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">n</span><span class="o">.</span><span class="n">params_count</span><span class="p">()</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">filter_nodes_by_type</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">Leaf</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">n_weights</span> <span class="o">+</span> <span class="n">n_leaf_params</span></div>
+
+
+<div class="viewcode-block" id="compute_depth"><a class="viewcode-back" href="../../../../api/deeprob.spn.utils.html#deeprob.spn.utils.statistics.compute_depth">[docs]</a><span class="k">def</span> <span class="nf">compute_depth</span><span class="p">(</span><span class="n">root</span><span class="p">:</span> <span class="n">Node</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Get the depth of the SPN given its root.</span>
+
+<span class="sd">    :param root: The root of the SPN.</span>
+<span class="sd">    :return: The depth of the network.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">depths</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">bfs</span><span class="p">(</span><span class="n">root</span><span class="p">):</span>
+        <span class="n">d</span> <span class="o">=</span> <span class="n">depths</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">node</span><span class="o">.</span><span class="n">children</span><span class="p">:</span>
+            <span class="n">depths</span><span class="p">[</span><span class="n">c</span><span class="p">]</span> <span class="o">=</span> <span class="n">d</span> <span class="o">+</span> <span class="mi">1</span>
+    <span class="k">return</span> <span class="nb">max</span><span class="p">(</span><span class="n">depths</span><span class="o">.</span><span class="n">values</span><span class="p">())</span></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, Lorenzo Loconte, Gennaro Gala.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    <span class="fa fa-book"> Other Versions</span>
+    v: main
+    <span class="fa fa-caret-down"></span>
+  </span>
+  <div class="rst-other-versions">
+    <dl>
+      <dt>Tags</dt>
+      <dd><a href="../../../../../v1.0.0/index.html">v1.0.0</a></dd>
+      <dd><a href="../../../../../v1.1.0/index.html">v1.1.0</a></dd>
+    </dl>
+    <dl>
+      <dt>Branches</dt>
+      <dd><a href="statistics.html">main</a></dd>
+    </dl>
+  </div>
+</div><script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>deeprob.spn.models.ratspn &mdash; DeeProb-kit 0.6.4 documentation</title>
+      <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../../_static/css/custom.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js"></script>
+        <script src="../../../../_static/jquery.js"></script>
+        <script src="../../../../_static/underscore.js"></script>
+        <script src="../../../../_static/doctools.js"></script>
+    <script src="../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../../../index.html" class="icon icon-home"> DeeProb-kit
+            <img src="../../../../_static/deeprob-logo-minimal.svg" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Read Me</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../home.html">Abstract</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../home.html#features">Features</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../home.html#installation-documentation">Installation &amp; Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../home.html#datasets-and-experiments">Datasets and Experiments</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../home.html#code-examples">Code Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../home.html#related-repositories">Related Repositories</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../home.html#references">References</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Modules</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../api/deeprob.html">deeprob package</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">DeeProb-kit</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="../../../index.html">Module code</a> &raquo;</li>
+      <li>deeprob.spn.models.ratspn</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for deeprob.spn.models.ratspn</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">torch</span>
+<span class="kn">import</span> <span class="nn">torch.nn.functional</span> <span class="k">as</span> <span class="nn">F</span>
+
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span>
+
+<span class="kn">from</span> <span class="nn">deeprob.utils.random</span> <span class="kn">import</span> <span class="n">RandomState</span>
+<span class="kn">from</span> <span class="nn">deeprob.utils.region</span> <span class="kn">import</span> <span class="n">RegionGraph</span>
+<span class="kn">from</span> <span class="nn">deeprob.torch.base</span> <span class="kn">import</span> <span class="n">ProbabilisticModel</span>
+<span class="kn">from</span> <span class="nn">deeprob.torch.constraints</span> <span class="kn">import</span> <span class="n">ScaleClipper</span>
+<span class="kn">from</span> <span class="nn">deeprob.spn.layers.ratspn</span> <span class="kn">import</span> <span class="n">GaussianLayer</span><span class="p">,</span> <span class="n">BernoulliLayer</span><span class="p">,</span> <span class="n">SumLayer</span><span class="p">,</span> <span class="n">ProductLayer</span><span class="p">,</span> <span class="n">RootLayer</span>
+
+
+<div class="viewcode-block" id="RatSpn"><a class="viewcode-back" href="../../../../api/deeprob.spn.models.html#deeprob.spn.models.ratspn.RatSpn">[docs]</a><span class="k">class</span> <span class="nc">RatSpn</span><span class="p">(</span><span class="n">ProbabilisticModel</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">in_features</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">out_classes</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="n">rg_depth</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span>
+        <span class="n">rg_repetitions</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="n">rg_batch</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span>
+        <span class="n">rg_sum</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span>
+        <span class="n">in_dropout</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">sum_dropout</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">random_state</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">RandomState</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialize a RAT-SPN.</span>
+
+<span class="sd">        :param in_features: The number of input features.</span>
+<span class="sd">        :param out_classes: The number of output classes. Specify 1 in case of plain density estimation.</span>
+<span class="sd">        :param rg_depth: The depth of the region graph.</span>
+<span class="sd">        :param rg_repetitions: The number of independent repetitions of the region graph.</span>
+<span class="sd">        :param rg_batch: The number of base distribution batches.</span>
+<span class="sd">        :param rg_sum: The number of sum nodes per region.</span>
+<span class="sd">        :param in_dropout: The dropout rate for probabilistic dropout at distributions layer outputs. It can be None.</span>
+<span class="sd">        :param sum_dropout: The dropout rate for probabilistic dropout at sum layers. It can be None.</span>
+<span class="sd">        :param random_state: The random state. It can be either None, a seed integer or a Numpy RandomState.</span>
+<span class="sd">        :raises ValueError: If a parameter is out of domain.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">in_features</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;The number of input features must be positve&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">out_classes</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;The number of output classes must be positive&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">rg_batch</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;The number of base distribution batches must be positive&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">rg_sum</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;The number of sum nodes per region must be positive&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">in_dropout</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="p">(</span><span class="n">in_dropout</span> <span class="o">&lt;=</span> <span class="mf">0.0</span> <span class="ow">or</span> <span class="n">in_dropout</span> <span class="o">&gt;=</span> <span class="mf">1.0</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;The dropout rate at base distribution must be in (0, 1)&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">sum_dropout</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="p">(</span><span class="n">sum_dropout</span> <span class="o">&lt;=</span> <span class="mf">0.0</span> <span class="ow">or</span> <span class="n">sum_dropout</span> <span class="o">&gt;=</span> <span class="mf">1.0</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;The dropout rate at sum layers must be in (0, 1)&quot;</span><span class="p">)</span>
+
+        <span class="nb">super</span><span class="p">(</span><span class="n">ProbabilisticModel</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">in_features</span> <span class="o">=</span> <span class="n">in_features</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">out_classes</span> <span class="o">=</span> <span class="n">out_classes</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rg_depth</span> <span class="o">=</span> <span class="n">rg_depth</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rg_batch</span> <span class="o">=</span> <span class="n">rg_batch</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rg_sum</span> <span class="o">=</span> <span class="n">rg_sum</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">in_dropout</span> <span class="o">=</span> <span class="n">in_dropout</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sum_dropout</span> <span class="o">=</span> <span class="n">sum_dropout</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">base_layer</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">layers</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">ModuleList</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">root_layer</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="c1"># Instantiate the region graph</span>
+        <span class="n">region_graph</span> <span class="o">=</span> <span class="n">RegionGraph</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">in_features</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">rg_depth</span><span class="p">,</span> <span class="n">random_state</span><span class="p">)</span>
+
+        <span class="c1"># Generate the region graph layers</span>
+        <span class="n">rg_layers</span> <span class="o">=</span> <span class="n">region_graph</span><span class="o">.</span><span class="n">make_layers</span><span class="p">(</span><span class="n">rg_repetitions</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rg_layers</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">reversed</span><span class="p">(</span><span class="n">rg_layers</span><span class="p">))</span>
+
+<div class="viewcode-block" id="RatSpn.build_layers"><a class="viewcode-back" href="../../../../api/deeprob.spn.models.html#deeprob.spn.models.ratspn.RatSpn.build_layers">[docs]</a>    <span class="k">def</span> <span class="nf">build_layers</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Build the RatSpn layers.</span>
+
+<span class="sd">        :raises ValueError: If the base layer is not already initialized.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">base_layer</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;The base layer must be initialized first&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Alternate between product and sum layer</span>
+        <span class="n">in_groups</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">base_layer</span><span class="o">.</span><span class="n">in_regions</span>
+        <span class="n">in_nodes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">base_layer</span><span class="o">.</span><span class="n">out_channels</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rg_layers</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">i</span> <span class="o">%</span> <span class="mi">2</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="n">layer</span> <span class="o">=</span> <span class="n">ProductLayer</span><span class="p">(</span><span class="n">in_groups</span><span class="p">,</span> <span class="n">in_nodes</span><span class="p">)</span>
+                <span class="n">in_groups</span> <span class="o">=</span> <span class="n">layer</span><span class="o">.</span><span class="n">out_partitions</span>
+                <span class="n">in_nodes</span> <span class="o">=</span> <span class="n">layer</span><span class="o">.</span><span class="n">out_nodes</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">layer</span> <span class="o">=</span> <span class="n">SumLayer</span><span class="p">(</span><span class="n">in_groups</span><span class="p">,</span> <span class="n">in_nodes</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">rg_sum</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">sum_dropout</span><span class="p">)</span>
+                <span class="n">in_groups</span> <span class="o">=</span> <span class="n">layer</span><span class="o">.</span><span class="n">out_regions</span>
+                <span class="n">in_nodes</span> <span class="o">=</span> <span class="n">layer</span><span class="o">.</span><span class="n">out_nodes</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">layer</span><span class="p">)</span>
+
+        <span class="c1"># Instantiate the root layer</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">root_layer</span> <span class="o">=</span> <span class="n">RootLayer</span><span class="p">(</span><span class="n">in_groups</span><span class="p">,</span> <span class="n">in_nodes</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">out_classes</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="RatSpn.forward"><a class="viewcode-back" href="../../../../api/deeprob.spn.models.html#deeprob.spn.models.ratspn.RatSpn.forward">[docs]</a>    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Compute the log-likelihood given some evidence.</span>
+<span class="sd">        Random variables can be marginalized using NaN values.</span>
+
+<span class="sd">        :param x: The inputs.</span>
+<span class="sd">        :return: The outputs.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Compute the base distributions log-likelihoods</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">base_layer</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+
+        <span class="c1"># Forward through the inner layers</span>
+        <span class="k">for</span> <span class="n">layer</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">layers</span><span class="p">:</span>
+            <span class="n">x</span> <span class="o">=</span> <span class="n">layer</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+
+        <span class="c1"># Forward through the root layer</span>
+        <span class="n">log_prob</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">root_layer</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">log_prob</span></div>
+
+<div class="viewcode-block" id="RatSpn.mpe"><a class="viewcode-back" href="../../../../api/deeprob.spn.models.html#deeprob.spn.models.ratspn.RatSpn.mpe">[docs]</a>    <span class="nd">@torch</span><span class="o">.</span><span class="n">no_grad</span><span class="p">()</span>
+    <span class="k">def</span> <span class="nf">mpe</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Compute the maximum at posteriori estimation.</span>
+<span class="sd">        Random variables can be marginalized using NaN values.</span>
+
+<span class="sd">        :param x: The inputs tensor.</span>
+<span class="sd">        :param y: The target classes tensor. It can be None for unlabeled maximum at posteriori estimation.</span>
+<span class="sd">        :return: The output of the model.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">lls</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">inputs</span> <span class="o">=</span> <span class="n">x</span>
+        <span class="n">n_samples</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="c1"># Compute the base distributions log-likelihoods</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">base_layer</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+
+        <span class="c1"># Compute in forward mode and gather the inner log-likelihoods</span>
+        <span class="k">for</span> <span class="n">layer</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">layers</span><span class="p">:</span>
+            <span class="n">lls</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+            <span class="n">x</span> <span class="o">=</span> <span class="n">layer</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+
+        <span class="c1"># Compute in forward mode through the root layer and get the class index,</span>
+        <span class="c1"># if no target classes are specified</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">out_classes</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">y</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">n_samples</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">long</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">y</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">y</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">root_layer</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+        <span class="c1"># Get the root layer indices</span>
+        <span class="n">idx_group</span><span class="p">,</span> <span class="n">idx_offset</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">root_layer</span><span class="o">.</span><span class="n">mpe</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+
+        <span class="c1"># Compute in top-down mode through the inner layers</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">layers</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">):</span>
+            <span class="n">idx_group</span><span class="p">,</span> <span class="n">idx_offset</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">layers</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">mpe</span><span class="p">(</span><span class="n">lls</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">idx_group</span><span class="p">,</span> <span class="n">idx_offset</span><span class="p">)</span>
+
+        <span class="c1"># Compute the maximum at posteriori inference at the base layer</span>
+        <span class="n">samples</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">base_layer</span><span class="o">.</span><span class="n">mpe</span><span class="p">(</span><span class="n">inputs</span><span class="p">,</span> <span class="n">idx_group</span><span class="p">,</span> <span class="n">idx_offset</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">samples</span></div>
+
+<div class="viewcode-block" id="RatSpn.sample"><a class="viewcode-back" href="../../../../api/deeprob.spn.models.html#deeprob.spn.models.ratspn.RatSpn.sample">[docs]</a>    <span class="nd">@torch</span><span class="o">.</span><span class="n">no_grad</span><span class="p">()</span>
+    <span class="k">def</span> <span class="nf">sample</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n_samples</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
+        <span class="c1"># Compute in forward mode through the root layer and get the class index,</span>
+        <span class="c1"># if no target classes are specified</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">out_classes</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">y</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">n_samples</span><span class="p">)</span><span class="o">.</span><span class="n">long</span><span class="p">()</span>
+        <span class="k">elif</span> <span class="n">y</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">y</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">out_classes</span><span class="p">,</span> <span class="p">[</span><span class="n">n_samples</span><span class="p">])</span>
+
+        <span class="c1"># Get the root layer indices</span>
+        <span class="n">idx_group</span><span class="p">,</span> <span class="n">idx_offset</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">root_layer</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
+
+        <span class="c1"># Compute in top-down mode through the inner layers</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">layers</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">):</span>
+            <span class="n">idx_group</span><span class="p">,</span> <span class="n">idx_offset</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">layers</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="n">idx_group</span><span class="p">,</span> <span class="n">idx_offset</span><span class="p">)</span>
+
+        <span class="c1"># Compute the maximum at posteriori inference at the base layer</span>
+        <span class="n">samples</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">base_layer</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="n">idx_group</span><span class="p">,</span> <span class="n">idx_offset</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">samples</span></div>
+
+<div class="viewcode-block" id="RatSpn.loss"><a class="viewcode-back" href="../../../../api/deeprob.spn.models.html#deeprob.spn.models.ratspn.RatSpn.loss">[docs]</a>    <span class="k">def</span> <span class="nf">loss</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">out_classes</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>  <span class="c1"># Generative setting, return average negative log-likelihood</span>
+            <span class="k">return</span> <span class="o">-</span><span class="n">torch</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>  <span class="c1"># Discriminative setting, return cross-entropy loss</span>
+            <span class="n">logits</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">log_softmax</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">F</span><span class="o">.</span><span class="n">nll_loss</span><span class="p">(</span><span class="n">logits</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="GaussianRatSpn"><a class="viewcode-back" href="../../../../api/deeprob.spn.models.html#deeprob.spn.models.ratspn.GaussianRatSpn">[docs]</a><span class="k">class</span> <span class="nc">GaussianRatSpn</span><span class="p">(</span><span class="n">RatSpn</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">in_features</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">out_classes</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="n">rg_depth</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span>
+        <span class="n">rg_repetitions</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="n">rg_batch</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span>
+        <span class="n">rg_sum</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span>
+        <span class="n">in_dropout</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">sum_dropout</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">random_state</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">RandomState</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">uniform_loc</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">optimize_scale</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialize a Gaussian RAT-SPN.</span>
+
+<span class="sd">        :param in_features: The number of input features.</span>
+<span class="sd">        :param out_classes: The number of output classes. Specify 1 in case of plain density estimation.</span>
+<span class="sd">        :param rg_depth: The depth of the region graph.</span>
+<span class="sd">        :param rg_repetitions: The number of independent repetitions of the region graph.</span>
+<span class="sd">        :param rg_batch: The number of base distributions batches.</span>
+<span class="sd">        :param rg_sum: The number of sum nodes per region.</span>
+<span class="sd">        :param in_dropout: The dropout rate for probabilistic dropout at distributions layer outputs. It can be None.</span>
+<span class="sd">        :param sum_dropout: The dropout rate for probabilistic dropout at sum layers. It can be None.</span>
+<span class="sd">        :param random_state: The random state. It can be either None, a seed integer or a Numpy RandomState.</span>
+<span class="sd">        :param uniform_loc: The optional uniform distribution parameters for location initialization.</span>
+<span class="sd">        :param optimize_scale: Whether to train scale and location jointly.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">GaussianRatSpn</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="n">in_features</span><span class="p">,</span> <span class="n">out_classes</span><span class="p">,</span> <span class="n">rg_depth</span><span class="p">,</span> <span class="n">rg_repetitions</span><span class="p">,</span>
+            <span class="n">rg_batch</span><span class="p">,</span> <span class="n">rg_sum</span><span class="p">,</span> <span class="n">in_dropout</span><span class="p">,</span> <span class="n">sum_dropout</span><span class="p">,</span> <span class="n">random_state</span>
+        <span class="p">)</span>
+
+        <span class="c1"># Initialize the scale clipper, if specified</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">optimize_scale</span> <span class="o">=</span> <span class="n">optimize_scale</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">optimize_scale</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">scale_clipper</span> <span class="o">=</span> <span class="n">ScaleClipper</span><span class="p">()</span>
+
+        <span class="c1"># Instantiate the base distributions layer</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">base_layer</span> <span class="o">=</span> <span class="n">GaussianLayer</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">in_features</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">rg_batch</span><span class="p">,</span>
+            <span class="n">regions</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">rg_layers</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">rg_depth</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">rg_depth</span><span class="p">,</span> <span class="n">dropout</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">in_dropout</span><span class="p">,</span>
+            <span class="n">uniform_loc</span><span class="o">=</span><span class="n">uniform_loc</span><span class="p">,</span> <span class="n">optimize_scale</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">optimize_scale</span>
+        <span class="p">)</span>
+
+        <span class="c1"># Build the layers</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">build_layers</span><span class="p">()</span>
+
+<div class="viewcode-block" id="GaussianRatSpn.apply_constraints"><a class="viewcode-back" href="../../../../api/deeprob.spn.models.html#deeprob.spn.models.ratspn.GaussianRatSpn.apply_constraints">[docs]</a>    <span class="k">def</span> <span class="nf">apply_constraints</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># Apply the scale clipper to the base layer, if specified</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">optimize_scale</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">scale_clipper</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">base_layer</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="BernoulliRatSpn"><a class="viewcode-back" href="../../../../api/deeprob.spn.models.html#deeprob.spn.models.ratspn.BernoulliRatSpn">[docs]</a><span class="k">class</span> <span class="nc">BernoulliRatSpn</span><span class="p">(</span><span class="n">RatSpn</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">in_features</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">out_classes</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="n">rg_depth</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span>
+        <span class="n">rg_repetitions</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="n">rg_batch</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span>
+        <span class="n">rg_sum</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span>
+        <span class="n">in_dropout</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">sum_dropout</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">random_state</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">RandomState</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialize a Bernoulli RAT-SPN.</span>
+
+<span class="sd">        :param in_features: The number of input features.</span>
+<span class="sd">        :param out_classes: The number of output classes. Specify 1 in case of plain density estimation.</span>
+<span class="sd">        :param rg_depth: The depth of the region graph.</span>
+<span class="sd">        :param rg_repetitions: The number of independent repetitions of the region graph.</span>
+<span class="sd">        :param rg_batch: The number of base distributions batches.</span>
+<span class="sd">        :param rg_sum: The number of sum nodes per region.</span>
+<span class="sd">        :param in_dropout: The dropout rate for probabilistic dropout at distributions layer outputs. It can be None.</span>
+<span class="sd">        :param sum_dropout: The dropout rate for probabilistic dropout at product layer outputs. It can be None.</span>
+<span class="sd">        :param random_state: The random state. It can be either None, a seed integer or a Numpy RandomState.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">BernoulliRatSpn</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="n">in_features</span><span class="p">,</span> <span class="n">out_classes</span><span class="p">,</span> <span class="n">rg_depth</span><span class="p">,</span> <span class="n">rg_repetitions</span><span class="p">,</span>
+            <span class="n">rg_batch</span><span class="p">,</span> <span class="n">rg_sum</span><span class="p">,</span> <span class="n">in_dropout</span><span class="p">,</span> <span class="n">sum_dropout</span><span class="p">,</span> <span class="n">random_state</span>
+        <span class="p">)</span>
+
+        <span class="c1"># Instantiate the base distributions layer</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">base_layer</span> <span class="o">=</span> <span class="n">BernoulliLayer</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">in_features</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">rg_batch</span><span class="p">,</span>
+            <span class="n">regions</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">rg_layers</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">rg_depth</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">rg_depth</span><span class="p">,</span> <span class="n">dropout</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">in_dropout</span>
+        <span class="p">)</span>
+
+        <span class="c1"># Build the layers</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">build_layers</span><span class="p">()</span></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, Lorenzo Loconte, Gennaro Gala.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    <span class="fa fa-book"> Other Versions</span>
+    v: v1.0.0
+    <span class="fa fa-caret-down"></span>
+  </span>
+  <div class="rst-other-versions">
+    <dl>
+      <dt>Tags</dt>
+      <dd><a href="ratspn.html">v1.0.0</a></dd>
+      <dd><a href="../../../../../v1.1.0/index.html">v1.1.0</a></dd>
+    </dl>
+    <dl>
+      <dt>Branches</dt>
+      <dd><a href="../../../../../main/index.html">main</a></dd>
+    </dl>
+  </div>
+</div><script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

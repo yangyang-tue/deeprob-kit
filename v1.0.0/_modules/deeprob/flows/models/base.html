@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>deeprob.flows.models.base &mdash; DeeProb-kit 0.6.4 documentation</title>
+      <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../../_static/css/custom.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js"></script>
+        <script src="../../../../_static/jquery.js"></script>
+        <script src="../../../../_static/underscore.js"></script>
+        <script src="../../../../_static/doctools.js"></script>
+    <script src="../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../../../index.html" class="icon icon-home"> DeeProb-kit
+            <img src="../../../../_static/deeprob-logo-minimal.svg" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Read Me</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../home.html">Abstract</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../home.html#features">Features</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../home.html#installation-documentation">Installation &amp; Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../home.html#datasets-and-experiments">Datasets and Experiments</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../home.html#code-examples">Code Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../home.html#related-repositories">Related Repositories</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../home.html#references">References</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Modules</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../api/deeprob.html">deeprob package</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">DeeProb-kit</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="../../../index.html">Module code</a> &raquo;</li>
+      <li>deeprob.flows.models.base</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for deeprob.flows.models.base</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">torch</span>
+<span class="kn">import</span> <span class="nn">torch.nn</span> <span class="k">as</span> <span class="nn">nn</span>
+<span class="kn">import</span> <span class="nn">torch.distributions</span> <span class="k">as</span> <span class="nn">distributions</span>
+
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span>
+
+<span class="kn">from</span> <span class="nn">deeprob.torch.base</span> <span class="kn">import</span> <span class="n">ProbabilisticModel</span><span class="p">,</span> <span class="n">DensityEstimator</span>
+<span class="kn">from</span> <span class="nn">deeprob.flows.utils</span> <span class="kn">import</span> <span class="n">DequantizeLayer</span><span class="p">,</span> <span class="n">LogitLayer</span>
+
+
+<div class="viewcode-block" id="NormalizingFlow"><a class="viewcode-back" href="../../../../api/deeprob.flows.models.html#deeprob.flows.models.base.NormalizingFlow">[docs]</a><span class="k">class</span> <span class="nc">NormalizingFlow</span><span class="p">(</span><span class="n">ProbabilisticModel</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">in_features</span><span class="p">,</span>
+        <span class="n">dequantize</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">logit</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">in_base</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">DensityEstimator</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialize an abstract Normalizing Flow model.</span>
+
+<span class="sd">        :param in_features: The input size.</span>
+<span class="sd">        :param dequantize: Whether to apply the dequantization transformation.</span>
+<span class="sd">        :param logit: The logit factor to use. Use None to disable the logit transformation.</span>
+<span class="sd">        :param in_base: The input base distribution to use. If None, the standard Normal distribution is used.</span>
+<span class="sd">        :raises ValueError: If the number of input features is invalid.</span>
+<span class="sd">        :raises ValueError: If the logit value is invalid.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">in_features</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">in_features</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">in_features</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">3</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;The number of input features must be either an int or a (C, H, W) tuple&quot;</span><span class="p">)</span>
+
+        <span class="nb">super</span><span class="p">(</span><span class="n">NormalizingFlow</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">in_features</span> <span class="o">=</span> <span class="n">in_features</span>
+
+        <span class="c1"># Build the dequantization layer</span>
+        <span class="k">if</span> <span class="n">dequantize</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">dequantize</span> <span class="o">=</span> <span class="n">DequantizeLayer</span><span class="p">(</span><span class="n">in_features</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">dequantize</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="c1"># Build the logit layer</span>
+        <span class="k">if</span> <span class="n">logit</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">logit</span> <span class="o">&lt;=</span> <span class="mf">0.0</span> <span class="ow">or</span> <span class="n">logit</span> <span class="o">&gt;=</span> <span class="mf">1.0</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;The logit factor must be in (0, 1)&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logit</span> <span class="o">=</span> <span class="n">LogitLayer</span><span class="p">(</span><span class="n">in_features</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="n">logit</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logit</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="c1"># Build the base distribution, if necessary</span>
+        <span class="k">if</span> <span class="n">in_base</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">in_base_loc</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Parameter</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">in_features</span><span class="p">,</span> <span class="n">requires_grad</span><span class="o">=</span><span class="kc">False</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">in_base_scale</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Parameter</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">in_features</span><span class="p">,</span> <span class="n">requires_grad</span><span class="o">=</span><span class="kc">False</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">in_base</span> <span class="o">=</span> <span class="n">distributions</span><span class="o">.</span><span class="n">Normal</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">in_base_loc</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">in_base_scale</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">in_base</span> <span class="o">=</span> <span class="n">in_base</span>
+
+        <span class="c1"># Initialize the normalizing flow layers</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">layers</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">ModuleList</span><span class="p">()</span>
+
+<div class="viewcode-block" id="NormalizingFlow.train"><a class="viewcode-back" href="../../../../api/deeprob.flows.models.html#deeprob.flows.models.base.NormalizingFlow.train">[docs]</a>    <span class="k">def</span> <span class="nf">train</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mode</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">base_mode</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Set the training mode.</span>
+
+<span class="sd">        :param mode: The training mode for the flows layers.</span>
+<span class="sd">        :param base_mode: The training mode for the in_base distribution.</span>
+<span class="sd">        :return: Itself.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">training</span> <span class="o">=</span> <span class="n">mode</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">train</span><span class="p">(</span><span class="n">mode</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">in_base</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">in_base</span><span class="o">.</span><span class="n">train</span><span class="p">(</span><span class="n">base_mode</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span></div>
+
+<div class="viewcode-block" id="NormalizingFlow.eval"><a class="viewcode-back" href="../../../../api/deeprob.flows.models.html#deeprob.flows.models.base.NormalizingFlow.eval">[docs]</a>    <span class="k">def</span> <span class="nf">eval</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Turn off the training mode for both the flows layers and the in_base distribution.</span>
+
+<span class="sd">        :return: Itself.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">train</span><span class="p">(</span><span class="kc">False</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="NormalizingFlow.preprocess"><a class="viewcode-back" href="../../../../api/deeprob.flows.models.html#deeprob.flows.models.base.NormalizingFlow.preprocess">[docs]</a>    <span class="k">def</span> <span class="nf">preprocess</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Preprocess the data batch before feeding it to the probabilistic model (forward mode).</span>
+
+<span class="sd">        :param x: The input data batch.</span>
+<span class="sd">        :return: The preprocessed data batch and the inv-log-det-jacobian.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">inv_log_det_jacobian</span> <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">dequantize</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">x</span><span class="p">,</span> <span class="n">ildj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dequantize</span><span class="o">.</span><span class="n">apply_backward</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+            <span class="n">inv_log_det_jacobian</span> <span class="o">+=</span> <span class="n">ildj</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">logit</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">x</span><span class="p">,</span> <span class="n">ildj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">logit</span><span class="o">.</span><span class="n">apply_backward</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+            <span class="n">inv_log_det_jacobian</span> <span class="o">+=</span> <span class="n">ildj</span>
+        <span class="k">return</span> <span class="n">x</span><span class="p">,</span> <span class="n">inv_log_det_jacobian</span></div>
+
+<div class="viewcode-block" id="NormalizingFlow.unpreprocess"><a class="viewcode-back" href="../../../../api/deeprob.flows.models.html#deeprob.flows.models.base.NormalizingFlow.unpreprocess">[docs]</a>    <span class="k">def</span> <span class="nf">unpreprocess</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Preprocess the data batch before feeding it to the probabilistic model (backward mode).</span>
+
+<span class="sd">        :param x: The input data batch.</span>
+<span class="sd">        :return: The unpreprocessed data batch and the log-det-jacobian.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">log_det_jacobian</span> <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">logit</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">x</span><span class="p">,</span> <span class="n">ldj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">logit</span><span class="o">.</span><span class="n">apply_forward</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+            <span class="n">log_det_jacobian</span> <span class="o">+=</span> <span class="n">ldj</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">dequantize</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">x</span><span class="p">,</span> <span class="n">ldj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dequantize</span><span class="o">.</span><span class="n">apply_forward</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+            <span class="n">log_det_jacobian</span> <span class="o">+=</span> <span class="n">ldj</span>
+        <span class="k">return</span> <span class="n">x</span><span class="p">,</span> <span class="n">log_det_jacobian</span></div>
+
+<div class="viewcode-block" id="NormalizingFlow.forward"><a class="viewcode-back" href="../../../../api/deeprob.flows.models.html#deeprob.flows.models.base.NormalizingFlow.forward">[docs]</a>    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Compute the log-likelihood given complete evidence.</span>
+
+<span class="sd">        :param x: The inputs.</span>
+<span class="sd">        :return: The log-likelihoods.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Preprocess the samples</span>
+        <span class="n">batch_size</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">x</span><span class="p">,</span> <span class="n">inv_log_det_jacobian</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">preprocess</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+
+        <span class="c1"># Apply backward transformations</span>
+        <span class="n">x</span><span class="p">,</span> <span class="n">ildj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">apply_backward</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+        <span class="n">inv_log_det_jacobian</span> <span class="o">+=</span> <span class="n">ildj</span>
+
+        <span class="c1"># Compute the prior log-likelihood</span>
+        <span class="n">base_lls</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">in_base</span><span class="o">.</span><span class="n">log_prob</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+        <span class="n">prior</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">base_lls</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="n">batch_size</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">),</span> <span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+        <span class="c1"># Return the final log-likelihood</span>
+        <span class="k">return</span> <span class="n">prior</span> <span class="o">+</span> <span class="n">inv_log_det_jacobian</span></div>
+
+<div class="viewcode-block" id="NormalizingFlow.sample"><a class="viewcode-back" href="../../../../api/deeprob.flows.models.html#deeprob.flows.models.base.NormalizingFlow.sample">[docs]</a>    <span class="nd">@torch</span><span class="o">.</span><span class="n">no_grad</span><span class="p">()</span>
+    <span class="k">def</span> <span class="nf">sample</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n_samples</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
+        <span class="c1"># Sample from the base distribution</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">in_base</span><span class="o">.</span><span class="n">sample</span><span class="p">([</span><span class="n">n_samples</span><span class="p">])</span>
+
+        <span class="c1"># Apply forward transformations</span>
+        <span class="n">x</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">apply_forward</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+
+        <span class="c1"># Apply reversed preprocessing transformation</span>
+        <span class="n">x</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">unpreprocess</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">x</span></div>
+
+<div class="viewcode-block" id="NormalizingFlow.apply_backward"><a class="viewcode-back" href="../../../../api/deeprob.flows.models.html#deeprob.flows.models.base.NormalizingFlow.apply_backward">[docs]</a>    <span class="k">def</span> <span class="nf">apply_backward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Apply the backward transformation.</span>
+
+<span class="sd">        :param x: The inputs.</span>
+<span class="sd">        :return: The transformed samples and the backward log-det-jacobian.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">inv_log_det_jacobian</span> <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="k">for</span> <span class="n">layer</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">layers</span><span class="p">:</span>
+            <span class="n">x</span><span class="p">,</span> <span class="n">ildj</span> <span class="o">=</span> <span class="n">layer</span><span class="o">.</span><span class="n">apply_backward</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+            <span class="n">inv_log_det_jacobian</span> <span class="o">+=</span> <span class="n">ildj</span>
+        <span class="k">return</span> <span class="n">x</span><span class="p">,</span> <span class="n">inv_log_det_jacobian</span></div>
+
+<div class="viewcode-block" id="NormalizingFlow.apply_forward"><a class="viewcode-back" href="../../../../api/deeprob.flows.models.html#deeprob.flows.models.base.NormalizingFlow.apply_forward">[docs]</a>    <span class="k">def</span> <span class="nf">apply_forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Apply the forward transformation.</span>
+
+<span class="sd">        :param x: the inputs.</span>
+<span class="sd">        :return: The transformed samples and the forward log-det-jacobian.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">log_det_jacobian</span> <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="k">for</span> <span class="n">layer</span> <span class="ow">in</span> <span class="nb">reversed</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">layers</span><span class="p">):</span>
+            <span class="n">x</span><span class="p">,</span> <span class="n">ldj</span> <span class="o">=</span> <span class="n">layer</span><span class="o">.</span><span class="n">apply_forward</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+            <span class="n">log_det_jacobian</span> <span class="o">+=</span> <span class="n">ldj</span>
+        <span class="k">return</span> <span class="n">x</span><span class="p">,</span> <span class="n">log_det_jacobian</span></div>
+
+<div class="viewcode-block" id="NormalizingFlow.loss"><a class="viewcode-back" href="../../../../api/deeprob.flows.models.html#deeprob.flows.models.base.NormalizingFlow.loss">[docs]</a>    <span class="k">def</span> <span class="nf">loss</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
+        <span class="c1"># Compute the loss as the average negative log-likelihood</span>
+        <span class="k">return</span> <span class="o">-</span><span class="n">torch</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">x</span><span class="p">)</span></div></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, Lorenzo Loconte, Gennaro Gala.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    <span class="fa fa-book"> Other Versions</span>
+    v: v1.0.0
+    <span class="fa fa-caret-down"></span>
+  </span>
+  <div class="rst-other-versions">
+    <dl>
+      <dt>Tags</dt>
+      <dd><a href="base.html">v1.0.0</a></dd>
+      <dd><a href="../../../../../v1.1.0/index.html">v1.1.0</a></dd>
+    </dl>
+    <dl>
+      <dt>Branches</dt>
+      <dd><a href="../../../../../main/index.html">main</a></dd>
+    </dl>
+  </div>
+</div><script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

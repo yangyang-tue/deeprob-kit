@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>deeprob.spn.utils.validity &mdash; DeeProb-kit 0.6.4 documentation</title>
+      <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../../_static/css/custom.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js"></script>
+        <script src="../../../../_static/jquery.js"></script>
+        <script src="../../../../_static/underscore.js"></script>
+        <script src="../../../../_static/doctools.js"></script>
+    <script src="../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../../../index.html" class="icon icon-home"> DeeProb-kit
+            <img src="../../../../_static/deeprob-logo-minimal.svg" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Read Me</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../home.html">Abstract</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../home.html#features">Features</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../home.html#installation-documentation">Installation &amp; Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../home.html#datasets-and-experiments">Datasets and Experiments</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../home.html#code-examples">Code Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../home.html#related-repositories">Related Repositories</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../home.html#references">References</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Modules</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../api/deeprob.html">deeprob package</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">DeeProb-kit</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="../../../index.html">Module code</a> &raquo;</li>
+      <li>deeprob.spn.utils.validity</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for deeprob.spn.utils.validity</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">List</span>
+
+<span class="kn">from</span> <span class="nn">deeprob.context</span> <span class="kn">import</span> <span class="n">is_check_spn_enabled</span>
+<span class="kn">from</span> <span class="nn">deeprob.spn.structure.node</span> <span class="kn">import</span> <span class="n">Node</span><span class="p">,</span> <span class="n">Sum</span><span class="p">,</span> <span class="n">Product</span>
+<span class="kn">from</span> <span class="nn">deeprob.spn.structure.leaf</span> <span class="kn">import</span> <span class="n">Leaf</span>
+<span class="kn">from</span> <span class="nn">deeprob.spn.structure.cltree</span> <span class="kn">import</span> <span class="n">BinaryCLT</span>
+<span class="kn">from</span> <span class="nn">deeprob.spn.utils.filter</span> <span class="kn">import</span> <span class="n">collect_nodes</span><span class="p">,</span> <span class="n">filter_nodes_by_type</span>
+
+
+<div class="viewcode-block" id="check_spn"><a class="viewcode-back" href="../../../../api/deeprob.spn.utils.html#deeprob.spn.utils.validity.check_spn">[docs]</a><span class="k">def</span> <span class="nf">check_spn</span><span class="p">(</span>
+    <span class="n">root</span><span class="p">:</span> <span class="n">Node</span><span class="p">,</span>
+    <span class="n">labeled</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="n">smooth</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="n">decomposable</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="n">structured_decomposable</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+<span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Check a SPN have certain properties. Defaults to checking only &#39;labeled&#39;.</span>
+<span class="sd">    This function combines several checks over a SPN, hence reducing the computational effort</span>
+<span class="sd">    used to retrieve the nodes from the SPN.</span>
+
+<span class="sd">    :param root: The root node of the SPN.</span>
+<span class="sd">    :param labeled: Whether to check if the SPN is correctly labeled.</span>
+<span class="sd">    :param smooth: Whether to check if the SPN is smooth.</span>
+<span class="sd">    :param decomposable: Whether to check if the SPN is decomposable.</span>
+<span class="sd">    :param structured_decomposable: Whether to check if the SPN is structured decomposable.</span>
+<span class="sd">    :raises ValueError: If the SPN doesn&#39;t have a certain property.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">is_check_spn_enabled</span><span class="p">():</span>  <span class="c1"># Skip the checks entirely, if specified</span>
+        <span class="k">return</span>
+
+    <span class="c1"># Collect the nodes starting from the root node</span>
+    <span class="n">nodes</span> <span class="o">=</span> <span class="n">collect_nodes</span><span class="p">(</span><span class="n">root</span><span class="p">)</span>
+
+    <span class="c1"># Check the SPN nodes are correctly labeled</span>
+    <span class="k">if</span> <span class="n">labeled</span><span class="p">:</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">is_labeled</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">nodes</span><span class="o">=</span><span class="n">nodes</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">result</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;SPN is not correctly labeled: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">result</span><span class="p">))</span>
+
+    <span class="c1"># Check the SPN is smooth</span>
+    <span class="k">if</span> <span class="n">smooth</span><span class="p">:</span>
+        <span class="n">sum_nodes</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Sum</span><span class="p">]</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">filter</span><span class="p">(</span><span class="k">lambda</span> <span class="n">n</span><span class="p">:</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">Sum</span><span class="p">),</span> <span class="n">nodes</span><span class="p">))</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">is_smooth</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">sum_nodes</span><span class="o">=</span><span class="n">sum_nodes</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">result</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;SPN is not smooth: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">result</span><span class="p">))</span>
+
+    <span class="c1"># Check the SPN is decomposable</span>
+    <span class="k">if</span> <span class="n">decomposable</span><span class="p">:</span>
+        <span class="n">product_nodes</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Product</span><span class="p">]</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">filter</span><span class="p">(</span><span class="k">lambda</span> <span class="n">n</span><span class="p">:</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">Product</span><span class="p">),</span> <span class="n">nodes</span><span class="p">))</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">is_decomposable</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">product_nodes</span><span class="o">=</span><span class="n">product_nodes</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">result</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;SPN is not decomposable: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">result</span><span class="p">))</span>
+
+    <span class="c1"># Check the SPN is structured decomposable</span>
+    <span class="k">if</span> <span class="n">structured_decomposable</span><span class="p">:</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">is_structured_decomposable</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">nodes</span><span class="o">=</span><span class="n">nodes</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">result</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;SPN is not structured decomposable: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">result</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="is_smooth"><a class="viewcode-back" href="../../../../api/deeprob.spn.utils.html#deeprob.spn.utils.validity.is_smooth">[docs]</a><span class="k">def</span> <span class="nf">is_smooth</span><span class="p">(</span><span class="n">root</span><span class="p">:</span> <span class="n">Node</span><span class="p">,</span> <span class="n">sum_nodes</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">Sum</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Check if the SPN is smooth (or complete).</span>
+<span class="sd">    It checks that each child of a sum node has the same scope.</span>
+<span class="sd">    Furthermore, it checks that the sum of the weights of a sum node is close to 1.</span>
+
+<span class="sd">    :param root: The root of the SPN.</span>
+<span class="sd">    :param sum_nodes: The list of sum nodes. If None, it will be retrieved starting from the root node.</span>
+<span class="sd">    :return: None if the SPN is smooth, a reason otherwise.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">sum_nodes</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">sum_nodes</span> <span class="o">=</span> <span class="n">filter_nodes_by_type</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">Sum</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">sum_nodes</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">isclose</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">weights</span><span class="p">),</span> <span class="mf">1.0</span><span class="p">):</span>
+            <span class="k">return</span> <span class="s2">&quot;Weights of node #</span><span class="si">{}</span><span class="s2"> don&#39;t sum up to 1&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">children</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s2">&quot;Sum node #</span><span class="si">{}</span><span class="s2"> has no children&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">children</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">weights</span><span class="p">):</span>
+            <span class="k">return</span> <span class="s2">&quot;Weights and children length mismatch in node #</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+        <span class="n">s_scope</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">scope</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">c</span><span class="p">:</span> <span class="nb">set</span><span class="p">(</span><span class="n">c</span><span class="o">.</span><span class="n">scope</span><span class="p">)</span> <span class="o">!=</span> <span class="n">s_scope</span><span class="p">,</span> <span class="n">node</span><span class="o">.</span><span class="n">children</span><span class="p">)):</span>
+            <span class="k">return</span> <span class="s2">&quot;Children of Sum node #</span><span class="si">{}</span><span class="s2"> have different scopes&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+    <span class="k">return</span> <span class="kc">None</span></div>
+
+
+<div class="viewcode-block" id="is_decomposable"><a class="viewcode-back" href="../../../../api/deeprob.spn.utils.html#deeprob.spn.utils.validity.is_decomposable">[docs]</a><span class="k">def</span> <span class="nf">is_decomposable</span><span class="p">(</span><span class="n">root</span><span class="p">:</span> <span class="n">Node</span><span class="p">,</span> <span class="n">product_nodes</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">Product</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Check if the SPN is decomposable (or consistent).</span>
+<span class="sd">    It checks that each child of a product node has disjointed scopes.</span>
+
+<span class="sd">    :param root: The root of the SPN.</span>
+<span class="sd">    :param product_nodes: The list of product nodes. If None, it will be retrieved starting from the root node.</span>
+<span class="sd">    :return: None if the SPN is decomposable, a reason otherwise.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">product_nodes</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">product_nodes</span> <span class="o">=</span> <span class="n">filter_nodes_by_type</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">Product</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">product_nodes</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">children</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s2">&quot;Product node #</span><span class="si">{}</span><span class="s2"> has no children&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+        <span class="n">s_scope</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="nb">sum</span><span class="p">([</span><span class="n">c</span><span class="o">.</span><span class="n">scope</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">node</span><span class="o">.</span><span class="n">children</span><span class="p">],</span> <span class="p">[]))</span>
+        <span class="k">if</span> <span class="nb">set</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">scope</span><span class="p">)</span> <span class="o">!=</span> <span class="n">s_scope</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s2">&quot;Children of Product node #</span><span class="si">{}</span><span class="s2"> don&#39;t have disjointed scopes&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+    <span class="k">return</span> <span class="kc">None</span></div>
+
+
+<div class="viewcode-block" id="is_structured_decomposable"><a class="viewcode-back" href="../../../../api/deeprob.spn.utils.html#deeprob.spn.utils.validity.is_structured_decomposable">[docs]</a><span class="k">def</span> <span class="nf">is_structured_decomposable</span><span class="p">(</span><span class="n">root</span><span class="p">:</span> <span class="n">Node</span><span class="p">,</span> <span class="n">nodes</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">Node</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">verbose</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Check if the PC is structured decomposable.</span>
+<span class="sd">    It checks that product nodes follow a vtree.</span>
+<span class="sd">    Note that if a PC is structured decomposable then it&#39;s also decomposable / consistent.</span>
+
+<span class="sd">    :param root: The root of the PC.</span>
+<span class="sd">    :param nodes: The list of nodes. If None, it will be retrieved starting from the root node.</span>
+<span class="sd">    :param verbose: if True, it prints the product nodes scopes in a relevant order.</span>
+<span class="sd">    :return: None if the PC is structured decomposable, a reason otherwise.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">nodes</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">nodes</span> <span class="o">=</span> <span class="n">collect_nodes</span><span class="p">(</span><span class="n">root</span><span class="p">)</span>
+
+    <span class="n">scopes_set</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">nodes</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">Product</span><span class="p">):</span>
+            <span class="n">scopes_set</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="nb">tuple</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="n">n</span><span class="o">.</span><span class="n">scope</span><span class="p">)))</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">BinaryCLT</span><span class="p">):</span>
+            <span class="n">scopes_set</span><span class="o">.</span><span class="n">update</span><span class="p">([</span><span class="nb">tuple</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="n">scope</span><span class="p">))</span> <span class="k">for</span> <span class="n">scope</span> <span class="ow">in</span> <span class="n">n</span><span class="o">.</span><span class="n">get_scopes</span><span class="p">()])</span>
+        <span class="k">elif</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">Sum</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">Leaf</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;Case not yet considered for </span><span class="si">%s</span><span class="s2"> nodes&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">n</span><span class="p">)))</span>
+
+    <span class="n">scopes</span> <span class="o">=</span> <span class="p">[</span><span class="nb">set</span><span class="p">(</span><span class="n">t</span><span class="p">)</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">scopes_set</span><span class="p">)]</span>
+
+    <span class="c1"># Ordering scopes is not needed, but useful for printing when verbose = True</span>
+    <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
+        <span class="n">scopes</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="nb">len</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">scope</span> <span class="ow">in</span> <span class="n">scopes</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">scope</span><span class="p">)</span>
+
+    <span class="c1"># Quadratic in the number of product nodes, but at least does not require a vtree structure</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">scopes</span><span class="p">)):</span>
+        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">scopes</span><span class="p">)):</span>
+            <span class="n">int_len</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">scopes</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">intersection</span><span class="p">(</span><span class="n">scopes</span><span class="p">[</span><span class="n">j</span><span class="p">]))</span>
+            <span class="k">if</span> <span class="n">int_len</span> <span class="o">!=</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">int_len</span> <span class="o">!=</span> <span class="nb">min</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">scopes</span><span class="p">[</span><span class="n">i</span><span class="p">]),</span> <span class="nb">len</span><span class="p">(</span><span class="n">scopes</span><span class="p">[</span><span class="n">j</span><span class="p">])):</span>
+                <span class="k">return</span> <span class="s2">&quot;Intersection between scope </span><span class="si">{}</span><span class="s2"> and scope </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">scopes</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">scopes</span><span class="p">[</span><span class="n">j</span><span class="p">])</span>
+    <span class="k">return</span> <span class="kc">None</span></div>
+
+
+<div class="viewcode-block" id="is_labeled"><a class="viewcode-back" href="../../../../api/deeprob.spn.utils.html#deeprob.spn.utils.validity.is_labeled">[docs]</a><span class="k">def</span> <span class="nf">is_labeled</span><span class="p">(</span><span class="n">root</span><span class="p">:</span> <span class="n">Node</span><span class="p">,</span> <span class="n">nodes</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">Node</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Check if the SPN is labeled correctly.</span>
+<span class="sd">    It checks that the initial id is zero and each id is consecutive.</span>
+
+<span class="sd">    :param root: The root of the SPN.</span>
+<span class="sd">    :param nodes: The list of nodes. If None, it will be retrieved starting from the root node.</span>
+<span class="sd">    :return: None if the SPN is labeled correctly, a reason otherwise.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">nodes</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">nodes</span> <span class="o">=</span> <span class="n">collect_nodes</span><span class="p">(</span><span class="n">root</span><span class="p">)</span>
+
+    <span class="n">ids</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">n</span><span class="p">:</span> <span class="n">n</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">nodes</span><span class="p">))</span>
+    <span class="k">if</span> <span class="kc">None</span> <span class="ow">in</span> <span class="n">ids</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s2">&quot;Some nodes have missing ids&quot;</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">ids</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">nodes</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s2">&quot;Some nodes have repeated ids&quot;</span>
+    <span class="k">if</span> <span class="nb">min</span><span class="p">(</span><span class="n">ids</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s2">&quot;Node ids are not starting at 0&quot;</span>
+    <span class="k">if</span> <span class="nb">max</span><span class="p">(</span><span class="n">ids</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">ids</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s2">&quot;Node ids are not consecutive&quot;</span>
+    <span class="k">return</span> <span class="kc">None</span></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, Lorenzo Loconte, Gennaro Gala.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    <span class="fa fa-book"> Other Versions</span>
+    v: v1.0.0
+    <span class="fa fa-caret-down"></span>
+  </span>
+  <div class="rst-other-versions">
+    <dl>
+      <dt>Tags</dt>
+      <dd><a href="validity.html">v1.0.0</a></dd>
+      <dd><a href="../../../../../v1.1.0/index.html">v1.1.0</a></dd>
+    </dl>
+    <dl>
+      <dt>Branches</dt>
+      <dd><a href="../../../../../main/index.html">main</a></dd>
+    </dl>
+  </div>
+</div><script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

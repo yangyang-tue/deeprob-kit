@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>deeprob.spn.models.dgcspn &mdash; DeeProb-kit 1.0.0 documentation</title>
+      <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../../_static/css/custom.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js"></script>
+        <script src="../../../../_static/jquery.js"></script>
+        <script src="../../../../_static/underscore.js"></script>
+        <script src="../../../../_static/doctools.js"></script>
+    <script src="../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../../../index.html" class="icon icon-home"> DeeProb-kit
+            <img src="../../../../_static/deeprob-logo-minimal.svg" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Read Me</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../markdown/home.html">Abstract</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../markdown/home.html#features">Features</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../markdown/home.html#installation">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../markdown/home.html#project-directories">Project Directories</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../markdown/home.html#related-repositories">Related Repositories</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../markdown/home.html#references">References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../markdown/docs.html">Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../markdown/examples.html">Code Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../markdown/experiments.html">Experiments</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../markdown/benchmark.html">Benchmark</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Modules</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../api/deeprob.html">deeprob package</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">DeeProb-kit</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="../../../index.html">Module code</a> &raquo;</li>
+      <li>deeprob.spn.models.dgcspn</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for deeprob.spn.models.dgcspn</h1><div class="highlight"><pre>
+<span></span><span class="c1"># MIT License: Copyright (c) 2021 Lorenzo Loconte, Gennaro Gala</span>
+
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">List</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">torch</span>
+<span class="kn">import</span> <span class="nn">torch.nn.functional</span> <span class="k">as</span> <span class="nn">F</span>
+<span class="kn">from</span> <span class="nn">torch</span> <span class="kn">import</span> <span class="n">autograd</span>
+
+<span class="kn">from</span> <span class="nn">deeprob.torch.base</span> <span class="kn">import</span> <span class="n">ProbabilisticModel</span>
+<span class="kn">from</span> <span class="nn">deeprob.torch.constraints</span> <span class="kn">import</span> <span class="n">ScaleClipper</span>
+<span class="kn">from</span> <span class="nn">deeprob.spn.layers.dgcspn</span> <span class="kn">import</span> <span class="n">SpatialGaussianLayer</span><span class="p">,</span> <span class="n">SpatialProductLayer</span><span class="p">,</span> <span class="n">SpatialSumLayer</span><span class="p">,</span> <span class="n">SpatialRootLayer</span>
+
+
+<div class="viewcode-block" id="DgcSpn"><a class="viewcode-back" href="../../../../api/deeprob.spn.models.html#deeprob.spn.models.dgcspn.DgcSpn">[docs]</a><span class="k">class</span> <span class="nc">DgcSpn</span><span class="p">(</span><span class="n">ProbabilisticModel</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">in_features</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span>
+        <span class="n">out_classes</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="n">n_batch</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">8</span><span class="p">,</span>
+        <span class="n">sum_channels</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">8</span><span class="p">,</span>
+        <span class="n">depthwise</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">bool</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">bool</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">n_pooling</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="n">optimize_scale</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">in_dropout</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">sum_dropout</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">quantiles_loc</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">uniform_loc</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialize a Deep Generalized Convolutional Sum-Product Network (DGC-SPN).</span>
+
+<span class="sd">        :param in_features: The input size as a (C, D, D) tuple.</span>
+<span class="sd">        :param out_classes: The number of output classes. Specify 1 in case of plain density estimation.</span>
+<span class="sd">        :param n_batch: The number of output channels of the base layer.</span>
+<span class="sd">        :param sum_channels: The number of output channels of spatial sum layers.</span>
+<span class="sd">        :param depthwise: Whether to use depthwise convolutions as product layers at each depth level.</span>
+<span class="sd">                          The last flag of the list will be considered as the one for the rest of the network.</span>
+<span class="sd">                          If a single boolean is passed, it will be used for all the network&#39;s product layers.</span>
+<span class="sd">        :param n_pooling: The number of initial pooling spatial product layers.</span>
+<span class="sd">        :param optimize_scale: Whether to train scale and location jointly.</span>
+<span class="sd">        :param in_dropout: The dropout rate for probabilistic dropout at distributions layer outputs. It can be None.</span>
+<span class="sd">        :param sum_dropout: The dropout rate for probabilistic dropout at sum layers. It can be None.</span>
+<span class="sd">        :param quantiles_loc: The mean quantiles for location initialization. It can be None.</span>
+<span class="sd">        :param uniform_loc: The uniform range for location initialization. It can be None.</span>
+<span class="sd">        :raises ValueError: If a parameter is out of domain.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">in_features</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">!=</span> <span class="n">in_features</span><span class="p">[</span><span class="mi">2</span><span class="p">]:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;The height and width of input size must be the same&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">out_classes</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;The number of output classes must be positive&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">n_batch</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;The number of base distribution batches must be positive&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">sum_channels</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;The number of output channels of spatial sum layers must be positive&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">in_dropout</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="p">(</span><span class="n">in_dropout</span> <span class="o">&lt;=</span> <span class="mf">0.0</span> <span class="ow">or</span> <span class="n">in_dropout</span> <span class="o">&gt;=</span> <span class="mf">1.0</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;The dropout rate at base distribution must be in (0, 1)&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">sum_dropout</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="p">(</span><span class="n">sum_dropout</span> <span class="o">&lt;=</span> <span class="mf">0.0</span> <span class="ow">or</span> <span class="n">sum_dropout</span> <span class="o">&gt;=</span> <span class="mf">1.0</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;The dropout rate at spatial sum layers must be in (0, 1)&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">quantiles_loc</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">uniform_loc</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;At least one between quantiles_loc and uniform_loc must be None&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">quantiles_loc</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">quantiles_loc</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">4</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;The mean quantiles must be a 4D Numpy array&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">uniform_loc</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">uniform_loc</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">2</span> <span class="ow">or</span> <span class="n">uniform_loc</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="n">uniform_loc</span><span class="p">[</span><span class="mi">1</span><span class="p">]):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;The uniform range must be a pair (A, B) with A &lt; B&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Check depthwise and n_pooling arguments, based on computed network&#39;s depth</span>
+        <span class="n">depth</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ceil</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">log2</span><span class="p">(</span><span class="n">in_features</span><span class="p">[</span><span class="mi">1</span><span class="p">])))</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">depthwise</span><span class="p">,</span> <span class="nb">bool</span><span class="p">):</span>
+            <span class="n">depthwise</span> <span class="o">=</span> <span class="p">[</span><span class="n">depthwise</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="n">depth</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">depthwise</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">depthwise</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">depth</span> <span class="o">+</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;The length of depthwise argument must be in [1, ceil(log2(D)) + 1]&quot;</span><span class="p">)</span>
+            <span class="n">rest_depthwise</span> <span class="o">=</span> <span class="n">depth</span> <span class="o">+</span> <span class="mi">1</span> <span class="o">-</span> <span class="nb">len</span><span class="p">(</span><span class="n">depthwise</span><span class="p">)</span>
+            <span class="n">depthwise</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="n">depthwise</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]]</span> <span class="o">*</span> <span class="n">rest_depthwise</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">n_pooling</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">n_pooling</span> <span class="o">&gt;</span> <span class="n">depth</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;The number of initial pooling spatial product layers must be in [0, ceil(log2(D))]&quot;</span><span class="p">)</span>
+
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">in_features</span> <span class="o">=</span> <span class="n">in_features</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">out_classes</span> <span class="o">=</span> <span class="n">out_classes</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">n_batch</span> <span class="o">=</span> <span class="n">n_batch</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sum_channels</span> <span class="o">=</span> <span class="n">sum_channels</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">depthwise</span> <span class="o">=</span> <span class="n">depthwise</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">n_pooling</span> <span class="o">=</span> <span class="n">n_pooling</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">optimize_scale</span> <span class="o">=</span> <span class="n">optimize_scale</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">in_dropout</span> <span class="o">=</span> <span class="n">in_dropout</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sum_dropout</span> <span class="o">=</span> <span class="n">sum_dropout</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">layers</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">ModuleList</span><span class="p">()</span>
+
+        <span class="c1"># Instantiate the base distribution layer</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">base_layer</span> <span class="o">=</span> <span class="n">SpatialGaussianLayer</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">in_features</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_batch</span><span class="p">,</span>
+            <span class="n">optimize_scale</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">optimize_scale</span><span class="p">,</span> <span class="n">dropout</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">in_dropout</span><span class="p">,</span>
+            <span class="n">quantiles_loc</span><span class="o">=</span><span class="n">quantiles_loc</span><span class="p">,</span> <span class="n">uniform_loc</span><span class="o">=</span><span class="n">uniform_loc</span>
+        <span class="p">)</span>
+        <span class="n">in_features</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">base_layer</span><span class="o">.</span><span class="n">out_features</span>
+
+        <span class="c1"># Instantiate the inner layers</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">depth</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+            <span class="c1"># Check for spatial product pooling layers, and</span>
+            <span class="c1"># check whether to use depthwise product layer at current depth</span>
+            <span class="k">if</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_pooling</span><span class="p">:</span>
+                <span class="n">padding</span> <span class="o">=</span> <span class="s1">&#39;valid&#39;</span>
+                <span class="n">stride</span> <span class="o">=</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+                <span class="n">dilation</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">padding</span> <span class="o">=</span> <span class="s1">&#39;final&#39;</span> <span class="k">if</span> <span class="n">i</span> <span class="o">==</span> <span class="n">depth</span> <span class="k">else</span> <span class="s1">&#39;full&#39;</span>
+                <span class="n">stride</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+                <span class="n">k</span> <span class="o">=</span> <span class="n">i</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_pooling</span>
+                <span class="n">dilation</span> <span class="o">=</span> <span class="p">(</span><span class="mi">2</span> <span class="o">**</span> <span class="n">k</span><span class="p">,</span> <span class="mi">2</span> <span class="o">**</span> <span class="n">k</span><span class="p">)</span>
+
+            <span class="c1"># Add a spatial product layer</span>
+            <span class="n">spatial_prod</span> <span class="o">=</span> <span class="n">SpatialProductLayer</span><span class="p">(</span>
+                <span class="n">in_features</span><span class="p">,</span> <span class="n">kernel_size</span><span class="o">=</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="n">padding</span><span class="o">=</span><span class="n">padding</span><span class="p">,</span>
+                <span class="n">stride</span><span class="o">=</span><span class="n">stride</span><span class="p">,</span> <span class="n">dilation</span><span class="o">=</span><span class="n">dilation</span><span class="p">,</span> <span class="n">depthwise</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">depthwise</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+            <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">spatial_prod</span><span class="p">)</span>
+            <span class="n">in_features</span> <span class="o">=</span> <span class="n">spatial_prod</span><span class="o">.</span><span class="n">out_features</span>
+
+            <span class="k">if</span> <span class="n">i</span> <span class="o">!=</span> <span class="n">depth</span><span class="p">:</span>
+                <span class="c1"># Add a spatial sum layer</span>
+                <span class="n">spatial_sum</span> <span class="o">=</span> <span class="n">SpatialSumLayer</span><span class="p">(</span><span class="n">in_features</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">sum_channels</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">sum_dropout</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">spatial_sum</span><span class="p">)</span>
+                <span class="n">in_features</span> <span class="o">=</span> <span class="n">spatial_sum</span><span class="o">.</span><span class="n">out_features</span>
+
+        <span class="c1"># Instantiate the spatial root layer</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">root_layer</span> <span class="o">=</span> <span class="n">SpatialRootLayer</span><span class="p">(</span><span class="n">in_features</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">out_classes</span><span class="p">)</span>
+
+        <span class="c1"># Initialize the scale clipper to apply, if specified</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">optimize_scale</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">scale_clipper</span> <span class="o">=</span> <span class="n">ScaleClipper</span><span class="p">()</span>
+
+<div class="viewcode-block" id="DgcSpn.forward"><a class="viewcode-back" href="../../../../api/deeprob.spn.models.html#deeprob.spn.models.dgcspn.DgcSpn.forward">[docs]</a>    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Compute the log-likelihood given some evidence.</span>
+<span class="sd">        Random variables can be marginalized using NaN values.</span>
+
+<span class="sd">        :param x: The inputs.</span>
+<span class="sd">        :return: The outputs.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Compute the base distributions log-likelihoods</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">base_layer</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+
+        <span class="c1"># Forward through the inner layers</span>
+        <span class="k">for</span> <span class="n">layer</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">layers</span><span class="p">:</span>
+            <span class="n">x</span> <span class="o">=</span> <span class="n">layer</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+
+        <span class="c1"># Forward through the root layer</span>
+        <span class="n">log_prob</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">root_layer</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">log_prob</span></div>
+
+<div class="viewcode-block" id="DgcSpn.mpe"><a class="viewcode-back" href="../../../../api/deeprob.spn.models.html#deeprob.spn.models.dgcspn.DgcSpn.mpe">[docs]</a>    <span class="k">def</span> <span class="nf">mpe</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Compute the maximum at posteriori estimation.</span>
+<span class="sd">        Random variables can be marginalized using NaN values.</span>
+
+<span class="sd">        :param x: The inputs.</span>
+<span class="sd">        :return: The outputs.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Compute the base distribution log-likelihoods</span>
+        <span class="n">z</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">base_layer</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+
+        <span class="c1"># Just in case the inputs don&#39;t requires gradients</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">z</span><span class="o">.</span><span class="n">requires_grad</span><span class="p">:</span>
+            <span class="n">z</span><span class="o">.</span><span class="n">requires_grad</span> <span class="o">=</span> <span class="kc">True</span>
+
+        <span class="c1"># Forward through the inner layers</span>
+        <span class="n">y</span> <span class="o">=</span> <span class="n">z</span>
+        <span class="k">for</span> <span class="n">layer</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">layers</span><span class="p">:</span>
+            <span class="n">y</span> <span class="o">=</span> <span class="n">layer</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
+
+        <span class="c1"># Forward through the root layer</span>
+        <span class="n">y</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">root_layer</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
+
+        <span class="c1"># Compute the gradients at distribution leaves</span>
+        <span class="n">z_grad</span><span class="p">,</span> <span class="o">=</span> <span class="n">autograd</span><span class="o">.</span><span class="n">grad</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">grad_outputs</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">ones_like</span><span class="p">(</span><span class="n">y</span><span class="p">),</span> <span class="n">only_inputs</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="k">with</span> <span class="n">torch</span><span class="o">.</span><span class="n">no_grad</span><span class="p">():</span>
+            <span class="c1"># Compute the maximum at posteriori estimate using leaves gradients</span>
+            <span class="n">mode</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">base_layer</span><span class="o">.</span><span class="n">loc</span>
+            <span class="n">estimates</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="n">z_grad</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span> <span class="o">*</span> <span class="n">mode</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+            <span class="n">samples</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="n">estimates</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">samples</span></div>
+
+<div class="viewcode-block" id="DgcSpn.sample"><a class="viewcode-back" href="../../../../api/deeprob.spn.models.html#deeprob.spn.models.dgcspn.DgcSpn.sample">[docs]</a>    <span class="k">def</span> <span class="nf">sample</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n_samples</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;Sampling is not implemented for DGC-SPNs&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="DgcSpn.loss"><a class="viewcode-back" href="../../../../api/deeprob.spn.models.html#deeprob.spn.models.dgcspn.DgcSpn.loss">[docs]</a>    <span class="k">def</span> <span class="nf">loss</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
+        <span class="c1"># Generative setting, return average negative log-likelihood</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">out_classes</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">return</span> <span class="o">-</span><span class="n">torch</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+
+        <span class="c1"># Discriminative setting, return cross-entropy loss</span>
+        <span class="n">logits</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">log_softmax</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">F</span><span class="o">.</span><span class="n">nll_loss</span><span class="p">(</span><span class="n">logits</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="DgcSpn.apply_constraints"><a class="viewcode-back" href="../../../../api/deeprob.spn.models.html#deeprob.spn.models.dgcspn.DgcSpn.apply_constraints">[docs]</a>    <span class="k">def</span> <span class="nf">apply_constraints</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># Apply the scale clipper to the base layer, if specified</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">optimize_scale</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">scale_clipper</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">base_layer</span><span class="p">)</span></div></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, Lorenzo Loconte, Gennaro Gala.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    <span class="fa fa-book"> Other Versions</span>
+    v: v1.1.0
+    <span class="fa fa-caret-down"></span>
+  </span>
+  <div class="rst-other-versions">
+    <dl>
+      <dt>Tags</dt>
+      <dd><a href="../../../../../v1.0.0/index.html">v1.0.0</a></dd>
+      <dd><a href="dgcspn.html">v1.1.0</a></dd>
+    </dl>
+    <dl>
+      <dt>Branches</dt>
+      <dd><a href="../../../../../main/index.html">main</a></dd>
+    </dl>
+  </div>
+</div><script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

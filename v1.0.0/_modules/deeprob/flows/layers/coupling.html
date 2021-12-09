@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>deeprob.flows.layers.coupling &mdash; DeeProb-kit 0.6.4 documentation</title>
+      <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../../_static/css/custom.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js"></script>
+        <script src="../../../../_static/jquery.js"></script>
+        <script src="../../../../_static/underscore.js"></script>
+        <script src="../../../../_static/doctools.js"></script>
+    <script src="../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../../../index.html" class="icon icon-home"> DeeProb-kit
+            <img src="../../../../_static/deeprob-logo-minimal.svg" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Read Me</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../home.html">Abstract</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../home.html#features">Features</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../home.html#installation-documentation">Installation &amp; Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../home.html#datasets-and-experiments">Datasets and Experiments</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../home.html#code-examples">Code Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../home.html#related-repositories">Related Repositories</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../home.html#references">References</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Modules</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../api/deeprob.html">deeprob package</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">DeeProb-kit</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="../../../index.html">Module code</a> &raquo;</li>
+      <li>deeprob.flows.layers.coupling</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for deeprob.flows.layers.coupling</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">torch</span>
+<span class="kn">import</span> <span class="nn">torch.nn</span> <span class="k">as</span> <span class="nn">nn</span>
+
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Tuple</span>
+
+<span class="kn">from</span> <span class="nn">deeprob.torch.utils</span> <span class="kn">import</span> <span class="n">ScaledTanh</span>
+<span class="kn">from</span> <span class="nn">deeprob.flows.utils</span> <span class="kn">import</span> <span class="n">squeeze_depth2d</span><span class="p">,</span> <span class="n">unsqueeze_depth2d</span><span class="p">,</span> <span class="n">Bijector</span><span class="p">,</span> <span class="n">BatchNormLayer2d</span>
+<span class="kn">from</span> <span class="nn">deeprob.flows.layers.densenet</span> <span class="kn">import</span> <span class="n">DenseNetwork</span>
+<span class="kn">from</span> <span class="nn">deeprob.flows.layers.resnet</span> <span class="kn">import</span> <span class="n">ResidualNetwork</span>
+
+
+<div class="viewcode-block" id="CouplingLayer1d"><a class="viewcode-back" href="../../../../api/deeprob.flows.layers.html#deeprob.flows.layers.coupling.CouplingLayer1d">[docs]</a><span class="k">class</span> <span class="nc">CouplingLayer1d</span><span class="p">(</span><span class="n">Bijector</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">in_features</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">depth</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">units</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">affine</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="n">reverse</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Build a RealNVP (or NICE) 1D coupling layer.</span>
+
+<span class="sd">        :param in_features: The number of input features.</span>
+<span class="sd">        :param depth: The number of hidden layers of the conditioner.</span>
+<span class="sd">        :param units: The number of units of each hidden layer of the conditioner.</span>
+<span class="sd">        :param affine: Whether to use affine transformation. If False then use only translation (as in NICE).</span>
+<span class="sd">        :param reverse: Whether to reverse the mask used in the coupling layer. Useful for alternating masks.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">CouplingLayer1d</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">in_features</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">affine</span> <span class="o">=</span> <span class="n">affine</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">reverse</span> <span class="o">=</span> <span class="n">reverse</span>
+
+        <span class="c1"># Initialize the coupling masks</span>
+        <span class="n">mask</span><span class="p">,</span> <span class="n">inv_mask</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">build_alternating_masks</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">reverse</span><span class="p">:</span>
+            <span class="n">mask</span><span class="p">,</span> <span class="n">inv_mask</span> <span class="o">=</span> <span class="n">inv_mask</span><span class="p">,</span> <span class="n">mask</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">register_buffer</span><span class="p">(</span><span class="s1">&#39;mask&#39;</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">mask</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">float32</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">register_buffer</span><span class="p">(</span><span class="s1">&#39;inv_mask&#39;</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">inv_mask</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">float32</span><span class="p">))</span>
+
+        <span class="c1"># Build the conditioner neural network</span>
+        <span class="n">layers</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">in_features</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">in_features</span>
+        <span class="n">out_features</span> <span class="o">=</span> <span class="n">units</span>
+        <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">depth</span><span class="p">):</span>
+            <span class="n">layers</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span>
+                <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="n">in_features</span><span class="p">,</span> <span class="n">out_features</span><span class="p">),</span>
+                <span class="n">nn</span><span class="o">.</span><span class="n">ReLU</span><span class="p">(</span><span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="p">])</span>
+            <span class="n">in_features</span> <span class="o">=</span> <span class="n">out_features</span>
+        <span class="n">out_features</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">in_features</span> <span class="o">*</span> <span class="mi">2</span> <span class="k">if</span> <span class="n">affine</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">in_features</span>
+        <span class="n">layers</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="n">in_features</span><span class="p">,</span> <span class="n">out_features</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">network</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Sequential</span><span class="p">(</span><span class="o">*</span><span class="n">layers</span><span class="p">)</span>
+
+        <span class="c1"># Build the activation function for the scale of affine transformation</span>
+        <span class="k">if</span> <span class="n">affine</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">scale_act</span> <span class="o">=</span> <span class="n">ScaledTanh</span><span class="p">()</span>
+
+<div class="viewcode-block" id="CouplingLayer1d.build_alternating_masks"><a class="viewcode-back" href="../../../../api/deeprob.flows.layers.html#deeprob.flows.layers.coupling.CouplingLayer1d.build_alternating_masks">[docs]</a>    <span class="k">def</span> <span class="nf">build_alternating_masks</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Build the alterning masks.</span>
+
+<span class="sd">        :return: The alterning mask and its inverse.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">mask</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">in_features</span><span class="p">)</span> <span class="o">%</span> <span class="mi">2</span>
+        <span class="n">inv_mask</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">-</span> <span class="n">mask</span>
+        <span class="k">return</span> <span class="n">mask</span><span class="p">,</span> <span class="n">inv_mask</span></div>
+
+<div class="viewcode-block" id="CouplingLayer1d.apply_backward"><a class="viewcode-back" href="../../../../api/deeprob.flows.layers.html#deeprob.flows.layers.coupling.CouplingLayer1d.apply_backward">[docs]</a>    <span class="k">def</span> <span class="nf">apply_backward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">]:</span>
+        <span class="c1"># Evaluate the neural network conditioner</span>
+        <span class="n">z</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">network</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mask</span> <span class="o">*</span> <span class="n">x</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">affine</span><span class="p">:</span>
+            <span class="n">t</span><span class="p">,</span> <span class="n">s</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">chunk</span><span class="p">(</span><span class="n">z</span><span class="p">,</span> <span class="n">chunks</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+            <span class="n">s</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">scale_act</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
+            <span class="n">t</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">inv_mask</span> <span class="o">*</span> <span class="n">t</span>
+            <span class="n">s</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">inv_mask</span> <span class="o">*</span> <span class="n">s</span>
+            <span class="n">u</span> <span class="o">=</span> <span class="p">(</span><span class="n">x</span> <span class="o">-</span> <span class="n">t</span><span class="p">)</span> <span class="o">*</span> <span class="n">torch</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">s</span><span class="p">)</span>
+            <span class="n">inv_log_det_jacobian</span> <span class="o">=</span> <span class="o">-</span><span class="n">torch</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">t</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">inv_mask</span> <span class="o">*</span> <span class="n">z</span>
+            <span class="n">u</span> <span class="o">=</span> <span class="n">x</span> <span class="o">-</span> <span class="n">t</span>
+            <span class="n">inv_log_det_jacobian</span> <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="k">return</span> <span class="n">u</span><span class="p">,</span> <span class="n">inv_log_det_jacobian</span></div>
+
+<div class="viewcode-block" id="CouplingLayer1d.apply_forward"><a class="viewcode-back" href="../../../../api/deeprob.flows.layers.html#deeprob.flows.layers.coupling.CouplingLayer1d.apply_forward">[docs]</a>    <span class="k">def</span> <span class="nf">apply_forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">u</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">]:</span>
+        <span class="c1"># Evaluate the neural network conditioner</span>
+        <span class="n">z</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">network</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mask</span> <span class="o">*</span> <span class="n">u</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">affine</span><span class="p">:</span>
+            <span class="n">t</span><span class="p">,</span> <span class="n">s</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">chunk</span><span class="p">(</span><span class="n">z</span><span class="p">,</span> <span class="n">chunks</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+            <span class="n">s</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">scale_act</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
+            <span class="n">t</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">inv_mask</span> <span class="o">*</span> <span class="n">t</span>
+            <span class="n">s</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">inv_mask</span> <span class="o">*</span> <span class="n">s</span>
+            <span class="n">x</span> <span class="o">=</span> <span class="n">u</span> <span class="o">*</span> <span class="n">torch</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="o">+</span> <span class="n">t</span>
+            <span class="n">log_det_jacobian</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">t</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">inv_mask</span> <span class="o">*</span> <span class="n">z</span>
+            <span class="n">x</span> <span class="o">=</span> <span class="n">u</span> <span class="o">+</span> <span class="n">t</span>
+            <span class="n">log_det_jacobian</span> <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="k">return</span> <span class="n">x</span><span class="p">,</span> <span class="n">log_det_jacobian</span></div></div>
+
+
+<div class="viewcode-block" id="CouplingLayer2d"><a class="viewcode-back" href="../../../../api/deeprob.flows.layers.html#deeprob.flows.layers.coupling.CouplingLayer2d">[docs]</a><span class="k">class</span> <span class="nc">CouplingLayer2d</span><span class="p">(</span><span class="n">Bijector</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">in_features</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span>
+        <span class="n">network</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">n_blocks</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">channels</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">affine</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="n">channelwise</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">reverse</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Build a RealNVP (or NICE) 2D coupling layer.</span>
+
+<span class="sd">        :param in_features: The size of the input.</span>
+<span class="sd">        :param network: The network conditioner to use. It can be either &#39;resnet&#39; or &#39;densenet&#39;.</span>
+<span class="sd">        :param n_blocks: The number of residual blocks or dense blocks.</span>
+<span class="sd">        :param channels: The number of output channels of each convolutional layer.</span>
+<span class="sd">        :param affine: Whether to use affine transformation. If False then use only translation (as in NICE).</span>
+<span class="sd">        :param channelwise: Whether to use channel-wise coupling mask.</span>
+<span class="sd">                            Defaults to False, i.e. checkerboard coupling mask.</span>
+<span class="sd">        :param reverse: Whether to reverse the mask used in the coupling layer. Useful for alternating masks.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">CouplingLayer2d</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">in_features</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">affine</span> <span class="o">=</span> <span class="n">affine</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">channelwise</span> <span class="o">=</span> <span class="n">channelwise</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">reverse</span> <span class="o">=</span> <span class="n">reverse</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">channelwise</span><span class="p">:</span>
+            <span class="c1"># Initialize the coupling masks</span>
+            <span class="n">mask</span><span class="p">,</span> <span class="n">inv_mask</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">build_checkerboard_masks</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">reverse</span><span class="p">:</span>
+                <span class="n">mask</span><span class="p">,</span> <span class="n">inv_mask</span> <span class="o">=</span> <span class="n">inv_mask</span><span class="p">,</span> <span class="n">mask</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">register_buffer</span><span class="p">(</span><span class="s1">&#39;mask&#39;</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">mask</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">float32</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">register_buffer</span><span class="p">(</span><span class="s1">&#39;inv_mask&#39;</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">inv_mask</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">float32</span><span class="p">))</span>
+
+        <span class="c1"># Build the conditioner neural network</span>
+        <span class="n">in_channels</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">in_channels</span> <span class="o">//</span> <span class="mi">2</span> <span class="k">if</span> <span class="n">channelwise</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">in_channels</span>
+        <span class="n">out_channels</span> <span class="o">=</span> <span class="n">in_channels</span> <span class="o">*</span> <span class="mi">2</span> <span class="k">if</span> <span class="n">affine</span> <span class="k">else</span> <span class="n">in_channels</span>
+        <span class="k">if</span> <span class="n">network</span> <span class="o">==</span> <span class="s1">&#39;resnet&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">network</span> <span class="o">=</span> <span class="n">ResidualNetwork</span><span class="p">(</span><span class="n">in_channels</span><span class="p">,</span> <span class="n">channels</span><span class="p">,</span> <span class="n">out_channels</span><span class="p">,</span> <span class="n">n_blocks</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">network</span> <span class="o">==</span> <span class="s1">&#39;densenet&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">network</span> <span class="o">=</span> <span class="n">DenseNetwork</span><span class="p">(</span><span class="n">in_channels</span><span class="p">,</span> <span class="n">channels</span><span class="p">,</span> <span class="n">out_channels</span><span class="p">,</span> <span class="n">n_blocks</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;Unknown network conditioner </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">network</span><span class="p">))</span>
+
+        <span class="c1"># Build the activation function for the scale of affine transformation</span>
+        <span class="k">if</span> <span class="n">affine</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">scale_act</span> <span class="o">=</span> <span class="n">ScaledTanh</span><span class="p">([</span><span class="n">in_channels</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">in_channels</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">in_features</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">in_height</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">in_features</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">in_width</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">in_features</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+
+<div class="viewcode-block" id="CouplingLayer2d.build_checkerboard_masks"><a class="viewcode-back" href="../../../../api/deeprob.flows.layers.html#deeprob.flows.layers.coupling.CouplingLayer2d.build_checkerboard_masks">[docs]</a>    <span class="k">def</span> <span class="nf">build_checkerboard_masks</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Build the checkerboard coupling masks.</span>
+
+<span class="sd">        :return: The checkerboard mask and its inverse.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">mask</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">indices</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">in_height</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">in_width</span><span class="p">]),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span> <span class="o">%</span> <span class="mi">2</span>
+        <span class="n">inv_mask</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">-</span> <span class="n">mask</span>
+        <span class="k">return</span> <span class="n">mask</span><span class="p">,</span> <span class="n">inv_mask</span></div>
+
+<div class="viewcode-block" id="CouplingLayer2d.apply_backward"><a class="viewcode-back" href="../../../../api/deeprob.flows.layers.html#deeprob.flows.layers.coupling.CouplingLayer2d.apply_backward">[docs]</a>    <span class="k">def</span> <span class="nf">apply_backward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">]:</span>
+        <span class="n">batch_size</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">channelwise</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">reverse</span><span class="p">:</span>
+                <span class="n">mx</span><span class="p">,</span> <span class="n">my</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">chunk</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">chunks</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">my</span><span class="p">,</span> <span class="n">mx</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">chunk</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">chunks</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+            <span class="c1"># Evaluate the neural network conditioner</span>
+            <span class="n">z</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">network</span><span class="p">(</span><span class="n">mx</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">affine</span><span class="p">:</span>
+                <span class="c1"># Apply the affine transformation (backward mode)</span>
+                <span class="n">t</span><span class="p">,</span> <span class="n">s</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">chunk</span><span class="p">(</span><span class="n">z</span><span class="p">,</span> <span class="n">chunks</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+                <span class="n">s</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">scale_act</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
+                <span class="n">my</span> <span class="o">=</span> <span class="p">(</span><span class="n">my</span> <span class="o">-</span> <span class="n">t</span><span class="p">)</span> <span class="o">*</span> <span class="n">torch</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">s</span><span class="p">)</span>
+                <span class="n">inv_log_det_jacobian</span> <span class="o">=</span> <span class="o">-</span><span class="n">torch</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="n">batch_size</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">),</span> <span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># Apply the translation-only transformation (backward mode)</span>
+                <span class="n">my</span> <span class="o">=</span> <span class="n">my</span> <span class="o">-</span> <span class="n">z</span>
+                <span class="n">inv_log_det_jacobian</span> <span class="o">=</span> <span class="mf">0.0</span>
+
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">reverse</span><span class="p">:</span>
+                <span class="n">u</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">([</span><span class="n">mx</span><span class="p">,</span> <span class="n">my</span><span class="p">],</span> <span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">u</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">([</span><span class="n">my</span><span class="p">,</span> <span class="n">mx</span><span class="p">],</span> <span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># Evaluate the neural network conditioner</span>
+            <span class="n">mx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mask</span> <span class="o">*</span> <span class="n">x</span>
+            <span class="n">z</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">network</span><span class="p">(</span><span class="n">mx</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">affine</span><span class="p">:</span>
+                <span class="c1"># Apply the affine transformation (backward mode)</span>
+                <span class="n">t</span><span class="p">,</span> <span class="n">s</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">chunk</span><span class="p">(</span><span class="n">z</span><span class="p">,</span> <span class="n">chunks</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+                <span class="n">s</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">scale_act</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
+                <span class="n">t</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">inv_mask</span> <span class="o">*</span> <span class="n">t</span>
+                <span class="n">s</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">inv_mask</span> <span class="o">*</span> <span class="n">s</span>
+                <span class="n">u</span> <span class="o">=</span> <span class="p">(</span><span class="n">x</span> <span class="o">-</span> <span class="n">t</span><span class="p">)</span> <span class="o">*</span> <span class="n">torch</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">s</span><span class="p">)</span>
+                <span class="n">inv_log_det_jacobian</span> <span class="o">=</span> <span class="o">-</span><span class="n">torch</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="n">batch_size</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">),</span> <span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># Apply the translation-only transformation (backward mode)</span>
+                <span class="n">t</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">inv_mask</span> <span class="o">*</span> <span class="n">z</span>
+                <span class="n">u</span> <span class="o">=</span> <span class="n">x</span> <span class="o">-</span> <span class="n">t</span>
+                <span class="n">inv_log_det_jacobian</span> <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="k">return</span> <span class="n">u</span><span class="p">,</span> <span class="n">inv_log_det_jacobian</span></div>
+
+<div class="viewcode-block" id="CouplingLayer2d.apply_forward"><a class="viewcode-back" href="../../../../api/deeprob.flows.layers.html#deeprob.flows.layers.coupling.CouplingLayer2d.apply_forward">[docs]</a>    <span class="k">def</span> <span class="nf">apply_forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">u</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">]:</span>
+        <span class="n">batch_size</span> <span class="o">=</span> <span class="n">u</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">channelwise</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">reverse</span><span class="p">:</span>
+                <span class="n">mu</span><span class="p">,</span> <span class="n">mv</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">chunk</span><span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">chunks</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">mv</span><span class="p">,</span> <span class="n">mu</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">chunk</span><span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">chunks</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+            <span class="c1"># Get the parameters</span>
+            <span class="n">z</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">network</span><span class="p">(</span><span class="n">mu</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">affine</span><span class="p">:</span>
+                <span class="c1"># Apply the affine transformation (forward mode)</span>
+                <span class="n">t</span><span class="p">,</span> <span class="n">s</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">chunk</span><span class="p">(</span><span class="n">z</span><span class="p">,</span> <span class="n">chunks</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+                <span class="n">s</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">scale_act</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
+                <span class="n">mv</span> <span class="o">=</span> <span class="n">mv</span> <span class="o">*</span> <span class="n">torch</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="o">+</span> <span class="n">t</span>
+                <span class="n">log_det_jacobian</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="n">batch_size</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">),</span> <span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># Apply the translation-only transformation (forward mode)</span>
+                <span class="n">mv</span> <span class="o">=</span> <span class="n">mv</span> <span class="o">+</span> <span class="n">z</span>
+                <span class="n">log_det_jacobian</span> <span class="o">=</span> <span class="mf">0.0</span>
+
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">reverse</span><span class="p">:</span>
+                <span class="n">x</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">([</span><span class="n">mu</span><span class="p">,</span> <span class="n">mv</span><span class="p">],</span> <span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">x</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">([</span><span class="n">mv</span><span class="p">,</span> <span class="n">mu</span><span class="p">],</span> <span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># Get the parameters</span>
+            <span class="n">mu</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mask</span> <span class="o">*</span> <span class="n">u</span>
+            <span class="n">z</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">network</span><span class="p">(</span><span class="n">mu</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">affine</span><span class="p">:</span>
+                <span class="c1"># Apply the affine transformation (forward mode)</span>
+                <span class="n">t</span><span class="p">,</span> <span class="n">s</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">chunk</span><span class="p">(</span><span class="n">z</span><span class="p">,</span> <span class="n">chunks</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+                <span class="n">s</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">scale_act</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
+                <span class="n">t</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">inv_mask</span> <span class="o">*</span> <span class="n">t</span>
+                <span class="n">s</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">inv_mask</span> <span class="o">*</span> <span class="n">s</span>
+                <span class="n">x</span> <span class="o">=</span> <span class="n">u</span> <span class="o">*</span> <span class="n">torch</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="o">+</span> <span class="n">t</span>
+                <span class="n">log_det_jacobian</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="n">batch_size</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">),</span> <span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># Apply the translation-only transformation (forward mode)</span>
+                <span class="n">t</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">inv_mask</span> <span class="o">*</span> <span class="n">z</span>
+                <span class="n">x</span> <span class="o">=</span> <span class="n">u</span> <span class="o">+</span> <span class="n">t</span>
+                <span class="n">log_det_jacobian</span> <span class="o">=</span> <span class="mf">0.0</span>
+
+        <span class="k">return</span> <span class="n">x</span><span class="p">,</span> <span class="n">log_det_jacobian</span></div></div>
+
+
+<div class="viewcode-block" id="CouplingBlock2d"><a class="viewcode-back" href="../../../../api/deeprob.flows.layers.html#deeprob.flows.layers.coupling.CouplingBlock2d">[docs]</a><span class="k">class</span> <span class="nc">CouplingBlock2d</span><span class="p">(</span><span class="n">Bijector</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">in_features</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span>
+        <span class="n">network</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">n_blocks</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">channels</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">affine</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="n">last_block</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Build a RealNVP (or NICE) 2D coupling block,</span>
+<span class="sd">        consisting of check-board/channel-wise couplings and squeeze operation.</span>
+
+<span class="sd">        :param in_features: The size of the input.</span>
+<span class="sd">        :param network: The network conditioner to use. It can be either &#39;resnet&#39; or &#39;densenet&#39;.</span>
+<span class="sd">        :param n_blocks: The number of residual blocks or dense blocks.</span>
+<span class="sd">        :param channels: The number of output channels of each convolutional layer.</span>
+<span class="sd">        :param affine: Whether to use affine transformation. If False then use only translation (as in NICE).</span>
+<span class="sd">        :param last_block: Whether it is the last block (i.e. no channelwise-masked couplings) or not.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">CouplingBlock2d</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">in_features</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">last_block</span> <span class="o">=</span> <span class="n">last_block</span>
+
+        <span class="c1"># Build the input couplings (consisting of 3 checkerboard-masked couplings)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">in_couplings</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">ModuleList</span><span class="p">([</span>
+            <span class="n">CouplingLayer2d</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">in_features</span><span class="p">,</span> <span class="n">network</span><span class="p">,</span> <span class="n">n_blocks</span><span class="p">,</span> <span class="n">channels</span><span class="p">,</span> <span class="n">affine</span><span class="p">,</span>
+                <span class="n">channelwise</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">reverse</span><span class="o">=</span><span class="kc">False</span>
+            <span class="p">),</span>
+            <span class="n">BatchNormLayer2d</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">in_channels</span><span class="p">),</span>
+            <span class="n">CouplingLayer2d</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">in_features</span><span class="p">,</span> <span class="n">network</span><span class="p">,</span> <span class="n">n_blocks</span><span class="p">,</span> <span class="n">channels</span><span class="p">,</span> <span class="n">affine</span><span class="p">,</span>
+                <span class="n">channelwise</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">reverse</span><span class="o">=</span><span class="kc">True</span>
+            <span class="p">),</span>
+            <span class="n">BatchNormLayer2d</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">in_channels</span><span class="p">),</span>
+            <span class="n">CouplingLayer2d</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">in_features</span><span class="p">,</span> <span class="n">network</span><span class="p">,</span> <span class="n">n_blocks</span><span class="p">,</span> <span class="n">channels</span><span class="p">,</span> <span class="n">affine</span><span class="p">,</span>
+                <span class="n">channelwise</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">reverse</span><span class="o">=</span><span class="kc">False</span>
+            <span class="p">),</span>
+            <span class="n">BatchNormLayer2d</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">in_channels</span><span class="p">)</span>
+        <span class="p">])</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">last_block</span><span class="p">:</span>
+            <span class="c1"># Add an additional checkerboard-masked coupling layer</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">in_couplings</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span>
+                <span class="n">CouplingLayer2d</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">in_features</span><span class="p">,</span> <span class="n">network</span><span class="p">,</span> <span class="n">n_blocks</span><span class="p">,</span> <span class="n">channels</span><span class="p">,</span> <span class="n">affine</span><span class="p">,</span>
+                    <span class="n">channelwise</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">reverse</span><span class="o">=</span><span class="kc">True</span>
+                <span class="p">),</span>
+                <span class="n">BatchNormLayer2d</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">in_channels</span><span class="p">)</span>
+            <span class="p">])</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># Compute the size of the input (after squeezing operation)</span>
+            <span class="n">squeezed_channels</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">in_channels</span> <span class="o">*</span> <span class="mi">4</span>
+            <span class="n">squeezed_features</span> <span class="o">=</span> <span class="p">(</span><span class="n">squeezed_channels</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">in_height</span> <span class="o">//</span> <span class="mi">2</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">in_width</span> <span class="o">//</span> <span class="mi">2</span><span class="p">)</span>
+
+            <span class="c1"># Double the number of channels</span>
+            <span class="n">channels</span> <span class="o">*=</span> <span class="mi">2</span>
+
+            <span class="c1"># Build the output couplings (consisting of 3 channel-wise-masked couplings)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">out_couplings</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">ModuleList</span><span class="p">([</span>
+                <span class="n">CouplingLayer2d</span><span class="p">(</span>
+                    <span class="n">squeezed_features</span><span class="p">,</span> <span class="n">network</span><span class="p">,</span> <span class="n">n_blocks</span><span class="p">,</span> <span class="n">channels</span><span class="p">,</span> <span class="n">affine</span><span class="p">,</span>
+                    <span class="n">channelwise</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">reverse</span><span class="o">=</span><span class="kc">False</span>
+                <span class="p">),</span>
+                <span class="n">BatchNormLayer2d</span><span class="p">(</span><span class="n">squeezed_channels</span><span class="p">),</span>
+                <span class="n">CouplingLayer2d</span><span class="p">(</span>
+                    <span class="n">squeezed_features</span><span class="p">,</span> <span class="n">network</span><span class="p">,</span> <span class="n">n_blocks</span><span class="p">,</span> <span class="n">channels</span><span class="p">,</span> <span class="n">affine</span><span class="p">,</span>
+                    <span class="n">channelwise</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">reverse</span><span class="o">=</span><span class="kc">True</span>
+                <span class="p">),</span>
+                <span class="n">BatchNormLayer2d</span><span class="p">(</span><span class="n">squeezed_channels</span><span class="p">),</span>
+                <span class="n">CouplingLayer2d</span><span class="p">(</span>
+                    <span class="n">squeezed_features</span><span class="p">,</span> <span class="n">network</span><span class="p">,</span> <span class="n">n_blocks</span><span class="p">,</span> <span class="n">channels</span><span class="p">,</span> <span class="n">affine</span><span class="p">,</span>
+                    <span class="n">channelwise</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">reverse</span><span class="o">=</span><span class="kc">False</span>
+                <span class="p">),</span>
+                <span class="n">BatchNormLayer2d</span><span class="p">(</span><span class="n">squeezed_channels</span><span class="p">)</span>
+            <span class="p">])</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">in_channels</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">in_features</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">in_height</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">in_features</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">in_width</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">in_features</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+
+<div class="viewcode-block" id="CouplingBlock2d.apply_backward"><a class="viewcode-back" href="../../../../api/deeprob.flows.layers.html#deeprob.flows.layers.coupling.CouplingBlock2d.apply_backward">[docs]</a>    <span class="k">def</span> <span class="nf">apply_backward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">]:</span>
+        <span class="n">inv_log_det_jacobian</span> <span class="o">=</span> <span class="mf">0.0</span>
+
+        <span class="c1"># Pass through the checkerboard-masked couplings</span>
+        <span class="k">for</span> <span class="n">layer</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">in_couplings</span><span class="p">:</span>
+            <span class="n">x</span><span class="p">,</span> <span class="n">ildj</span> <span class="o">=</span> <span class="n">layer</span><span class="o">.</span><span class="n">apply_backward</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+            <span class="n">inv_log_det_jacobian</span> <span class="o">+=</span> <span class="n">ildj</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">last_block</span><span class="p">:</span>
+            <span class="c1"># Squeeze the inputs</span>
+            <span class="n">x</span> <span class="o">=</span> <span class="n">squeeze_depth2d</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+
+            <span class="c1"># Pass through the channel-wise-masked couplings</span>
+            <span class="k">for</span> <span class="n">layer</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">out_couplings</span><span class="p">:</span>
+                <span class="n">x</span><span class="p">,</span> <span class="n">ildj</span> <span class="o">=</span> <span class="n">layer</span><span class="o">.</span><span class="n">apply_backward</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+                <span class="n">inv_log_det_jacobian</span> <span class="o">+=</span> <span class="n">ildj</span>
+
+            <span class="c1"># Un-squeeze the outputs</span>
+            <span class="n">x</span> <span class="o">=</span> <span class="n">unsqueeze_depth2d</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">x</span><span class="p">,</span> <span class="n">inv_log_det_jacobian</span></div>
+
+<div class="viewcode-block" id="CouplingBlock2d.apply_forward"><a class="viewcode-back" href="../../../../api/deeprob.flows.layers.html#deeprob.flows.layers.coupling.CouplingBlock2d.apply_forward">[docs]</a>    <span class="k">def</span> <span class="nf">apply_forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">]:</span>
+        <span class="n">log_det_jacobian</span> <span class="o">=</span> <span class="mf">0.0</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">last_block</span><span class="p">:</span>
+            <span class="c1"># Squeeze the inputs</span>
+            <span class="n">x</span> <span class="o">=</span> <span class="n">squeeze_depth2d</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+
+            <span class="c1"># Pass through the channel-wise-masked couplings</span>
+            <span class="k">for</span> <span class="n">layer</span> <span class="ow">in</span> <span class="nb">reversed</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">out_couplings</span><span class="p">):</span>
+                <span class="n">x</span><span class="p">,</span> <span class="n">ldj</span> <span class="o">=</span> <span class="n">layer</span><span class="o">.</span><span class="n">apply_forward</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+                <span class="n">log_det_jacobian</span> <span class="o">+=</span> <span class="n">ldj</span>
+
+            <span class="c1"># Un-squeeze the inputs</span>
+            <span class="n">x</span> <span class="o">=</span> <span class="n">unsqueeze_depth2d</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+
+        <span class="c1"># Pass through the checkerboard-masked couplings</span>
+        <span class="k">for</span> <span class="n">layer</span> <span class="ow">in</span> <span class="nb">reversed</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">in_couplings</span><span class="p">):</span>
+            <span class="n">x</span><span class="p">,</span> <span class="n">ldj</span> <span class="o">=</span> <span class="n">layer</span><span class="o">.</span><span class="n">apply_forward</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+            <span class="n">log_det_jacobian</span> <span class="o">+=</span> <span class="n">ldj</span>
+
+        <span class="k">return</span> <span class="n">x</span><span class="p">,</span> <span class="n">log_det_jacobian</span></div></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, Lorenzo Loconte, Gennaro Gala.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    <span class="fa fa-book"> Other Versions</span>
+    v: v1.0.0
+    <span class="fa fa-caret-down"></span>
+  </span>
+  <div class="rst-other-versions">
+    <dl>
+      <dt>Tags</dt>
+      <dd><a href="coupling.html">v1.0.0</a></dd>
+      <dd><a href="../../../../../v1.1.0/index.html">v1.1.0</a></dd>
+    </dl>
+    <dl>
+      <dt>Branches</dt>
+      <dd><a href="../../../../../main/index.html">main</a></dd>
+    </dl>
+  </div>
+</div><script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>deeprob.spn.learning.xpc &mdash; DeeProb-kit 0.6.4 documentation</title>
+      <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../../_static/css/custom.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js"></script>
+        <script src="../../../../_static/jquery.js"></script>
+        <script src="../../../../_static/underscore.js"></script>
+        <script src="../../../../_static/doctools.js"></script>
+    <script src="../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../../../index.html" class="icon icon-home"> DeeProb-kit
+            <img src="../../../../_static/deeprob-logo-minimal.svg" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Read Me</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../home.html">Abstract</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../home.html#features">Features</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../home.html#installation-documentation">Installation &amp; Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../home.html#datasets-and-experiments">Datasets and Experiments</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../home.html#code-examples">Code Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../home.html#related-repositories">Related Repositories</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../home.html#references">References</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Modules</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../api/deeprob.html">deeprob package</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">DeeProb-kit</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="../../../index.html">Module code</a> &raquo;</li>
+      <li>deeprob.spn.learning.xpc</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for deeprob.spn.learning.xpc</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">deeprob.spn.utils.partitioning</span> <span class="kn">import</span> <span class="n">Partition</span><span class="p">,</span> <span class="n">generate_random_partitioning</span>
+<span class="kn">from</span> <span class="nn">deeprob.spn.learning.leaf</span> <span class="kn">import</span> <span class="n">learn_mle</span>
+
+<span class="kn">from</span> <span class="nn">deeprob.spn.structure.node</span> <span class="kn">import</span> <span class="n">Node</span><span class="p">,</span> <span class="n">Sum</span><span class="p">,</span> <span class="n">Product</span><span class="p">,</span> <span class="n">assign_ids</span>
+<span class="kn">from</span> <span class="nn">deeprob.spn.structure.cltree</span> <span class="kn">import</span> <span class="n">BinaryCLT</span>
+<span class="kn">from</span> <span class="nn">deeprob.spn.structure.leaf</span> <span class="kn">import</span> <span class="n">Bernoulli</span>
+
+<span class="kn">from</span> <span class="nn">deeprob.utils.statistics</span> <span class="kn">import</span> <span class="n">estimate_priors_joints</span><span class="p">,</span> <span class="n">compute_mutual_information</span>
+<span class="kn">from</span> <span class="nn">deeprob.utils.graph</span> <span class="kn">import</span> <span class="n">maximum_spanning_tree</span>
+
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+
+<span class="c1"># SD stands for Structured Decomposable</span>
+<span class="n">SD_LEVEL_0</span> <span class="o">=</span> <span class="mi">0</span>  <span class="c1"># non-SD ensemble of non-SD PCs</span>
+<span class="n">SD_LEVEL_1</span> <span class="o">=</span> <span class="mi">1</span>  <span class="c1"># non-SD ensemble OF SD PCs</span>
+<span class="n">SD_LEVEL_2</span> <span class="o">=</span> <span class="mi">2</span>  <span class="c1"># SD ensemble</span>
+<span class="n">SD_LEVELS</span> <span class="o">=</span> <span class="p">[</span><span class="n">SD_LEVEL_0</span><span class="p">,</span> <span class="n">SD_LEVEL_1</span><span class="p">,</span> <span class="n">SD_LEVEL_2</span><span class="p">]</span>
+
+<span class="n">ROOT</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+
+
+<div class="viewcode-block" id="build_disjunction"><a class="viewcode-back" href="../../../../api/deeprob.spn.learning.html#deeprob.spn.learning.xpc.build_disjunction">[docs]</a><span class="k">def</span> <span class="nf">build_disjunction</span><span class="p">(</span>
+    <span class="n">data</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+    <span class="n">scope</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span>
+    <span class="n">assignments</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">alpha</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.01</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Node</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Build a disjunction (sum node) of conjunctions (product nodes).</span>
+<span class="sd">    If assignments are given, every conjunction is associated to a specific assignment (the number of conjunctions</span>
+<span class="sd">    is the same as the given assignments); otherwise, every conjunction will be associated to a specific</span>
+<span class="sd">    assignment occurring in the input data (the number of conjunctions is the same as the unique assignments</span>
+<span class="sd">    occurring in the data).</span>
+
+<span class="sd">    :param data: The input data matrix.</span>
+<span class="sd">    :param scope: The scope.</span>
+<span class="sd">    :param assignments: The optional assignments.</span>
+<span class="sd">    :param alpha: Laplace smoothing factor.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">unq_data</span><span class="p">,</span> <span class="n">counts</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">return_counts</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">assignments</span> <span class="o">=</span> <span class="n">unq_data</span> <span class="k">if</span> <span class="n">assignments</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">assignments</span>
+    <span class="k">assert</span> <span class="n">unq_data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">assignments</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="n">weights</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">assignments</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">assignments</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+        <span class="n">index</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">assignments</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">==</span> <span class="n">unq_data</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">))[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">index</span><span class="p">):</span>
+            <span class="n">weights</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">counts</span><span class="p">[</span><span class="n">index</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span>
+    <span class="n">weights</span> <span class="o">=</span> <span class="p">(</span><span class="n">weights</span> <span class="o">+</span> <span class="n">alpha</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">weights</span> <span class="o">+</span> <span class="n">alpha</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+
+    <span class="n">prod_nodes</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">assignments</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+        <span class="n">children</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">assignments</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]):</span>
+            <span class="n">children</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Bernoulli</span><span class="p">(</span><span class="n">scope</span><span class="o">=</span><span class="p">[</span><span class="n">scope</span><span class="p">[</span><span class="n">j</span><span class="p">]],</span> <span class="n">p</span><span class="o">=</span><span class="n">assignments</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]))</span>
+        <span class="n">prod_nodes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Product</span><span class="p">(</span><span class="n">children</span><span class="o">=</span><span class="n">children</span><span class="p">))</span>
+
+    <span class="n">disjunction</span> <span class="o">=</span> <span class="n">Sum</span><span class="p">(</span><span class="n">children</span><span class="o">=</span><span class="n">prod_nodes</span><span class="p">,</span> <span class="n">weights</span><span class="o">=</span><span class="n">weights</span><span class="p">)</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">prod_nodes</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="k">else</span> <span class="n">prod_nodes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">assign_ids</span><span class="p">(</span><span class="n">disjunction</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="build_leaf"><a class="viewcode-back" href="../../../../api/deeprob.spn.learning.html#deeprob.spn.learning.xpc.build_leaf">[docs]</a><span class="k">def</span> <span class="nf">build_leaf</span><span class="p">(</span>
+    <span class="n">data</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+    <span class="n">part</span><span class="p">:</span> <span class="n">Partition</span><span class="p">,</span>
+    <span class="n">use_clt</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span>
+    <span class="n">trees_dict</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span>
+    <span class="n">det</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span>
+    <span class="n">alpha</span><span class="p">:</span> <span class="nb">float</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Node</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Build a multivariate leaf distribution for an XPC.</span>
+
+<span class="sd">    :param data: The input data matrix.</span>
+<span class="sd">    :param part: The partition associated to the leaf to build.</span>
+<span class="sd">    :param use_clt: True if it is possible to use CLTrees as leaf nodes, False otherwise.</span>
+<span class="sd">    :param trees_dict: A dictionary of trees (see the function build_trees_dict).</span>
+<span class="sd">    :param det: True to force determinism, False otherwise.</span>
+<span class="sd">    :param alpha: Laplace smoothing factor.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">data_slice</span> <span class="o">=</span> <span class="n">part</span><span class="o">.</span><span class="n">get_slice</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+    <span class="n">scope</span> <span class="o">=</span> <span class="n">part</span><span class="o">.</span><span class="n">col_ids</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="n">part</span><span class="o">.</span><span class="n">is_conj</span><span class="p">:</span>
+        <span class="n">leaf</span> <span class="o">=</span> <span class="n">Product</span><span class="p">(</span><span class="n">children</span><span class="o">=</span><span class="p">[</span><span class="n">Bernoulli</span><span class="p">(</span><span class="n">scope</span><span class="o">=</span><span class="p">[</span><span class="n">scope</span><span class="p">[</span><span class="n">k</span><span class="p">]],</span> <span class="n">p</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span><span class="n">data_slice</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="n">k</span><span class="p">]))</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">scope</span><span class="p">))])</span>
+
+    <span class="k">elif</span> <span class="n">part</span><span class="o">.</span><span class="n">is_naive</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">use_clt</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">det</span> <span class="ow">or</span> <span class="n">part</span><span class="o">.</span><span class="n">disc_assignments</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="mi">2</span> <span class="o">**</span> <span class="n">part</span><span class="o">.</span><span class="n">disc_assignments</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span>
+            <span class="n">leaf</span> <span class="o">=</span> <span class="n">learn_mle</span><span class="p">(</span><span class="n">data_slice</span><span class="p">,</span> <span class="p">[</span><span class="n">Bernoulli</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">scope</span><span class="p">),</span> <span class="p">[[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">scope</span><span class="p">),</span> <span class="n">scope</span><span class="p">,</span> <span class="n">alpha</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">leaf</span> <span class="o">=</span> <span class="n">build_disjunction</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">data_slice</span><span class="p">,</span> <span class="n">scope</span><span class="o">=</span><span class="n">scope</span><span class="p">,</span> <span class="n">assignments</span><span class="o">=</span><span class="n">part</span><span class="o">.</span><span class="n">disc_assignments</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="n">alpha</span><span class="p">)</span>
+
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">trees_dict</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">tree</span><span class="p">,</span> <span class="n">scope</span> <span class="o">=</span> <span class="n">trees_dict</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">scope</span><span class="p">)]</span>
+            <span class="n">data_slice</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="n">part</span><span class="o">.</span><span class="n">row_ids</span><span class="p">][:,</span> <span class="n">scope</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">tree</span><span class="p">,</span> <span class="n">scope</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">part</span><span class="o">.</span><span class="n">col_ids</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+        <span class="n">leaf</span> <span class="o">=</span> <span class="n">BinaryCLT</span><span class="p">(</span><span class="n">tree</span><span class="o">=</span><span class="n">tree</span><span class="p">,</span> <span class="n">scope</span><span class="o">=</span><span class="n">scope</span><span class="p">)</span>
+        <span class="n">leaf</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">data_slice</span><span class="p">,</span> <span class="n">domain</span><span class="o">=</span><span class="p">[[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">scope</span><span class="p">),</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.01</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">leaf</span></div>
+
+
+<div class="viewcode-block" id="greedy_vars_ordering"><a class="viewcode-back" href="../../../../api/deeprob.spn.learning.html#deeprob.spn.learning.xpc.greedy_vars_ordering">[docs]</a><span class="k">def</span> <span class="nf">greedy_vars_ordering</span><span class="p">(</span>
+    <span class="n">data</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+    <span class="n">conj_len</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+    <span class="n">alpha</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.01</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Return the ordering of the random variables according to the implemented heuristic.</span>
+
+<span class="sd">    :param data: The input data matrix.</span>
+<span class="sd">    :param conj_len: The conjunction length.</span>
+<span class="sd">    :param alpha: Laplace smoothing factor.</span>
+<span class="sd">    </span>
+<span class="sd">    :return ordering: The ordering.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">priors</span><span class="p">,</span> <span class="n">joints</span> <span class="o">=</span> <span class="n">estimate_priors_joints</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">alpha</span><span class="p">)</span>
+    <span class="n">mut_info</span> <span class="o">=</span> <span class="n">compute_mutual_information</span><span class="p">(</span><span class="n">priors</span><span class="p">,</span> <span class="n">joints</span><span class="p">)</span>
+    <span class="n">sums</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">mut_info</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+    <span class="n">ordering</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">free_vars</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+    <span class="k">while</span> <span class="n">free_vars</span><span class="p">:</span>
+        <span class="n">peek_var</span> <span class="o">=</span> <span class="n">free_vars</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">sums</span><span class="p">[</span><span class="n">free_vars</span><span class="p">])]</span>
+        <span class="n">free_vars</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">peek_var</span><span class="p">)</span>
+        <span class="n">ordering</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">peek_var</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">free_vars</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">conj_len</span> <span class="o">-</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">idx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argpartition</span><span class="p">(</span><span class="o">-</span><span class="n">mut_info</span><span class="p">[</span><span class="n">peek_var</span><span class="p">][</span><span class="n">free_vars</span><span class="p">],</span> <span class="n">conj_len</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)[:</span><span class="n">conj_len</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span>
+            <span class="n">vars_</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">free_vars</span><span class="p">)[</span><span class="n">idx</span><span class="p">]</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">vars_</span> <span class="o">=</span> <span class="n">free_vars</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="n">free_vars</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">free_vars</span><span class="p">)</span> <span class="o">-</span> <span class="nb">set</span><span class="p">(</span><span class="n">vars_</span><span class="p">))</span>
+        <span class="n">ordering</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">vars_</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">ordering</span></div>
+
+
+<div class="viewcode-block" id="build_trees_dict"><a class="viewcode-back" href="../../../../api/deeprob.spn.learning.html#deeprob.spn.learning.xpc.build_trees_dict">[docs]</a><span class="k">def</span> <span class="nf">build_trees_dict</span><span class="p">(</span>
+    <span class="n">data</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+    <span class="n">cl_parts_l</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span>
+    <span class="n">conj_vars_l</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span>
+    <span class="n">alpha</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+    <span class="n">random_state</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">RandomState</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Return a dictionary where:</span>
+<span class="sd">     - a key refers to a scope length</span>
+<span class="sd">     - a value is a list of two lists: the first is a list of predecessors, the second its scope.</span>
+
+<span class="sd">    :param data: The input data matrix.</span>
+<span class="sd">    :param cl_parts_l: List of lists. Every sublist is associated to a specific XPC and contains</span>
+<span class="sd">     the leaf partitions over which a CLTree will be learnt.</span>
+<span class="sd">    :param conj_vars_l: List of lists. Every sublist contains the variables of a conjunction (e.g. [[3, 5]]).</span>
+<span class="sd">     If a sublist occurs before another, then the former has been used first. There are no duplicates.</span>
+<span class="sd">    :param alpha: Laplace smoothing factor.</span>
+<span class="sd">    :param random_state: The random state.</span>
+
+<span class="sd">    :return tree_dict: The dictionary.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Compute the mutual information for each slice associated to every partition in cl_parts_l</span>
+    <span class="c1"># and add it to a cumulative matrix (cumulative_info).</span>
+    <span class="n">n_vars</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">cumulative_info</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">n_vars</span><span class="p">,</span> <span class="n">n_vars</span><span class="p">))</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">cl_parts_l</span><span class="p">)):</span>
+        <span class="k">for</span> <span class="n">part</span> <span class="ow">in</span> <span class="n">cl_parts_l</span><span class="p">[</span><span class="n">i</span><span class="p">]:</span>
+            <span class="n">priors</span><span class="p">,</span> <span class="n">joints</span> <span class="o">=</span> <span class="n">estimate_priors_joints</span><span class="p">(</span><span class="n">part</span><span class="o">.</span><span class="n">get_slice</span><span class="p">(</span><span class="n">data</span><span class="p">),</span> <span class="n">alpha</span><span class="p">)</span>
+            <span class="n">mi</span> <span class="o">=</span> <span class="n">compute_mutual_information</span><span class="p">(</span><span class="n">priors</span><span class="p">,</span> <span class="n">joints</span><span class="p">)</span>
+            <span class="n">cumulative_info</span><span class="p">[</span><span class="n">part</span><span class="o">.</span><span class="n">col_ids</span><span class="p">[:,</span> <span class="kc">None</span><span class="p">],</span> <span class="n">part</span><span class="o">.</span><span class="n">col_ids</span><span class="p">]</span> <span class="o">+=</span> <span class="n">mi</span>
+
+    <span class="c1"># Free_vars are the variables not involved in any conjunction and will appear at the bottom of the circuit</span>
+    <span class="n">free_vars</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">n_vars</span><span class="p">))</span> <span class="o">-</span> <span class="nb">set</span><span class="p">([</span><span class="n">var</span> <span class="k">for</span> <span class="n">conj_vars</span> <span class="ow">in</span> <span class="n">conj_vars_l</span> <span class="k">for</span> <span class="n">var</span> <span class="ow">in</span> <span class="n">conj_vars</span><span class="p">]))</span>
+
+    <span class="c1"># Create a tree for each scope in scopes</span>
+    <span class="n">scopes</span> <span class="o">=</span> <span class="n">conj_vars_l</span> <span class="o">+</span> <span class="p">[</span><span class="n">free_vars</span><span class="p">]</span> <span class="k">if</span> <span class="n">free_vars</span> <span class="k">else</span> <span class="n">conj_vars_l</span>
+    <span class="n">trees</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">scope</span> <span class="ow">in</span> <span class="n">scopes</span><span class="p">:</span>
+        <span class="n">_</span><span class="p">,</span> <span class="n">tree</span> <span class="o">=</span> <span class="n">maximum_spanning_tree</span><span class="p">(</span><span class="n">adj_matrix</span><span class="o">=</span><span class="n">cumulative_info</span><span class="p">[</span><span class="n">scope</span><span class="p">][:,</span> <span class="n">scope</span><span class="p">],</span> <span class="n">root</span><span class="o">=</span><span class="n">scope</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">random_state</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">scope</span><span class="p">)))</span>
+        <span class="n">trees</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">tree</span><span class="p">))</span>
+
+    <span class="c1"># Concatenate trees and create the dictionary</span>
+    <span class="c1"># The root of every tree is added as child to the root node of the tree with the minimum higher length scope.</span>
+    <span class="n">tree_dict</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+    <span class="n">tree</span> <span class="o">=</span> <span class="n">trees</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="n">scope</span> <span class="o">=</span> <span class="n">scopes</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">reversed</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">trees</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)):</span>
+        <span class="n">tree_dict</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">scope</span><span class="p">)]</span> <span class="o">=</span> <span class="p">[</span><span class="n">tree</span><span class="o">.</span><span class="n">copy</span><span class="p">(),</span> <span class="n">scope</span><span class="o">.</span><span class="n">copy</span><span class="p">()]</span>
+        <span class="n">tree</span> <span class="o">+=</span> <span class="p">[</span><span class="n">t</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="n">scope</span><span class="p">)</span> <span class="k">if</span> <span class="n">t</span> <span class="o">!=</span> <span class="n">ROOT</span> <span class="k">else</span> <span class="n">t</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">trees</span><span class="p">[</span><span class="n">k</span><span class="p">]]</span>
+        <span class="n">tree</span><span class="p">[</span><span class="n">tree</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">ROOT</span><span class="p">)]</span> <span class="o">=</span> <span class="n">tree</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">ROOT</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">scope</span><span class="p">))</span>
+        <span class="n">scope</span> <span class="o">+=</span> <span class="n">scopes</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
+
+    <span class="k">return</span> <span class="n">tree_dict</span></div>
+
+
+<div class="viewcode-block" id="build_xpc"><a class="viewcode-back" href="../../../../api/deeprob.spn.learning.html#deeprob.spn.learning.xpc.build_xpc">[docs]</a><span class="k">def</span> <span class="nf">build_xpc</span><span class="p">(</span>
+    <span class="n">data</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+    <span class="n">part_root</span><span class="p">:</span> <span class="n">Partition</span><span class="p">,</span>
+    <span class="n">trees_dict</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span>
+    <span class="n">det</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span>
+    <span class="n">use_clt</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span>
+    <span class="n">alpha</span><span class="p">:</span> <span class="nb">float</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Node</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Build the XPC induced by the partitions tree in a bottom up way.</span>
+<span class="sd">    The building process is based on the post-order traversal exploration of the partitions tree.</span>
+
+<span class="sd">    :param data: The input data matrix.</span>
+<span class="sd">    :param part_root: The root partition of the tree.</span>
+<span class="sd">    :param trees_dict: None if no dependency tree has to be respected, a dictionary of trees otherwise.</span>
+<span class="sd">    :param det: True to force determinism, False otherwise.</span>
+<span class="sd">    :param use_clt: True to use CLTrees as leaf nodes, False otherwise.</span>
+<span class="sd">    :param alpha: Laplace smoothing factor.</span>
+
+<span class="sd">    :return: the XPC induced by the partition tree</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">partitions_stack</span> <span class="o">=</span> <span class="p">[</span><span class="n">part_root</span><span class="p">]</span>
+    <span class="n">pc_nodes_stack</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">last_part_visited</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="k">while</span> <span class="n">partitions_stack</span><span class="p">:</span>
+        <span class="n">part</span> <span class="o">=</span> <span class="n">partitions_stack</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">part</span><span class="o">.</span><span class="n">is_partitioned</span><span class="p">()</span> <span class="ow">or</span> <span class="p">(</span><span class="n">last_part_visited</span> <span class="ow">in</span> <span class="n">part</span><span class="o">.</span><span class="n">sub_partitions</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">part</span><span class="o">.</span><span class="n">is_partitioned</span><span class="p">():</span>
+                <span class="n">pc_child_nodes</span> <span class="o">=</span> <span class="n">pc_nodes_stack</span><span class="p">[</span><span class="o">-</span><span class="nb">len</span><span class="p">(</span><span class="n">part</span><span class="o">.</span><span class="n">sub_partitions</span><span class="p">):]</span>
+                <span class="n">pc_nodes_stack</span> <span class="o">=</span> <span class="n">pc_nodes_stack</span><span class="p">[:</span><span class="nb">len</span><span class="p">(</span><span class="n">pc_nodes_stack</span><span class="p">)</span> <span class="o">-</span> <span class="nb">len</span><span class="p">(</span><span class="n">part</span><span class="o">.</span><span class="n">sub_partitions</span><span class="p">)]</span>
+                <span class="k">if</span> <span class="n">part</span><span class="o">.</span><span class="n">is_horizontally_partitioned</span><span class="p">():</span>
+                    <span class="c1"># Create sum node</span>
+                    <span class="n">weights</span> <span class="o">=</span> <span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">sub_part</span><span class="o">.</span><span class="n">row_ids</span><span class="p">)</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">part</span><span class="o">.</span><span class="n">row_ids</span><span class="p">)</span> <span class="k">for</span> <span class="n">sub_part</span> <span class="ow">in</span> <span class="n">part</span><span class="o">.</span><span class="n">sub_partitions</span><span class="p">]</span>
+                    <span class="n">pc_nodes_stack</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Sum</span><span class="p">(</span><span class="n">weights</span><span class="o">=</span><span class="n">weights</span><span class="p">,</span> <span class="n">children</span><span class="o">=</span><span class="n">pc_child_nodes</span><span class="p">))</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="c1"># Create product node</span>
+                    <span class="n">pc_child_nodes_</span> <span class="o">=</span> <span class="p">[]</span>
+                    <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">pc_child_nodes</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">Product</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">Sum</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">c</span><span class="o">.</span><span class="n">children</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">):</span>
+                            <span class="n">pc_child_nodes_</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">c</span><span class="o">.</span><span class="n">children</span><span class="p">)</span>
+                        <span class="k">else</span><span class="p">:</span>
+                            <span class="n">pc_child_nodes_</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">c</span><span class="p">)</span>
+                    <span class="n">pc_prod_node</span> <span class="o">=</span> <span class="n">Product</span><span class="p">(</span><span class="n">children</span><span class="o">=</span><span class="n">pc_child_nodes_</span><span class="p">)</span>
+                    <span class="n">pc_nodes_stack</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">pc_prod_node</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># Create leaf (it could be either a PC or a multivariate leaf)</span>
+                <span class="n">leaf</span> <span class="o">=</span> <span class="n">build_leaf</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">part</span><span class="p">,</span> <span class="n">use_clt</span><span class="p">,</span> <span class="n">trees_dict</span><span class="p">,</span> <span class="n">det</span><span class="p">,</span> <span class="n">alpha</span><span class="p">)</span>
+                <span class="n">pc_nodes_stack</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">leaf</span><span class="p">)</span>
+            <span class="n">last_part_visited</span> <span class="o">=</span> <span class="n">partitions_stack</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">partitions_stack</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">part</span><span class="o">.</span><span class="n">sub_partitions</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+
+    <span class="n">xpc</span> <span class="o">=</span> <span class="n">pc_nodes_stack</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">assign_ids</span><span class="p">(</span><span class="n">xpc</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">xpc</span></div>
+
+
+<div class="viewcode-block" id="learn_xpc"><a class="viewcode-back" href="../../../../api/deeprob.spn.learning.html#deeprob.spn.learning.xpc.learn_xpc">[docs]</a><span class="k">def</span> <span class="nf">learn_xpc</span><span class="p">(</span>
+    <span class="n">data</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+    <span class="n">det</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span>
+    <span class="n">sd</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span>
+    <span class="n">min_part_inst</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+    <span class="n">conj_len</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+    <span class="n">arity</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+    <span class="n">n_max_parts</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">200</span><span class="p">,</span>
+    <span class="n">use_clt</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="n">use_greedy_ordering</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="n">alpha</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mf">0.01</span><span class="p">,</span>
+    <span class="n">random_seed</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">42</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Node</span><span class="p">,</span> <span class="nb">dict</span><span class="p">]:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Learn an eXtremely randomized Probabilistic Circuit (XPC).</span>
+
+<span class="sd">    :param data: The input data matrix.</span>
+<span class="sd">    :param det: True to force determinism, False otherwise.</span>
+<span class="sd">    :param sd: True to force structured decomposability, False otherwise.</span>
+<span class="sd">    :param min_part_inst: The minimum number of instances allowed per partition.</span>
+<span class="sd">    :param conj_len: The conjunction length.</span>
+<span class="sd">    :param arity: The maximum number of children for a sum node.</span>
+<span class="sd">    :param n_max_parts: The maximum number of partitions for the partitions tree.</span>
+<span class="sd">    :param use_clt: True to use CLTrees as multivariate leaves, False otherwise.</span>
+<span class="sd">    :param use_greedy_ordering: True to use a greedy ordering, False otherwise.</span>
+<span class="sd">    :param alpha: Laplace smoothing factor.</span>
+<span class="sd">    :param random_seed: Random State.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">assert</span> <span class="n">arity</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="ow">or</span> <span class="n">arity</span> <span class="o">&lt;=</span> <span class="mi">2</span> <span class="o">**</span> <span class="n">conj_len</span><span class="p">,</span> <span class="s1">&#39;Arity must be in the interval [2, 2 ** conj_len]&#39;</span>
+    <span class="k">assert</span> <span class="n">sd</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">use_greedy_ordering</span><span class="p">,</span> <span class="s1">&#39;Using the greedy ordering makes sense only if sd = True.&#39;</span>
+
+    <span class="n">random_state</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">RandomState</span><span class="p">(</span><span class="n">random_seed</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">use_greedy_ordering</span><span class="p">:</span>
+        <span class="n">ordering</span> <span class="o">=</span> <span class="n">greedy_vars_ordering</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">conj_len</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">ordering</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+        <span class="n">random_state</span><span class="o">.</span><span class="n">shuffle</span><span class="p">(</span><span class="n">ordering</span><span class="p">)</span>
+
+    <span class="n">part_root</span><span class="p">,</span> <span class="n">cl_parts_l</span><span class="p">,</span> <span class="n">conj_vars_l</span><span class="p">,</span> <span class="n">n_parts</span> <span class="o">=</span> \
+        <span class="n">generate_random_partitioning</span><span class="p">(</span>
+            <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">,</span>
+            <span class="n">sd</span><span class="o">=</span><span class="n">sd</span><span class="p">,</span>
+            <span class="n">min_part_inst</span><span class="o">=</span><span class="n">min_part_inst</span><span class="p">,</span>
+            <span class="n">conj_len</span><span class="o">=</span><span class="n">conj_len</span><span class="p">,</span>
+            <span class="n">arity</span><span class="o">=</span><span class="n">arity</span><span class="p">,</span>
+            <span class="n">n_max_parts</span><span class="o">=</span><span class="n">n_max_parts</span><span class="p">,</span>
+            <span class="n">uncond_vars</span><span class="o">=</span><span class="n">ordering</span><span class="p">,</span>
+            <span class="n">random_state</span><span class="o">=</span><span class="n">random_state</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">n_parts</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;No partitioning found.&#39;</span>
+
+    <span class="n">trees_dict</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="k">if</span> <span class="n">sd</span> <span class="ow">and</span> <span class="n">use_clt</span><span class="p">:</span>
+        <span class="n">trees_dict</span> <span class="o">=</span> <span class="n">build_trees_dict</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="p">[</span><span class="n">cl_parts_l</span><span class="p">],</span> <span class="n">conj_vars_l</span><span class="p">,</span> <span class="n">alpha</span><span class="p">,</span> <span class="n">random_state</span><span class="p">)</span>
+    
+    <span class="c1"># creating useful dictionary</span>
+    <span class="n">utils</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;part_root&#39;</span><span class="p">:</span> <span class="n">part_root</span><span class="p">,</span> <span class="s1">&#39;cl_parts_l&#39;</span><span class="p">:</span> <span class="n">cl_parts_l</span><span class="p">,</span> <span class="s1">&#39;conj_vars_l&#39;</span><span class="p">:</span> <span class="n">conj_vars_l</span><span class="p">,</span>
+             <span class="s1">&#39;n_parts&#39;</span><span class="p">:</span> <span class="n">n_parts</span><span class="p">,</span> <span class="s1">&#39;trees_dict&#39;</span><span class="p">:</span> <span class="n">trees_dict</span><span class="p">}</span>
+    <span class="n">xpc</span> <span class="o">=</span> <span class="n">build_xpc</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">part_root</span><span class="p">,</span> <span class="n">trees_dict</span><span class="p">,</span> <span class="n">det</span><span class="p">,</span> <span class="n">use_clt</span><span class="p">,</span> <span class="n">alpha</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">xpc</span><span class="p">,</span> <span class="n">utils</span></div>
+
+
+<div class="viewcode-block" id="learn_expc"><a class="viewcode-back" href="../../../../api/deeprob.spn.learning.html#deeprob.spn.learning.xpc.learn_expc">[docs]</a><span class="k">def</span> <span class="nf">learn_expc</span><span class="p">(</span>
+    <span class="n">data</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+    <span class="n">ensemble_dim</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+    <span class="n">det</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span>
+    <span class="n">sd_level</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+    <span class="n">min_part_inst</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+    <span class="n">conj_len</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+    <span class="n">arity</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+    <span class="n">n_max_parts</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">200</span><span class="p">,</span>
+    <span class="n">use_clt</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="n">alpha</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mf">0.01</span><span class="p">,</span>
+    <span class="n">random_seed</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">42</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Node</span><span class="p">,</span> <span class="nb">list</span><span class="p">]:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Learn an Ensemble (i.e. a mixture) of eXtremely randomized Probabilistic Circuit (EXPC).</span>
+
+<span class="sd">    :param data: The input data matrix.</span>
+<span class="sd">    :param ensemble_dim: The number of circuits in the ensemble/mixture.</span>
+<span class="sd">    :param det: True to force determinism, False otherwise.</span>
+<span class="sd">    :param sd_level: 0 a non-SD ensemble of non-SD PCs, 1 for a non-SD ensemble of SD PCs and 2 for a SD ensemble.</span>
+<span class="sd">    :param min_part_inst: The minimum number of instances allowed per partition.</span>
+<span class="sd">    :param conj_len: The conjunction length.</span>
+<span class="sd">    :param arity: The maximum number of children for a Sum node.</span>
+<span class="sd">    :param n_max_parts: The maximum number of partitions for the partitions tree.</span>
+<span class="sd">    :param use_clt: True to use CLTrees as multivariate leaves, False otherwise.</span>
+<span class="sd">    :param alpha: Laplace smoothing factor.</span>
+<span class="sd">    :param random_seed: A random seed.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">assert</span> <span class="n">sd_level</span> <span class="ow">in</span> <span class="n">SD_LEVELS</span><span class="p">,</span> <span class="s1">&#39;Choose a value in {0, 1, 2}.&#39;</span>
+    <span class="k">assert</span> <span class="n">arity</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="ow">or</span> <span class="n">arity</span> <span class="o">&lt;=</span> <span class="mi">2</span> <span class="o">**</span> <span class="n">conj_len</span><span class="p">,</span> <span class="s1">&#39;Arity must be in the interval [2, 2 ** conj_len].&#39;</span>
+    <span class="k">assert</span> <span class="ow">not</span> <span class="p">(</span><span class="n">sd_level</span> <span class="o">==</span> <span class="n">SD_LEVEL_2</span> <span class="ow">and</span> <span class="n">conj_len</span> <span class="o">==</span> <span class="mi">1</span><span class="p">),</span> <span class="s1">&#39;No randomness in this setting. Change hyper parameters.&#39;</span>
+
+    <span class="n">random_state</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">RandomState</span><span class="p">(</span><span class="n">random_seed</span><span class="p">)</span>
+    <span class="n">conj_vars_l_l</span> <span class="o">=</span> <span class="p">[</span><span class="kc">None</span><span class="p">]</span> <span class="o">*</span> <span class="n">ensemble_dim</span>
+    <span class="n">cl_parts_l_l</span> <span class="o">=</span> <span class="p">[</span><span class="kc">None</span><span class="p">]</span> <span class="o">*</span> <span class="n">ensemble_dim</span>
+    <span class="n">trees_dict_l</span> <span class="o">=</span> <span class="p">[</span><span class="kc">None</span><span class="p">]</span> <span class="o">*</span> <span class="n">ensemble_dim</span>
+    <span class="n">part_root_l</span> <span class="o">=</span> <span class="p">[</span><span class="kc">None</span><span class="p">]</span> <span class="o">*</span> <span class="n">ensemble_dim</span>
+    <span class="n">n_parts_l</span> <span class="o">=</span> <span class="p">[</span><span class="kc">None</span><span class="p">]</span> <span class="o">*</span> <span class="n">ensemble_dim</span>
+    <span class="n">xpc_l</span> <span class="o">=</span> <span class="p">[</span><span class="kc">None</span><span class="p">]</span> <span class="o">*</span> <span class="n">ensemble_dim</span>
+
+    <span class="n">sd</span> <span class="o">=</span> <span class="p">(</span><span class="n">sd_level</span> <span class="o">==</span> <span class="n">SD_LEVEL_1</span> <span class="ow">or</span> <span class="n">sd_level</span> <span class="o">==</span> <span class="n">SD_LEVEL_2</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">sd_level</span> <span class="o">==</span> <span class="n">SD_LEVEL_2</span><span class="p">:</span>
+        <span class="n">ordering</span> <span class="o">=</span> <span class="n">greedy_vars_ordering</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">conj_len</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">ordering</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">ensemble_dim</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">sd_level</span> <span class="o">!=</span> <span class="n">SD_LEVEL_2</span><span class="p">:</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">shuffle</span><span class="p">(</span><span class="n">ordering</span><span class="p">)</span>
+        <span class="n">part_root_l</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">cl_parts_l_l</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">conj_vars_l_l</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">n_parts_l</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> \
+            <span class="n">generate_random_partitioning</span><span class="p">(</span>
+                <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">,</span>
+                <span class="n">sd</span><span class="o">=</span><span class="n">sd</span><span class="p">,</span>
+                <span class="n">min_part_inst</span><span class="o">=</span><span class="n">min_part_inst</span><span class="p">,</span>
+                <span class="n">conj_len</span><span class="o">=</span><span class="n">conj_len</span><span class="p">,</span>
+                <span class="n">arity</span><span class="o">=</span><span class="n">arity</span><span class="p">,</span>
+                <span class="n">n_max_parts</span><span class="o">=</span><span class="n">n_max_parts</span><span class="p">,</span>
+                <span class="n">uncond_vars</span><span class="o">=</span><span class="n">ordering</span><span class="p">,</span>
+                <span class="n">random_state</span><span class="o">=</span><span class="n">random_state</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="ow">not</span> <span class="nb">all</span><span class="p">([</span><span class="n">n_parts</span> <span class="o">==</span> <span class="mi">1</span> <span class="k">for</span> <span class="n">n_parts</span> <span class="ow">in</span> <span class="n">n_parts_l</span><span class="p">]),</span> <span class="s1">&#39;No Partitioning Found&#39;</span>
+
+    <span class="k">if</span> <span class="n">sd_level</span> <span class="o">==</span> <span class="n">SD_LEVEL_0</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">use_clt</span><span class="p">:</span>
+        <span class="c1"># no tree structure to respect</span>
+        <span class="n">trees_dict</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">ensemble_dim</span><span class="p">):</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Learning XPC </span><span class="si">%s</span><span class="s1">/</span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">ensemble_dim</span><span class="p">))</span>
+            <span class="n">xpc_l</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">build_xpc</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">part_root_l</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">trees_dict</span><span class="p">,</span> <span class="n">det</span><span class="p">,</span> <span class="n">use_clt</span><span class="p">,</span> <span class="n">alpha</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">sd_level</span> <span class="o">==</span> <span class="n">SD_LEVEL_1</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">ensemble_dim</span><span class="p">):</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Learning XPC </span><span class="si">%s</span><span class="s1">/</span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">ensemble_dim</span><span class="p">))</span>
+            <span class="c1"># learn a tree for each XPC</span>
+            <span class="n">trees_dict_l</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">build_trees_dict</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="p">[</span><span class="n">cl_parts_l_l</span><span class="p">[</span><span class="n">i</span><span class="p">]],</span> <span class="n">conj_vars_l_l</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">alpha</span><span class="p">,</span> <span class="n">random_state</span><span class="p">)</span>
+            <span class="n">xpc_l</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">build_xpc</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">part_root_l</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">trees_dict_l</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">det</span><span class="p">,</span> <span class="n">use_clt</span><span class="p">,</span> <span class="n">alpha</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">sd_level</span> <span class="o">==</span> <span class="n">SD_LEVEL_2</span><span class="p">:</span>
+        <span class="c1"># learn a tree structure for the whole ensemble</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Learning a dependency tree for the ensemble..&#39;</span><span class="p">)</span>
+        <span class="n">trees_dict</span> <span class="o">=</span> <span class="n">build_trees_dict</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">cl_parts_l_l</span><span class="p">,</span> <span class="nb">max</span><span class="p">(</span><span class="n">conj_vars_l_l</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="nb">len</span><span class="p">),</span> <span class="n">alpha</span><span class="p">,</span> <span class="n">random_state</span><span class="p">)</span>
+        <span class="n">trees_dict_l</span> <span class="o">=</span> <span class="p">[</span><span class="n">trees_dict</span><span class="p">]</span> <span class="o">*</span> <span class="n">ensemble_dim</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">ensemble_dim</span><span class="p">):</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Building XPC </span><span class="si">%s</span><span class="s1">/</span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">ensemble_dim</span><span class="p">))</span>
+            <span class="n">xpc_l</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">build_xpc</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">part_root_l</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">trees_dict</span><span class="p">,</span> <span class="n">det</span><span class="p">,</span> <span class="n">use_clt</span><span class="p">,</span> <span class="n">alpha</span><span class="p">)</span>
+    
+    <span class="c1"># creating useful list of dictionaries</span>
+    <span class="n">utils</span> <span class="o">=</span> <span class="p">[{</span><span class="s1">&#39;part_root&#39;</span><span class="p">:</span> <span class="n">part_root_l</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="s1">&#39;cl_parts_l&#39;</span><span class="p">:</span> <span class="n">cl_parts_l_l</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="s1">&#39;conj_vars_l&#39;</span><span class="p">:</span> <span class="n">conj_vars_l_l</span><span class="p">[</span><span class="n">i</span><span class="p">],</span>
+              <span class="s1">&#39;n_parts&#39;</span><span class="p">:</span> <span class="n">n_parts_l</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="s1">&#39;trees_dict&#39;</span><span class="p">:</span> <span class="n">trees_dict_l</span><span class="p">[</span><span class="n">i</span><span class="p">]}</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">ensemble_dim</span><span class="p">)]</span>
+    <span class="n">expc</span> <span class="o">=</span> <span class="n">Sum</span><span class="p">(</span><span class="n">weights</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">(</span><span class="n">ensemble_dim</span><span class="p">,</span> <span class="mi">1</span> <span class="o">/</span> <span class="n">ensemble_dim</span><span class="p">),</span> <span class="n">children</span><span class="o">=</span><span class="n">xpc_l</span><span class="p">)</span>
+    <span class="n">assign_ids</span><span class="p">(</span><span class="n">expc</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">expc</span><span class="p">,</span> <span class="n">utils</span></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, Lorenzo Loconte, Gennaro Gala.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    <span class="fa fa-book"> Other Versions</span>
+    v: v1.0.0
+    <span class="fa fa-caret-down"></span>
+  </span>
+  <div class="rst-other-versions">
+    <dl>
+      <dt>Tags</dt>
+      <dd><a href="xpc.html">v1.0.0</a></dd>
+      <dd><a href="../../../../../v1.1.0/index.html">v1.1.0</a></dd>
+    </dl>
+    <dl>
+      <dt>Branches</dt>
+      <dd><a href="../../../../../main/index.html">main</a></dd>
+    </dl>
+  </div>
+</div><script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

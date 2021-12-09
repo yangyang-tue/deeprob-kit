@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>deeprob.spn.learning.splitting.gvs &mdash; DeeProb-kit 1.0.0 documentation</title>
+      <link rel="stylesheet" href="../../../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../../../_static/css/custom.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../../../../" id="documentation_options" src="../../../../../_static/documentation_options.js"></script>
+        <script src="../../../../../_static/jquery.js"></script>
+        <script src="../../../../../_static/underscore.js"></script>
+        <script src="../../../../../_static/doctools.js"></script>
+    <script src="../../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../../../../index.html" class="icon icon-home"> DeeProb-kit
+            <img src="../../../../../_static/deeprob-logo-minimal.svg" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Read Me</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../markdown/home.html">Abstract</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../markdown/home.html#features">Features</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../markdown/home.html#installation">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../markdown/home.html#project-directories">Project Directories</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../markdown/home.html#related-repositories">Related Repositories</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../markdown/home.html#references">References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../markdown/docs.html">Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../markdown/examples.html">Code Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../markdown/experiments.html">Experiments</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../markdown/benchmark.html">Benchmark</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Modules</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../api/deeprob.html">deeprob package</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../../index.html">DeeProb-kit</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="../../../../index.html">Module code</a> &raquo;</li>
+      <li>deeprob.spn.learning.splitting.gvs</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for deeprob.spn.learning.splitting.gvs</h1><div class="highlight"><pre>
+<span></span><span class="c1"># MIT License: Copyright (c) 2021 Lorenzo Loconte, Gennaro Gala, Federico Luzzi</span>
+
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Type</span><span class="p">,</span> <span class="n">List</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">deque</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="kn">from</span> <span class="nn">deeprob.spn.structure.leaf</span> <span class="kn">import</span> <span class="n">LeafType</span><span class="p">,</span> <span class="n">Leaf</span>
+
+
+<div class="viewcode-block" id="gvs_cols"><a class="viewcode-back" href="../../../../../api/deeprob.spn.learning.splitting.html#deeprob.spn.learning.splitting.gvs.gvs_cols">[docs]</a><span class="k">def</span> <span class="nf">gvs_cols</span><span class="p">(</span>
+    <span class="n">data</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+    <span class="n">distributions</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Type</span><span class="p">[</span><span class="n">Leaf</span><span class="p">]],</span>
+    <span class="n">domains</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">]],</span>
+    <span class="n">random_state</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">RandomState</span><span class="p">,</span>
+    <span class="n">p</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">5.0</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Greedy Variable Splitting (GVS) independence test.</span>
+
+<span class="sd">    :param data: The data.</span>
+<span class="sd">    :param distributions: The distributions.</span>
+<span class="sd">    :param domains: The domains.</span>
+<span class="sd">    :param random_state: The random state.</span>
+<span class="sd">    :param p: The threshold for the G-Test.</span>
+<span class="sd">    :return: A partitioning of features.</span>
+<span class="sd">    :raises ValueError: If the leaf distributions are discrete and continuous.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">_</span><span class="p">,</span> <span class="n">n_features</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">shape</span>
+    <span class="n">rand_init</span> <span class="o">=</span> <span class="n">random_state</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">n_features</span><span class="p">)</span>
+    <span class="n">features_set</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="nb">filter</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span> <span class="o">!=</span> <span class="n">rand_init</span><span class="p">,</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_features</span><span class="p">)))</span>
+    <span class="n">dependent_features_set</span> <span class="o">=</span> <span class="p">{</span><span class="n">rand_init</span><span class="p">}</span>
+
+    <span class="n">features_queue</span> <span class="o">=</span> <span class="n">deque</span><span class="p">()</span>
+    <span class="n">features_queue</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">rand_init</span><span class="p">)</span>
+
+    <span class="k">while</span> <span class="n">features_queue</span><span class="p">:</span>
+        <span class="n">feature</span> <span class="o">=</span> <span class="n">features_queue</span><span class="o">.</span><span class="n">popleft</span><span class="p">()</span>
+        <span class="n">features_remove</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+
+        <span class="k">for</span> <span class="n">other_feature</span> <span class="ow">in</span> <span class="n">features_set</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">gtest</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">feature</span><span class="p">,</span> <span class="n">other_feature</span><span class="p">,</span> <span class="n">distributions</span><span class="p">,</span> <span class="n">domains</span><span class="p">,</span> <span class="n">p</span><span class="o">=</span><span class="n">p</span><span class="p">):</span>
+                <span class="n">features_remove</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">other_feature</span><span class="p">)</span>
+                <span class="n">dependent_features_set</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">other_feature</span><span class="p">)</span>
+                <span class="n">features_queue</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">other_feature</span><span class="p">)</span>
+        <span class="n">features_set</span> <span class="o">=</span> <span class="n">features_set</span><span class="o">.</span><span class="n">difference</span><span class="p">(</span><span class="n">features_remove</span><span class="p">)</span>
+
+    <span class="n">partition</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">n_features</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">)</span>
+    <span class="n">partition</span><span class="p">[</span><span class="nb">list</span><span class="p">(</span><span class="n">dependent_features_set</span><span class="p">)]</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="k">return</span> <span class="n">partition</span></div>
+
+
+<div class="viewcode-block" id="rgvs_cols"><a class="viewcode-back" href="../../../../../api/deeprob.spn.learning.splitting.html#deeprob.spn.learning.splitting.gvs.rgvs_cols">[docs]</a><span class="k">def</span> <span class="nf">rgvs_cols</span><span class="p">(</span>
+    <span class="n">data</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+    <span class="n">distributions</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Type</span><span class="p">[</span><span class="n">Leaf</span><span class="p">]],</span>
+    <span class="n">domains</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">]],</span>
+    <span class="n">random_state</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">RandomState</span><span class="p">,</span>
+    <span class="n">p</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">5.0</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Random Greedy Variable Splitting (RGVS) independence test.</span>
+
+<span class="sd">    :param data: The data.</span>
+<span class="sd">    :param distributions: The distributions.</span>
+<span class="sd">    :param domains: The domains.</span>
+<span class="sd">    :param random_state: The random state.</span>
+<span class="sd">    :param p: The threshold for the G-Test.</span>
+<span class="sd">    :return: A partitioning of features.</span>
+<span class="sd">    :raises ValueError: If the leaf distributions are discrete and continuous.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">_</span><span class="p">,</span> <span class="n">n_features</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">shape</span>
+    <span class="n">k</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">n_features</span><span class="p">),</span> <span class="mi">2</span><span class="p">))</span>
+    <span class="k">if</span> <span class="n">k</span> <span class="o">==</span> <span class="n">n_features</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">gvs_cols</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">distributions</span><span class="p">,</span> <span class="n">domains</span><span class="p">,</span> <span class="n">random_state</span><span class="p">,</span> <span class="n">p</span><span class="p">)</span>
+
+    <span class="n">rand_perm</span> <span class="o">=</span> <span class="n">random_state</span><span class="o">.</span><span class="n">permutation</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">n_features</span><span class="p">))[:</span><span class="n">k</span><span class="p">]</span>
+    <span class="n">data_gvs</span> <span class="o">=</span> <span class="n">data</span><span class="p">[:,</span> <span class="n">rand_perm</span><span class="p">]</span>
+    <span class="n">distributions_gvs</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">domains_gvs</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">rand_perm</span><span class="p">:</span>
+        <span class="n">distributions_gvs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">distributions</span><span class="p">[</span><span class="n">e</span><span class="p">])</span>
+        <span class="n">domains_gvs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">domains</span><span class="p">[</span><span class="n">e</span><span class="p">])</span>
+
+    <span class="n">partition_gvs</span> <span class="o">=</span> <span class="n">gvs_cols</span><span class="p">(</span><span class="n">data_gvs</span><span class="p">,</span> <span class="n">distributions_gvs</span><span class="p">,</span> <span class="n">domains_gvs</span><span class="p">,</span> <span class="n">random_state</span><span class="p">,</span> <span class="n">p</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="n">partition_gvs</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">():</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">n_features</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">random_state</span><span class="o">.</span><span class="n">rand</span><span class="p">()</span> <span class="o">&lt;</span> <span class="mf">0.5</span><span class="p">:</span>
+        <span class="c1"># excluded in first cluster 0</span>
+        <span class="n">partition</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">n_features</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># excluded in second cluster 1</span>
+        <span class="n">partition</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">n_features</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">)</span>
+
+    <span class="n">partition</span><span class="p">[</span><span class="n">rand_perm</span><span class="p">]</span> <span class="o">=</span> <span class="n">partition_gvs</span>
+    <span class="k">return</span> <span class="n">partition</span></div>
+
+
+<div class="viewcode-block" id="wrgvs_cols"><a class="viewcode-back" href="../../../../../api/deeprob.spn.learning.splitting.html#deeprob.spn.learning.splitting.gvs.wrgvs_cols">[docs]</a><span class="k">def</span> <span class="nf">wrgvs_cols</span><span class="p">(</span>
+    <span class="n">data</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+    <span class="n">distributions</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Type</span><span class="p">[</span><span class="n">Leaf</span><span class="p">]],</span>
+    <span class="n">domains</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">]],</span>
+    <span class="n">random_state</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">RandomState</span><span class="p">,</span>
+    <span class="n">p</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">5.0</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Wiser Random Greedy Variable Splitting (WRGVS) independence test.</span>
+
+<span class="sd">    :param data: The data.</span>
+<span class="sd">    :param distributions: The distributions.</span>
+<span class="sd">    :param domains: The domains.</span>
+<span class="sd">    :param random_state: The random state.</span>
+<span class="sd">    :param p: The threshold for the G-Test.</span>
+<span class="sd">    :return: A partitioning of features.</span>
+<span class="sd">    :raises ValueError: If the leaf distributions are discrete and continuous.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">_</span><span class="p">,</span> <span class="n">n_features</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">shape</span>
+    <span class="n">k</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">n_features</span><span class="p">),</span> <span class="mi">2</span><span class="p">))</span>
+    <span class="k">if</span> <span class="n">k</span> <span class="o">==</span> <span class="n">n_features</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">gvs_cols</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">distributions</span><span class="p">,</span> <span class="n">domains</span><span class="p">,</span> <span class="n">random_state</span><span class="p">,</span> <span class="n">p</span><span class="p">)</span>
+
+    <span class="n">rand_perm</span> <span class="o">=</span> <span class="n">random_state</span><span class="o">.</span><span class="n">permutation</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">n_features</span><span class="p">))[:</span><span class="n">k</span><span class="p">]</span>
+    <span class="n">data_gvs</span> <span class="o">=</span> <span class="n">data</span><span class="p">[:,</span> <span class="n">rand_perm</span><span class="p">]</span>
+    <span class="n">distributions_gvs</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">domains_gvs</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">rand_perm</span><span class="p">:</span>
+        <span class="n">distributions_gvs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">distributions</span><span class="p">[</span><span class="n">e</span><span class="p">])</span>
+        <span class="n">domains_gvs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">domains</span><span class="p">[</span><span class="n">e</span><span class="p">])</span>
+
+    <span class="n">partition_gvs</span> <span class="o">=</span> <span class="n">gvs_cols</span><span class="p">(</span><span class="n">data_gvs</span><span class="p">,</span> <span class="n">distributions_gvs</span><span class="p">,</span> <span class="n">domains_gvs</span><span class="p">,</span> <span class="n">random_state</span><span class="p">,</span> <span class="n">p</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="p">((</span><span class="n">partition_gvs</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">())</span> <span class="ow">or</span> <span class="p">((</span><span class="n">partition_gvs</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">()):</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">n_features</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">)</span>
+
+    <span class="n">part_0</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">rand_perm</span><span class="p">[</span><span class="n">partition_gvs</span> <span class="o">==</span> <span class="mi">0</span><span class="p">])</span>
+    <span class="n">part_1</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">rand_perm</span><span class="p">[</span><span class="n">partition_gvs</span> <span class="o">==</span> <span class="mi">1</span><span class="p">])</span>
+    <span class="n">part_0_el</span> <span class="o">=</span> <span class="n">random_state</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">part_0</span><span class="p">),</span> <span class="n">replace</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">part_1_el</span> <span class="o">=</span> <span class="n">random_state</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">part_1</span><span class="p">),</span> <span class="n">replace</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">feature_excluded</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">n_features</span><span class="p">))</span> <span class="o">-</span> <span class="nb">set</span><span class="p">(</span><span class="n">rand_perm</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">f_i</span> <span class="ow">in</span> <span class="n">feature_excluded</span><span class="p">:</span>
+        <span class="c1"># g testing for deciding which cluster</span>
+        <span class="n">g_val0</span> <span class="o">=</span> <span class="n">gtest</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">f_i</span><span class="p">,</span> <span class="n">part_0_el</span><span class="p">,</span> <span class="n">distributions</span><span class="p">,</span> <span class="n">domains</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">test</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="n">g_val1</span> <span class="o">=</span> <span class="n">gtest</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">f_i</span><span class="p">,</span> <span class="n">part_1_el</span><span class="p">,</span> <span class="n">distributions</span><span class="p">,</span> <span class="n">domains</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">test</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">g_val0</span> <span class="o">&gt;</span> <span class="n">g_val1</span><span class="p">:</span>
+            <span class="n">part_0</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">f_i</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">part_1</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">f_i</span><span class="p">)</span>
+
+    <span class="n">partition</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">n_features</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">)</span>
+    <span class="n">partition</span><span class="p">[</span><span class="nb">list</span><span class="p">(</span><span class="n">part_1</span><span class="p">)]</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="k">return</span> <span class="n">partition</span></div>
+
+
+<div class="viewcode-block" id="gtest"><a class="viewcode-back" href="../../../../../api/deeprob.spn.learning.splitting.html#deeprob.spn.learning.splitting.gvs.gtest">[docs]</a><span class="k">def</span> <span class="nf">gtest</span><span class="p">(</span>
+    <span class="n">data</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+    <span class="n">i</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+    <span class="n">j</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+    <span class="n">distributions</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Type</span><span class="p">[</span><span class="n">Leaf</span><span class="p">]],</span>
+    <span class="n">domains</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">]],</span>
+    <span class="n">p</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">5.0</span><span class="p">,</span>
+    <span class="n">test</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="nb">bool</span><span class="p">,</span> <span class="nb">float</span><span class="p">]:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    The G-Test independence test between two features.</span>
+
+<span class="sd">    :param data: The data.</span>
+<span class="sd">    :param i: The index of the first feature.</span>
+<span class="sd">    :param j: The index of the second feature.</span>
+<span class="sd">    :param distributions: The distributions.</span>
+<span class="sd">    :param domains: The domains.</span>
+<span class="sd">    :param p: The threshold for the G-Test.</span>
+<span class="sd">    :param test: If the method is called as test (true) or as value of statistics (false), default True.</span>
+<span class="sd">    :return: False if the features are assumed to be dependent, True otherwise.</span>
+<span class="sd">    :raises ValueError: If the leaf distributions are discrete and continuous.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">n_samples</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+    <span class="n">x1</span><span class="p">,</span> <span class="n">x2</span> <span class="o">=</span> <span class="n">data</span><span class="p">[:,</span> <span class="n">i</span><span class="p">],</span> <span class="n">data</span><span class="p">[:,</span> <span class="n">j</span><span class="p">]</span>
+
+    <span class="k">if</span> <span class="n">distributions</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">LEAF_TYPE</span> <span class="o">==</span> <span class="n">LeafType</span><span class="o">.</span><span class="n">DISCRETE</span> <span class="ow">and</span> <span class="n">distributions</span><span class="p">[</span><span class="n">j</span><span class="p">]</span><span class="o">.</span><span class="n">LEAF_TYPE</span> <span class="o">==</span> <span class="n">LeafType</span><span class="o">.</span><span class="n">DISCRETE</span><span class="p">:</span>
+        <span class="n">b1</span> <span class="o">=</span> <span class="n">domains</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+</span> <span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">domains</span><span class="p">[</span><span class="n">i</span><span class="p">])]</span>
+        <span class="n">b2</span> <span class="o">=</span> <span class="n">domains</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">+</span> <span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">domains</span><span class="p">[</span><span class="n">j</span><span class="p">])]</span>
+        <span class="n">hist</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">histogram2d</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="p">[</span><span class="n">b1</span><span class="p">,</span> <span class="n">b2</span><span class="p">])</span>
+    <span class="k">elif</span> <span class="n">distributions</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">LEAF_TYPE</span> <span class="o">==</span> <span class="n">LeafType</span><span class="o">.</span><span class="n">CONTINUOUS</span> <span class="ow">and</span> <span class="n">distributions</span><span class="p">[</span><span class="n">j</span><span class="p">]</span><span class="o">.</span><span class="n">LEAF_TYPE</span> <span class="o">==</span> <span class="n">LeafType</span><span class="o">.</span><span class="n">CONTINUOUS</span><span class="p">:</span>
+        <span class="n">hist</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">histogram2d</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="s1">&#39;scott&#39;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Leaves distributions must be either discrete or continuous&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Compute G-test statistics</span>
+    <span class="n">hist</span> <span class="o">=</span> <span class="n">hist</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">finfo</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span><span class="o">.</span><span class="n">eps</span>
+    <span class="n">m1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">hist</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">m2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">hist</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">e</span> <span class="o">=</span> <span class="n">m1</span> <span class="o">*</span> <span class="n">m2</span> <span class="o">/</span> <span class="n">n_samples</span>
+    <span class="n">g_val</span> <span class="o">=</span> <span class="mf">2.0</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">hist</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">hist</span> <span class="o">/</span> <span class="n">e</span><span class="p">))</span>
+
+    <span class="c1"># Return test result</span>
+    <span class="k">if</span> <span class="n">test</span><span class="p">:</span>
+        <span class="n">f1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">count_nonzero</span><span class="p">(</span><span class="n">m1</span><span class="p">)</span>
+        <span class="n">f2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">count_nonzero</span><span class="p">(</span><span class="n">m2</span><span class="p">)</span>
+        <span class="n">dof</span> <span class="o">=</span> <span class="p">(</span><span class="n">f1</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">f2</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">p_thresh</span> <span class="o">=</span> <span class="mf">2.0</span> <span class="o">*</span> <span class="n">dof</span> <span class="o">*</span> <span class="n">p</span>
+        <span class="k">return</span> <span class="n">g_val</span> <span class="o">&lt;</span> <span class="n">p_thresh</span>
+
+    <span class="c1"># Return the value of G-test</span>
+    <span class="k">return</span> <span class="n">g_val</span></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, Lorenzo Loconte, Gennaro Gala.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    <span class="fa fa-book"> Other Versions</span>
+    v: v1.1.0
+    <span class="fa fa-caret-down"></span>
+  </span>
+  <div class="rst-other-versions">
+    <dl>
+      <dt>Tags</dt>
+      <dd><a href="../../../../../../v1.0.0/index.html">v1.0.0</a></dd>
+      <dd><a href="gvs.html">v1.1.0</a></dd>
+    </dl>
+    <dl>
+      <dt>Branches</dt>
+      <dd><a href="../../../../../../main/index.html">main</a></dd>
+    </dl>
+  </div>
+</div><script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

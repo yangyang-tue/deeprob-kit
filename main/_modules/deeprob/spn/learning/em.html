@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>deeprob.spn.learning.em &mdash; DeeProb-kit 1.0.0 documentation</title>
+      <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../../_static/css/custom.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js"></script>
+        <script src="../../../../_static/jquery.js"></script>
+        <script src="../../../../_static/underscore.js"></script>
+        <script src="../../../../_static/doctools.js"></script>
+    <script src="../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../../../index.html" class="icon icon-home"> DeeProb-kit
+            <img src="../../../../_static/deeprob-logo-minimal.svg" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Read Me</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../markdown/home.html">Abstract</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../markdown/home.html#features">Features</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../markdown/home.html#installation">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../markdown/home.html#project-directories">Project Directories</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../markdown/home.html#related-repositories">Related Repositories</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../markdown/home.html#references">References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../markdown/docs.html">Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../markdown/examples.html">Code Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../markdown/experiments.html">Experiments</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../markdown/benchmark.html">Benchmark</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Modules</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../api/deeprob.html">deeprob package</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">DeeProb-kit</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="../../../index.html">Module code</a> &raquo;</li>
+      <li>deeprob.spn.learning.em</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for deeprob.spn.learning.em</h1><div class="highlight"><pre>
+<span></span><span class="c1"># MIT License: Copyright (c) 2021 Lorenzo Loconte, Gennaro Gala</span>
+
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">tqdm</span> <span class="kn">import</span> <span class="n">tqdm</span>
+
+<span class="kn">from</span> <span class="nn">deeprob.context</span> <span class="kn">import</span> <span class="n">ContextState</span>
+<span class="kn">from</span> <span class="nn">deeprob.utils.random</span> <span class="kn">import</span> <span class="n">RandomState</span><span class="p">,</span> <span class="n">check_random_state</span>
+<span class="kn">from</span> <span class="nn">deeprob.spn.utils.filter</span> <span class="kn">import</span> <span class="n">filter_nodes_by_type</span>
+<span class="kn">from</span> <span class="nn">deeprob.spn.utils.validity</span> <span class="kn">import</span> <span class="n">check_spn</span>
+<span class="kn">from</span> <span class="nn">deeprob.spn.structure.leaf</span> <span class="kn">import</span> <span class="n">Leaf</span>
+<span class="kn">from</span> <span class="nn">deeprob.spn.structure.node</span> <span class="kn">import</span> <span class="n">Node</span><span class="p">,</span> <span class="n">Sum</span>
+<span class="kn">from</span> <span class="nn">deeprob.spn.algorithms.inference</span> <span class="kn">import</span> <span class="n">log_likelihood</span>
+<span class="kn">from</span> <span class="nn">deeprob.spn.algorithms.gradient</span> <span class="kn">import</span> <span class="n">eval_backward</span>
+
+
+<div class="viewcode-block" id="expectation_maximization"><a class="viewcode-back" href="../../../../api/deeprob.spn.learning.html#deeprob.spn.learning.em.expectation_maximization">[docs]</a><span class="k">def</span> <span class="nf">expectation_maximization</span><span class="p">(</span>
+    <span class="n">root</span><span class="p">:</span> <span class="n">Node</span><span class="p">,</span>
+    <span class="n">data</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+    <span class="n">num_iter</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">100</span><span class="p">,</span>
+    <span class="n">batch_perc</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.1</span><span class="p">,</span>
+    <span class="n">step_size</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.5</span><span class="p">,</span>
+    <span class="n">random_init</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="n">random_state</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">RandomState</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">verbose</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Node</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Learn the parameters of a SPN by batch Expectation-Maximization (EM).</span>
+<span class="sd">    See https://arxiv.org/abs/1604.07243 and https://arxiv.org/abs/2004.06231 for details.</span>
+
+<span class="sd">    :param root: The spn structure.</span>
+<span class="sd">    :param data: The data to use to learn the parameters.</span>
+<span class="sd">    :param num_iter: The number of iterations.</span>
+<span class="sd">    :param batch_perc: The percentage of data to use for each step.</span>
+<span class="sd">    :param step_size: The step size for batch EM.</span>
+<span class="sd">    :param random_init: Whether to random initialize the weights of the SPN.</span>
+<span class="sd">    :param random_state: The random state. It can be either None, a seed integer or a Numpy RandomState.</span>
+<span class="sd">    :param verbose: Whether to enable verbose learning.</span>
+<span class="sd">    :return: The spn with learned parameters.</span>
+<span class="sd">    :raises ValueError: If a parameter is out of domain.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">num_iter</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;The number of iterations must be positive&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">batch_perc</span> <span class="o">&lt;=</span> <span class="mf">0.0</span> <span class="ow">or</span> <span class="n">batch_perc</span> <span class="o">&gt;=</span> <span class="mf">1.0</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;The batch percentage must be in (0, 1)&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">step_size</span> <span class="o">&lt;=</span> <span class="mf">0.0</span> <span class="ow">or</span> <span class="n">step_size</span> <span class="o">&gt;=</span> <span class="mf">1.0</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;The step size must be in (0, 1)&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Check the SPN</span>
+    <span class="n">check_spn</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">labeled</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">smooth</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">decomposable</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="c1"># Compute the batch size</span>
+    <span class="n">n_samples</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+    <span class="n">batch_size</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">batch_perc</span> <span class="o">*</span> <span class="n">n_samples</span><span class="p">)</span>
+
+    <span class="c1"># Compute a list-based cache for accessing nodes</span>
+    <span class="n">cached_nodes</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s1">&#39;sum&#39;</span><span class="p">:</span> <span class="n">filter_nodes_by_type</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">Sum</span><span class="p">),</span>
+        <span class="s1">&#39;leaf&#39;</span><span class="p">:</span> <span class="n">filter_nodes_by_type</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">Leaf</span><span class="p">)</span>
+    <span class="p">}</span>
+
+    <span class="c1"># Check the random state</span>
+    <span class="n">random_state</span> <span class="o">=</span> <span class="n">check_random_state</span><span class="p">(</span><span class="n">random_state</span><span class="p">)</span>
+
+    <span class="c1"># Random initialize the parameters of the SPN, if specified</span>
+    <span class="k">if</span> <span class="n">random_init</span><span class="p">:</span>
+        <span class="c1"># Initialize the sum parameters</span>
+        <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">cached_nodes</span><span class="p">[</span><span class="s1">&#39;sum&#39;</span><span class="p">]:</span>
+            <span class="n">node</span><span class="o">.</span><span class="n">em_init</span><span class="p">(</span><span class="n">random_state</span><span class="p">)</span>
+
+        <span class="c1"># Initialize the leaf parameters</span>
+        <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">cached_nodes</span><span class="p">[</span><span class="s1">&#39;leaf&#39;</span><span class="p">]:</span>
+            <span class="n">node</span><span class="o">.</span><span class="n">em_init</span><span class="p">(</span><span class="n">random_state</span><span class="p">)</span>
+
+    <span class="c1"># Initialize the tqdm bar, if verbose is specified</span>
+    <span class="n">iterator</span> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_iter</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
+        <span class="n">iterator</span> <span class="o">=</span> <span class="n">tqdm</span><span class="p">(</span>
+            <span class="n">iterator</span><span class="p">,</span> <span class="n">leave</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="s1">&#39;batch&#39;</span><span class="p">,</span>
+            <span class="n">bar_format</span><span class="o">=</span><span class="s1">&#39;</span><span class="si">{desc}</span><span class="s1">| </span><span class="si">{n_fmt}</span><span class="s1">/</span><span class="si">{total_fmt}</span><span class="s1"> [</span><span class="si">{elapsed}</span><span class="s1">&lt;</span><span class="si">{remaining}</span><span class="s1">, </span><span class="si">{rate_fmt}</span><span class="s1">]&#39;</span>
+        <span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">iterator</span><span class="p">:</span>
+        <span class="c1"># Sample a batch of data randomly with uniform distribution</span>
+        <span class="n">batch_indices</span> <span class="o">=</span> <span class="n">random_state</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">n_samples</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">batch_size</span><span class="p">,</span> <span class="n">replace</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="n">batch_data</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="n">batch_indices</span><span class="p">]</span>
+
+        <span class="c1"># Prevent checking the SPN at every forward inference step, we already did that!</span>
+        <span class="k">with</span> <span class="n">ContextState</span><span class="p">(</span><span class="n">check_spn</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+            <span class="c1"># Forward step, obtaining the LLs at each node</span>
+            <span class="n">root_ll</span><span class="p">,</span> <span class="n">lls</span> <span class="o">=</span> <span class="n">log_likelihood</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">batch_data</span><span class="p">,</span> <span class="n">return_results</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">mean_ll</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">root_ll</span><span class="p">)</span>
+
+        <span class="c1"># Backward step, compute the log-gradients required to compute the sufficient statistics</span>
+        <span class="n">grads</span> <span class="o">=</span> <span class="n">eval_backward</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">lls</span><span class="p">)</span>
+
+        <span class="c1"># Update the weights of each sum node</span>
+        <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">cached_nodes</span><span class="p">[</span><span class="s1">&#39;sum&#39;</span><span class="p">]:</span>
+            <span class="n">children_ll</span> <span class="o">=</span> <span class="n">lls</span><span class="p">[</span><span class="nb">list</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">c</span><span class="p">:</span> <span class="n">c</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">node</span><span class="o">.</span><span class="n">children</span><span class="p">))]</span>
+            <span class="n">stats</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">children_ll</span> <span class="o">-</span> <span class="n">root_ll</span> <span class="o">+</span> <span class="n">grads</span><span class="p">[</span><span class="n">node</span><span class="o">.</span><span class="n">id</span><span class="p">])</span>
+            <span class="n">node</span><span class="o">.</span><span class="n">em_step</span><span class="p">(</span><span class="n">stats</span><span class="p">,</span> <span class="n">step_size</span><span class="p">)</span>
+
+        <span class="c1"># Update the parameters of each leaf node</span>
+        <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">cached_nodes</span><span class="p">[</span><span class="s1">&#39;leaf&#39;</span><span class="p">]:</span>
+            <span class="n">stats</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">lls</span><span class="p">[</span><span class="n">node</span><span class="o">.</span><span class="n">id</span><span class="p">]</span> <span class="o">-</span> <span class="n">root_ll</span> <span class="o">+</span> <span class="n">grads</span><span class="p">[</span><span class="n">node</span><span class="o">.</span><span class="n">id</span><span class="p">])</span>
+            <span class="n">node</span><span class="o">.</span><span class="n">em_step</span><span class="p">(</span><span class="n">stats</span><span class="p">,</span> <span class="n">batch_data</span><span class="p">[:,</span> <span class="n">node</span><span class="o">.</span><span class="n">scope</span><span class="p">],</span> <span class="n">step_size</span><span class="p">)</span>
+
+        <span class="c1"># Update the progress bar</span>
+        <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
+            <span class="n">iterator</span><span class="o">.</span><span class="n">set_description</span><span class="p">(</span><span class="s1">&#39;Batch Avg. LL: </span><span class="si">{:.4f}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">mean_ll</span><span class="p">))</span>
+
+    <span class="k">return</span> <span class="n">root</span></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, Lorenzo Loconte, Gennaro Gala.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    <span class="fa fa-book"> Other Versions</span>
+    v: main
+    <span class="fa fa-caret-down"></span>
+  </span>
+  <div class="rst-other-versions">
+    <dl>
+      <dt>Tags</dt>
+      <dd><a href="../../../../../v1.0.0/index.html">v1.0.0</a></dd>
+      <dd><a href="../../../../../v1.1.0/index.html">v1.1.0</a></dd>
+    </dl>
+    <dl>
+      <dt>Branches</dt>
+      <dd><a href="em.html">main</a></dd>
+    </dl>
+  </div>
+</div><script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

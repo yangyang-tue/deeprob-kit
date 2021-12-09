@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>deeprob.spn.structure.io &mdash; DeeProb-kit 0.6.4 documentation</title>
+      <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../../_static/css/custom.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js"></script>
+        <script src="../../../../_static/jquery.js"></script>
+        <script src="../../../../_static/underscore.js"></script>
+        <script src="../../../../_static/doctools.js"></script>
+    <script src="../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../../../index.html" class="icon icon-home"> DeeProb-kit
+            <img src="../../../../_static/deeprob-logo-minimal.svg" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Read Me</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../home.html">Abstract</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../home.html#features">Features</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../home.html#installation-documentation">Installation &amp; Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../home.html#datasets-and-experiments">Datasets and Experiments</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../home.html#code-examples">Code Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../home.html#related-repositories">Related Repositories</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../home.html#references">References</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Modules</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../api/deeprob.html">deeprob package</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">DeeProb-kit</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="../../../index.html">Module code</a> &raquo;</li>
+      <li>deeprob.spn.structure.io</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for deeprob.spn.structure.io</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">networkx</span> <span class="k">as</span> <span class="nn">nx</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Type</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">IO</span>
+
+<span class="kn">from</span> <span class="nn">networkx.drawing</span> <span class="kn">import</span> <span class="n">nx_pydot</span>
+<span class="kn">from</span> <span class="nn">networkx.drawing.layout</span> <span class="kn">import</span> <span class="n">rescale_layout_dict</span>
+<span class="kn">from</span> <span class="nn">networkx.algorithms.tree</span> <span class="kn">import</span> <span class="n">is_arborescence</span>
+<span class="kn">from</span> <span class="nn">networkx.algorithms.dag</span> <span class="kn">import</span> <span class="n">is_directed_acyclic_graph</span>
+<span class="kn">from</span> <span class="nn">networkx.algorithms.traversal</span> <span class="kn">import</span> <span class="n">bfs_predecessors</span>
+<span class="kn">from</span> <span class="nn">networkx.readwrite.json_graph</span> <span class="kn">import</span> <span class="n">node_link_data</span><span class="p">,</span> <span class="n">node_link_graph</span>
+
+<span class="kn">from</span> <span class="nn">deeprob.spn.structure.node</span> <span class="kn">import</span> <span class="n">Node</span><span class="p">,</span> <span class="n">Sum</span><span class="p">,</span> <span class="n">Product</span><span class="p">,</span> <span class="n">topological_order</span>
+<span class="kn">from</span> <span class="nn">deeprob.spn.structure.leaf</span> <span class="kn">import</span> <span class="n">Leaf</span><span class="p">,</span> <span class="n">Bernoulli</span><span class="p">,</span> <span class="n">Categorical</span><span class="p">,</span> <span class="n">Isotonic</span><span class="p">,</span> <span class="n">Uniform</span><span class="p">,</span> <span class="n">Gaussian</span>
+<span class="kn">from</span> <span class="nn">deeprob.spn.structure.cltree</span> <span class="kn">import</span> <span class="n">BinaryCLT</span>
+
+
+<div class="viewcode-block" id="save_digraph_json"><a class="viewcode-back" href="../../../../api/deeprob.spn.structure.html#deeprob.spn.structure.io.save_digraph_json">[docs]</a><span class="k">def</span> <span class="nf">save_digraph_json</span><span class="p">(</span><span class="n">graph</span><span class="p">:</span> <span class="n">nx</span><span class="o">.</span><span class="n">DiGraph</span><span class="p">,</span> <span class="n">f</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">IO</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">PathLike</span><span class="p">,</span> <span class="nb">str</span><span class="p">]):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Save a NetworkX directed graph by using the JSON format.</span>
+
+<span class="sd">    :param graph: The NetworkX directed graph.</span>
+<span class="sd">    :param f: A file-like object or a filepath of the output JSON file.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Obtain the JSON object to serialize</span>
+    <span class="n">json_obj</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">node_link_data</span><span class="p">(</span><span class="n">graph</span><span class="p">))</span>
+
+    <span class="c1"># Save the object</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">PathLike</span><span class="p">,</span> <span class="nb">str</span><span class="p">)):</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
+            <span class="n">file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">json_obj</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">json_obj</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="load_digraph_json"><a class="viewcode-back" href="../../../../api/deeprob.spn.structure.html#deeprob.spn.structure.io.load_digraph_json">[docs]</a><span class="k">def</span> <span class="nf">load_digraph_json</span><span class="p">(</span><span class="n">f</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">IO</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">PathLike</span><span class="p">,</span> <span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">nx</span><span class="o">.</span><span class="n">DiGraph</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Load a NetworkX directed graph by using the JSON format.</span>
+
+<span class="sd">    :param f: A file-like object or a filepath of the input JSON file.</span>
+<span class="sd">    :return: The NetworkX directed graph.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Load the object</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">PathLike</span><span class="p">,</span> <span class="nb">str</span><span class="p">)):</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
+            <span class="n">json_obj</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">file</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">json_obj</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+
+    <span class="c1"># Obtain the NetworkX graph</span>
+    <span class="n">graph</span> <span class="o">=</span> <span class="n">node_link_graph</span><span class="p">(</span><span class="n">json_obj</span><span class="p">,</span> <span class="n">directed</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">multigraph</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">graph</span></div>
+
+
+<div class="viewcode-block" id="save_spn_json"><a class="viewcode-back" href="../../../../api/deeprob.spn.structure.html#deeprob.spn.structure.io.save_spn_json">[docs]</a><span class="k">def</span> <span class="nf">save_spn_json</span><span class="p">(</span><span class="n">root</span><span class="p">:</span> <span class="n">Node</span><span class="p">,</span> <span class="n">f</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">IO</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">PathLike</span><span class="p">,</span> <span class="nb">str</span><span class="p">]):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Save SPN to file by using the JSON format.</span>
+
+<span class="sd">    :param root: The root node of the SPN.</span>
+<span class="sd">    :param f: A file-like object or a filepath of the output JSON file.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Convert the SPN to a NetworkX graph</span>
+    <span class="n">graph</span> <span class="o">=</span> <span class="n">spn_to_digraph</span><span class="p">(</span><span class="n">root</span><span class="p">)</span>
+
+    <span class="c1"># Save the NetworkX graph</span>
+    <span class="n">save_digraph_json</span><span class="p">(</span><span class="n">graph</span><span class="p">,</span> <span class="n">f</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="load_spn_json"><a class="viewcode-back" href="../../../../api/deeprob.spn.structure.html#deeprob.spn.structure.io.load_spn_json">[docs]</a><span class="k">def</span> <span class="nf">load_spn_json</span><span class="p">(</span><span class="n">f</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">IO</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">PathLike</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span> <span class="n">leaves</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">Type</span><span class="p">[</span><span class="n">Leaf</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Node</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Load SPN from file by using the JSON format.</span>
+
+<span class="sd">    :param f: A file-like object or a filepath of the input JSON file.</span>
+<span class="sd">    :param leaves: An optional list of custom leaf classes. Useful when dealing with user-defined leaves.</span>
+<span class="sd">    :return: The loaded SPN with initialied ids for each node.</span>
+<span class="sd">    :raises ValueError: If multiple custom leaf classes with the same name are defined.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Set the default leaf classes map</span>
+    <span class="n">leaf_map</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Type</span><span class="p">[</span><span class="n">Leaf</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="bp">cls</span><span class="o">.</span><span class="vm">__name__</span><span class="p">:</span> <span class="bp">cls</span>
+        <span class="k">for</span> <span class="bp">cls</span> <span class="ow">in</span> <span class="p">[</span>
+            <span class="n">Bernoulli</span><span class="p">,</span> <span class="n">Categorical</span><span class="p">,</span> <span class="n">Isotonic</span><span class="p">,</span> <span class="n">Uniform</span><span class="p">,</span> <span class="n">Gaussian</span><span class="p">,</span> <span class="n">BinaryCLT</span>
+        <span class="p">]</span>
+    <span class="p">}</span>
+
+    <span class="c1"># Augment the leaf mapper dictionary, if custom leaf classes are defined</span>
+    <span class="k">if</span> <span class="n">leaves</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">for</span> <span class="bp">cls</span> <span class="ow">in</span> <span class="n">leaves</span><span class="p">:</span>
+            <span class="n">name</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="vm">__name__</span>
+            <span class="k">if</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">leaf_map</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Custom leaf class </span><span class="si">{}</span><span class="s2"> already defined&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">name</span><span class="p">))</span>
+            <span class="n">leaf_map</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="bp">cls</span>
+
+    <span class="c1"># Load the NetworkX graph</span>
+    <span class="n">graph</span> <span class="o">=</span> <span class="n">load_digraph_json</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+
+    <span class="c1"># Convert the NetworkX graph to a SPN</span>
+    <span class="k">return</span> <span class="n">digraph_to_spn</span><span class="p">(</span><span class="n">graph</span><span class="p">,</span> <span class="n">leaf_map</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="save_binary_clt_json"><a class="viewcode-back" href="../../../../api/deeprob.spn.structure.html#deeprob.spn.structure.io.save_binary_clt_json">[docs]</a><span class="k">def</span> <span class="nf">save_binary_clt_json</span><span class="p">(</span><span class="n">clt</span><span class="p">:</span> <span class="n">BinaryCLT</span><span class="p">,</span> <span class="n">f</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">IO</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">PathLike</span><span class="p">,</span> <span class="nb">str</span><span class="p">]):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Save Binary Chow-Liu Tree (CLT) to file by using the JSON format.</span>
+
+<span class="sd">    :param clt: The binary CLT.</span>
+<span class="sd">    :param f: A file-like object or a filepath of the output JSON file.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Convert the CLT to a NetworkX digraph</span>
+    <span class="n">graph</span> <span class="o">=</span> <span class="n">binary_clt_to_digraph</span><span class="p">(</span><span class="n">clt</span><span class="p">)</span>
+
+    <span class="c1"># Save the NetworkX graph</span>
+    <span class="n">save_digraph_json</span><span class="p">(</span><span class="n">graph</span><span class="p">,</span> <span class="n">f</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="load_binary_clt_json"><a class="viewcode-back" href="../../../../api/deeprob.spn.structure.html#deeprob.spn.structure.io.load_binary_clt_json">[docs]</a><span class="k">def</span> <span class="nf">load_binary_clt_json</span><span class="p">(</span><span class="n">f</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">IO</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">PathLike</span><span class="p">,</span> <span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">BinaryCLT</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Load Binary Chow-Liu Tree (CLT) from file by using the JSON format.</span>
+
+<span class="sd">    :param f: A file-like object or a filepath of the input JSON file.</span>
+<span class="sd">    :return: The loaded binary CLT.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Load the NetworkX graph</span>
+    <span class="n">graph</span> <span class="o">=</span> <span class="n">load_digraph_json</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+
+    <span class="c1"># Convert the NetworkX graph to a binary CLT</span>
+    <span class="k">return</span> <span class="n">digraph_to_binary_clt</span><span class="p">(</span><span class="n">graph</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="spn_to_digraph"><a class="viewcode-back" href="../../../../api/deeprob.spn.structure.html#deeprob.spn.structure.io.spn_to_digraph">[docs]</a><span class="k">def</span> <span class="nf">spn_to_digraph</span><span class="p">(</span><span class="n">root</span><span class="p">:</span> <span class="n">Node</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">nx</span><span class="o">.</span><span class="n">DiGraph</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Convert a SPN to a NetworkX directed graph.</span>
+
+<span class="sd">    :param root: The root node of the SPN.</span>
+<span class="sd">    :return: The corresponding NetworkX directed graph.</span>
+<span class="sd">    :raises ValueError: If the SPN structure is not a directed acyclic graph (DAG).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Check the SPN</span>
+    <span class="n">nodes</span> <span class="o">=</span> <span class="n">topological_order</span><span class="p">(</span><span class="n">root</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">nodes</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;SPN structure is not a directed acyclic graph (DAG)&quot;</span><span class="p">)</span>
+    <span class="n">graph</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">DiGraph</span><span class="p">()</span>
+
+    <span class="c1"># Add nodes to the graph</span>
+    <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">nodes</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">Sum</span><span class="p">):</span>
+            <span class="n">weights</span> <span class="o">=</span> <span class="p">[</span><span class="nb">round</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">w</span><span class="p">),</span> <span class="mi">8</span><span class="p">)</span> <span class="k">for</span> <span class="n">w</span> <span class="ow">in</span> <span class="n">node</span><span class="o">.</span><span class="n">weights</span><span class="p">]</span>
+            <span class="n">attr</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;class&#39;</span><span class="p">:</span> <span class="n">Sum</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="s1">&#39;scope&#39;</span><span class="p">:</span> <span class="n">node</span><span class="o">.</span><span class="n">scope</span><span class="p">,</span> <span class="s1">&#39;weights&#39;</span><span class="p">:</span> <span class="n">weights</span><span class="p">}</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">Product</span><span class="p">):</span>
+            <span class="n">attr</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;class&#39;</span><span class="p">:</span> <span class="n">Product</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="s1">&#39;scope&#39;</span><span class="p">:</span> <span class="n">node</span><span class="o">.</span><span class="n">scope</span><span class="p">}</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">Leaf</span><span class="p">):</span>
+            <span class="n">params</span> <span class="o">=</span> <span class="n">node</span><span class="o">.</span><span class="n">params_dict</span><span class="p">()</span>
+            <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">params</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>  <span class="c1"># Convert Numpy arrays into lists</span>
+                    <span class="k">if</span> <span class="n">value</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="n">np</span><span class="o">.</span><span class="n">float32</span> <span class="ow">or</span> <span class="n">value</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">:</span>
+                        <span class="n">value</span> <span class="o">=</span> <span class="n">value</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+                        <span class="n">params</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">around</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="mi">8</span><span class="p">)</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">params</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+                <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)):</span>  <span class="c1"># Convert Numpy floats into Python float</span>
+                    <span class="n">params</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="nb">round</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">value</span><span class="p">),</span> <span class="mi">8</span><span class="p">)</span>
+                <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">float</span><span class="p">):</span>  <span class="c1"># Round Python floats</span>
+                    <span class="n">params</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="nb">round</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="mi">8</span><span class="p">)</span>
+            <span class="n">attr</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;class&#39;</span><span class="p">:</span> <span class="n">node</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="s1">&#39;scope&#39;</span><span class="p">:</span> <span class="n">node</span><span class="o">.</span><span class="n">scope</span><span class="p">,</span> <span class="s1">&#39;params&#39;</span><span class="p">:</span> <span class="n">params</span><span class="p">}</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Unknown node of type </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">))</span>
+        <span class="n">graph</span><span class="o">.</span><span class="n">add_node</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="o">**</span><span class="n">attr</span><span class="p">)</span>
+
+    <span class="c1"># Add edges to the graph</span>
+    <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">nodes</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">c</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">children</span><span class="p">):</span>
+            <span class="n">graph</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="n">c</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">node</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">idx</span><span class="o">=</span><span class="n">i</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">graph</span></div>
+
+
+<div class="viewcode-block" id="digraph_to_spn"><a class="viewcode-back" href="../../../../api/deeprob.spn.structure.html#deeprob.spn.structure.io.digraph_to_spn">[docs]</a><span class="k">def</span> <span class="nf">digraph_to_spn</span><span class="p">(</span><span class="n">graph</span><span class="p">:</span> <span class="n">nx</span><span class="o">.</span><span class="n">DiGraph</span><span class="p">,</span> <span class="n">leaf_map</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Type</span><span class="p">[</span><span class="n">Leaf</span><span class="p">]])</span> <span class="o">-&gt;</span> <span class="n">Node</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Convert a NetworkX directed graph to a SPN.</span>
+
+<span class="sd">    :param graph: The NetworkX directed graph.</span>
+<span class="sd">    :param leaf_map: The leaf distributions mapper dictionary.</span>
+<span class="sd">    :return: The corresponding SPN.</span>
+<span class="sd">    :raises ValueError: If the graph is not a directed acyclic graph (DAG).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Check the graph</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">is_directed_acyclic_graph</span><span class="p">(</span><span class="n">graph</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;The graph is not a directed acyclic graph (DAG)&quot;</span><span class="p">)</span>
+    <span class="n">nodes</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">Leaf</span><span class="p">]</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+
+    <span class="c1"># Instantiate the nodes in the graph</span>
+    <span class="k">for</span> <span class="n">node_id</span> <span class="ow">in</span> <span class="n">graph</span><span class="o">.</span><span class="n">nodes</span><span class="p">:</span>
+        <span class="n">attr</span> <span class="o">=</span> <span class="n">graph</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">node_id</span><span class="p">]</span>
+        <span class="n">name</span> <span class="o">=</span> <span class="n">attr</span><span class="p">[</span><span class="s1">&#39;class&#39;</span><span class="p">]</span>
+        <span class="n">scope</span> <span class="o">=</span> <span class="n">attr</span><span class="p">[</span><span class="s1">&#39;scope&#39;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">name</span> <span class="o">==</span> <span class="n">Sum</span><span class="o">.</span><span class="vm">__name__</span><span class="p">:</span>
+            <span class="n">node</span> <span class="o">=</span> <span class="n">Sum</span><span class="p">(</span><span class="n">scope</span><span class="p">,</span> <span class="n">weights</span><span class="o">=</span><span class="n">attr</span><span class="p">[</span><span class="s1">&#39;weights&#39;</span><span class="p">])</span>
+        <span class="k">elif</span> <span class="n">name</span> <span class="o">==</span> <span class="n">Product</span><span class="o">.</span><span class="vm">__name__</span><span class="p">:</span>
+            <span class="n">node</span> <span class="o">=</span> <span class="n">Product</span><span class="p">(</span><span class="n">scope</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">leaf_map</span><span class="p">:</span>
+            <span class="n">node</span> <span class="o">=</span> <span class="n">leaf_map</span><span class="p">[</span><span class="n">name</span><span class="p">](</span><span class="n">scope</span><span class="p">,</span> <span class="o">**</span><span class="n">attr</span><span class="p">[</span><span class="s1">&#39;params&#39;</span><span class="p">])</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Unknown node of type </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">name</span><span class="p">))</span>
+        <span class="n">node</span><span class="o">.</span><span class="n">id</span> <span class="o">=</span> <span class="n">node_id</span>
+        <span class="n">nodes</span><span class="p">[</span><span class="n">node_id</span><span class="p">]</span> <span class="o">=</span> <span class="n">node</span>
+
+    <span class="c1"># Build the edges between the nodes as parent-children dependencies</span>
+    <span class="k">for</span> <span class="n">child_id</span><span class="p">,</span> <span class="n">parent_id</span> <span class="ow">in</span> <span class="n">graph</span><span class="o">.</span><span class="n">edges</span><span class="p">:</span>
+        <span class="n">idx</span> <span class="o">=</span> <span class="n">graph</span><span class="o">.</span><span class="n">edges</span><span class="p">[</span><span class="n">child_id</span><span class="p">,</span> <span class="n">parent_id</span><span class="p">][</span><span class="s1">&#39;idx&#39;</span><span class="p">]</span>
+        <span class="n">parent_node</span> <span class="o">=</span> <span class="n">nodes</span><span class="p">[</span><span class="n">parent_id</span><span class="p">]</span>
+        <span class="n">n_children</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">parent_node</span><span class="o">.</span><span class="n">children</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">idx</span> <span class="o">&gt;=</span> <span class="n">n_children</span><span class="p">:</span>
+            <span class="n">parent_node</span><span class="o">.</span><span class="n">children</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="kc">None</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="n">idx</span> <span class="o">-</span> <span class="n">n_children</span> <span class="o">+</span> <span class="mi">1</span><span class="p">))</span>
+        <span class="n">parent_node</span><span class="o">.</span><span class="n">children</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">=</span> <span class="n">nodes</span><span class="p">[</span><span class="n">child_id</span><span class="p">]</span>
+
+    <span class="c1"># Get the root of the SPN</span>
+    <span class="k">return</span> <span class="n">nodes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="binary_clt_to_digraph"><a class="viewcode-back" href="../../../../api/deeprob.spn.structure.html#deeprob.spn.structure.io.binary_clt_to_digraph">[docs]</a><span class="k">def</span> <span class="nf">binary_clt_to_digraph</span><span class="p">(</span><span class="n">clt</span><span class="p">:</span> <span class="n">BinaryCLT</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">nx</span><span class="o">.</span><span class="n">DiGraph</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Convert a binary Chow-Liu Tree (CLT) to a NetworkX directed graph.</span>
+
+<span class="sd">    :param clt: The binary CLT.</span>
+<span class="sd">    :return: The corresponding NetworkX directed graph.</span>
+<span class="sd">    :raises ValueError: If the CLT is not initialized.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">clt</span><span class="o">.</span><span class="n">tree</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;The CLT&#39;s structure must be already initialized&quot;</span><span class="p">)</span>
+    <span class="n">graph</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">DiGraph</span><span class="p">()</span>
+
+    <span class="c1"># Add nodes to the graph</span>
+    <span class="k">for</span> <span class="n">node_id</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">clt</span><span class="o">.</span><span class="n">tree</span><span class="p">)):</span>
+        <span class="n">weight</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">around</span><span class="p">(</span><span class="n">clt</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="n">node_id</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">),</span> <span class="mi">8</span><span class="p">)</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+        <span class="n">attr</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;scope&#39;</span><span class="p">:</span> <span class="n">clt</span><span class="o">.</span><span class="n">scope</span><span class="p">[</span><span class="n">node_id</span><span class="p">],</span> <span class="s1">&#39;weight&#39;</span><span class="p">:</span> <span class="n">weight</span><span class="p">}</span>
+        <span class="n">graph</span><span class="o">.</span><span class="n">add_node</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">node_id</span><span class="p">),</span> <span class="o">**</span><span class="n">attr</span><span class="p">)</span>
+
+    <span class="c1"># Add edges to the graph</span>
+    <span class="k">for</span> <span class="n">node_id</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">clt</span><span class="o">.</span><span class="n">tree</span><span class="p">)):</span>
+        <span class="k">if</span> <span class="n">clt</span><span class="o">.</span><span class="n">tree</span><span class="p">[</span><span class="n">node_id</span><span class="p">]</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+            <span class="n">graph</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">clt</span><span class="o">.</span><span class="n">tree</span><span class="p">[</span><span class="n">node_id</span><span class="p">]),</span> <span class="n">node_id</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">graph</span></div>
+
+
+<div class="viewcode-block" id="digraph_to_binary_clt"><a class="viewcode-back" href="../../../../api/deeprob.spn.structure.html#deeprob.spn.structure.io.digraph_to_binary_clt">[docs]</a><span class="k">def</span> <span class="nf">digraph_to_binary_clt</span><span class="p">(</span><span class="n">graph</span><span class="p">:</span> <span class="n">nx</span><span class="o">.</span><span class="n">DiGraph</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">BinaryCLT</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Convert a NetworkX directed graph to a binary Chow-Liu Tree (CLT).</span>
+
+<span class="sd">    :param graph: The NetworkX directed graph.</span>
+<span class="sd">    :return: The corresponding Chow-Liu Tree.</span>
+<span class="sd">    :raises ValueError: If the graph is not a tree.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Check the graph and get the root id</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">is_arborescence</span><span class="p">(</span><span class="n">graph</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;The graph is not a tree&quot;</span><span class="p">)</span>
+    <span class="n">root_id</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="n">node_id</span> <span class="k">for</span> <span class="n">node_id</span><span class="p">,</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">graph</span><span class="o">.</span><span class="n">in_degree</span><span class="p">()</span> <span class="k">if</span> <span class="n">c</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span>
+
+    <span class="n">scope</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="p">[</span><span class="kc">None</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">graph</span><span class="p">)</span>
+    <span class="n">tree</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="p">[</span><span class="kc">None</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">graph</span><span class="p">)</span>
+    <span class="n">params</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="p">[</span><span class="kc">None</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">graph</span><span class="p">)</span>
+
+    <span class="c1"># Include the information about the root node</span>
+    <span class="n">attr</span> <span class="o">=</span> <span class="n">graph</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">root_id</span><span class="p">]</span>
+    <span class="n">scope</span><span class="p">[</span><span class="n">root_id</span><span class="p">]</span> <span class="o">=</span> <span class="n">attr</span><span class="p">[</span><span class="s1">&#39;scope&#39;</span><span class="p">]</span>
+    <span class="n">tree</span><span class="p">[</span><span class="n">root_id</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+    <span class="n">params</span><span class="p">[</span><span class="n">root_id</span><span class="p">]</span> <span class="o">=</span> <span class="n">attr</span><span class="p">[</span><span class="s1">&#39;weight&#39;</span><span class="p">]</span>
+
+    <span class="c1"># Proceed by BFS starting from the root node</span>
+    <span class="k">for</span> <span class="n">node_id</span><span class="p">,</span> <span class="n">parent_id</span> <span class="ow">in</span> <span class="n">bfs_predecessors</span><span class="p">(</span><span class="n">graph</span><span class="p">,</span> <span class="n">source</span><span class="o">=</span><span class="n">root_id</span><span class="p">):</span>
+        <span class="n">attr</span> <span class="o">=</span> <span class="n">graph</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">node_id</span><span class="p">]</span>
+        <span class="n">tree</span><span class="p">[</span><span class="n">node_id</span><span class="p">]</span> <span class="o">=</span> <span class="n">parent_id</span>
+        <span class="n">scope</span><span class="p">[</span><span class="n">node_id</span><span class="p">]</span> <span class="o">=</span> <span class="n">attr</span><span class="p">[</span><span class="s1">&#39;scope&#39;</span><span class="p">]</span>
+        <span class="n">params</span><span class="p">[</span><span class="n">node_id</span><span class="p">]</span> <span class="o">=</span> <span class="n">attr</span><span class="p">[</span><span class="s1">&#39;weight&#39;</span><span class="p">]</span>
+
+    <span class="c1"># Instantiate a Binary CLT</span>
+    <span class="k">return</span> <span class="n">BinaryCLT</span><span class="p">(</span><span class="n">scope</span><span class="p">,</span> <span class="n">tree</span><span class="o">=</span><span class="n">tree</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="n">params</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="plot_spn"><a class="viewcode-back" href="../../../../api/deeprob.spn.structure.html#deeprob.spn.structure.io.plot_spn">[docs]</a><span class="k">def</span> <span class="nf">plot_spn</span><span class="p">(</span><span class="n">root</span><span class="p">:</span> <span class="n">Node</span><span class="p">,</span> <span class="n">f</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">IO</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">PathLike</span><span class="p">,</span> <span class="nb">str</span><span class="p">]):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Plot a SPN into file.</span>
+
+<span class="sd">    :param root: The SPN root node.</span>
+<span class="sd">    :param f: A file-like object or a filepath of the output file.</span>
+<span class="sd">    :raises ValueError: If an unknown node type is found.</span>
+<span class="sd">    :raises ValueError: If the SPN structure is not a DAG.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Convert the SPN to a NetworkX directed graph</span>
+    <span class="n">graph</span> <span class="o">=</span> <span class="n">spn_to_digraph</span><span class="p">(</span><span class="n">root</span><span class="p">)</span>
+
+    <span class="c1"># Build the dictionaries of node labels and colors</span>
+    <span class="n">labels</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+    <span class="n">colors</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">node_id</span> <span class="ow">in</span> <span class="n">graph</span><span class="o">.</span><span class="n">nodes</span><span class="p">:</span>
+        <span class="n">attr</span> <span class="o">=</span> <span class="n">graph</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">node_id</span><span class="p">]</span>
+        <span class="n">name</span> <span class="o">=</span> <span class="n">attr</span><span class="p">[</span><span class="s1">&#39;class&#39;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">name</span> <span class="o">==</span> <span class="n">Sum</span><span class="o">.</span><span class="vm">__name__</span><span class="p">:</span>
+            <span class="n">label</span> <span class="o">=</span> <span class="s1">&#39;+&#39;</span>
+            <span class="n">color</span> <span class="o">=</span> <span class="s1">&#39;#083d77&#39;</span>
+            <span class="k">for</span> <span class="n">child_id</span><span class="p">,</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">graph</span><span class="o">.</span><span class="n">in_edges</span><span class="p">(</span><span class="n">node_id</span><span class="p">):</span>
+                <span class="n">idx</span> <span class="o">=</span> <span class="n">graph</span><span class="o">.</span><span class="n">edges</span><span class="p">[</span><span class="n">child_id</span><span class="p">,</span> <span class="n">node_id</span><span class="p">][</span><span class="s1">&#39;idx&#39;</span><span class="p">]</span>
+                <span class="n">graph</span><span class="o">.</span><span class="n">edges</span><span class="p">[</span><span class="n">child_id</span><span class="p">,</span> <span class="n">node_id</span><span class="p">][</span><span class="s1">&#39;weight&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">round</span><span class="p">(</span><span class="n">attr</span><span class="p">[</span><span class="s1">&#39;weights&#39;</span><span class="p">][</span><span class="n">idx</span><span class="p">],</span> <span class="n">ndigits</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">name</span> <span class="o">==</span> <span class="n">Product</span><span class="o">.</span><span class="vm">__name__</span><span class="p">:</span>
+            <span class="n">label</span> <span class="o">=</span> <span class="s1">&#39;x&#39;</span>
+            <span class="n">color</span> <span class="o">=</span> <span class="s1">&#39;#bf3100&#39;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">label</span> <span class="o">=</span> <span class="nb">repr</span><span class="p">(</span><span class="n">attr</span><span class="p">[</span><span class="s1">&#39;scope&#39;</span><span class="p">])</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;,&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+            <span class="n">color</span> <span class="o">=</span> <span class="s1">&#39;#542188&#39;</span>
+        <span class="n">labels</span><span class="p">[</span><span class="n">node_id</span><span class="p">]</span> <span class="o">=</span> <span class="n">label</span>
+        <span class="n">colors</span><span class="p">[</span><span class="n">node_id</span><span class="p">]</span> <span class="o">=</span> <span class="n">color</span>
+
+    <span class="c1"># Compute the nodes positions using PyDot + Graphviz</span>
+    <span class="n">pos</span> <span class="o">=</span> <span class="n">nx_pydot</span><span class="o">.</span><span class="n">graphviz_layout</span><span class="p">(</span><span class="n">graph</span><span class="p">,</span> <span class="n">prog</span><span class="o">=</span><span class="s1">&#39;dot&#39;</span><span class="p">)</span>
+    <span class="n">pos</span> <span class="o">=</span> <span class="p">{</span><span class="n">node_id</span><span class="p">:</span> <span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="o">-</span><span class="n">y</span><span class="p">)</span> <span class="k">for</span> <span class="n">node_id</span><span class="p">,</span> <span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span> <span class="ow">in</span> <span class="n">pos</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
+    <span class="n">pos</span> <span class="o">=</span> <span class="n">rescale_layout_dict</span><span class="p">(</span><span class="n">pos</span><span class="p">)</span>
+
+    <span class="c1"># Set the figure size</span>
+    <span class="n">figdim</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">maximum</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">graph</span><span class="o">.</span><span class="n">number_of_nodes</span><span class="p">()</span> <span class="o">+</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">graph</span><span class="o">.</span><span class="n">number_of_edges</span><span class="p">()))</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="n">figdim</span><span class="p">,</span> <span class="n">figdim</span><span class="p">))</span>
+
+    <span class="c1"># Draw the nodes and edges</span>
+    <span class="n">nx</span><span class="o">.</span><span class="n">draw_networkx</span><span class="p">(</span>
+        <span class="n">graph</span><span class="p">,</span> <span class="n">pos</span><span class="o">=</span><span class="n">pos</span><span class="p">,</span> <span class="n">node_color</span><span class="o">=</span><span class="p">[</span><span class="n">colors</span><span class="p">[</span><span class="n">node_id</span><span class="p">]</span> <span class="k">for</span> <span class="n">node_id</span> <span class="ow">in</span> <span class="n">graph</span><span class="o">.</span><span class="n">nodes</span><span class="p">],</span>
+        <span class="n">labels</span><span class="o">=</span><span class="n">labels</span><span class="p">,</span> <span class="n">arrows</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">font_size</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span> <span class="n">font_color</span><span class="o">=</span><span class="s1">&#39;#ffffff&#39;</span>
+    <span class="p">)</span>
+    <span class="n">nx</span><span class="o">.</span><span class="n">draw_networkx_edge_labels</span><span class="p">(</span>
+        <span class="n">graph</span><span class="p">,</span> <span class="n">pos</span><span class="o">=</span><span class="n">pos</span><span class="p">,</span> <span class="n">edge_labels</span><span class="o">=</span><span class="n">nx</span><span class="o">.</span><span class="n">get_edge_attributes</span><span class="p">(</span><span class="n">graph</span><span class="p">,</span> <span class="s1">&#39;weight&#39;</span><span class="p">),</span>
+        <span class="n">rotate</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">font_size</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span> <span class="n">font_color</span><span class="o">=</span><span class="s1">&#39;#000000&#39;</span>
+    <span class="p">)</span>
+
+    <span class="c1"># Plot the final figure</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="s1">&#39;off&#39;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">bbox_inches</span><span class="o">=</span><span class="s1">&#39;tight&#39;</span><span class="p">,</span> <span class="n">pad_inches</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">clf</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="plot_binary_clt"><a class="viewcode-back" href="../../../../api/deeprob.spn.structure.html#deeprob.spn.structure.io.plot_binary_clt">[docs]</a><span class="k">def</span> <span class="nf">plot_binary_clt</span><span class="p">(</span><span class="n">clt</span><span class="p">:</span> <span class="n">BinaryCLT</span><span class="p">,</span> <span class="n">f</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">IO</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">PathLike</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span> <span class="n">show_weights</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Plot a binary Chow-Liu Tree (CLT) into file.</span>
+
+<span class="sd">    :param clt: The binary CLT.</span>
+<span class="sd">    :param f: A file-like object or a filepath of the output file.</span>
+<span class="sd">    :param show_weights: Whether to show the conditional probability tables (CPTs).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Convert the CLT to a NetworkX directed graph</span>
+    <span class="n">graph</span> <span class="o">=</span> <span class="n">binary_clt_to_digraph</span><span class="p">(</span><span class="n">clt</span><span class="p">)</span>
+
+    <span class="c1"># Build the dictionary of node labels</span>
+    <span class="n">labels</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">node_id</span> <span class="ow">in</span> <span class="n">graph</span><span class="o">.</span><span class="n">nodes</span><span class="p">:</span>
+        <span class="n">labels</span><span class="p">[</span><span class="n">node_id</span><span class="p">]</span> <span class="o">=</span> <span class="n">clt</span><span class="o">.</span><span class="n">scope</span><span class="p">[</span><span class="n">node_id</span><span class="p">]</span>
+
+    <span class="c1"># Compute the nodes positions using PyDot + Graphviz</span>
+    <span class="n">pos</span> <span class="o">=</span> <span class="n">nx_pydot</span><span class="o">.</span><span class="n">graphviz_layout</span><span class="p">(</span><span class="n">graph</span><span class="p">,</span> <span class="n">prog</span><span class="o">=</span><span class="s1">&#39;dot&#39;</span><span class="p">)</span>
+    <span class="n">pos</span> <span class="o">=</span> <span class="n">rescale_layout_dict</span><span class="p">(</span><span class="n">pos</span><span class="p">)</span>
+
+    <span class="c1"># Set the figure size</span>
+    <span class="n">figdim</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">maximum</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">graph</span><span class="o">.</span><span class="n">number_of_nodes</span><span class="p">()</span> <span class="o">+</span> <span class="mi">3</span> <span class="o">*</span> <span class="n">graph</span><span class="o">.</span><span class="n">number_of_edges</span><span class="p">()))</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="n">figdim</span><span class="p">,</span> <span class="n">figdim</span><span class="p">))</span>
+
+    <span class="c1"># Draw the nodes and edges</span>
+    <span class="n">nx</span><span class="o">.</span><span class="n">draw_networkx</span><span class="p">(</span>
+        <span class="n">graph</span><span class="p">,</span> <span class="n">pos</span><span class="o">=</span><span class="n">pos</span><span class="p">,</span> <span class="n">node_color</span><span class="o">=</span><span class="s1">&#39;#542188&#39;</span><span class="p">,</span>
+        <span class="n">labels</span><span class="o">=</span><span class="n">labels</span><span class="p">,</span> <span class="n">arrows</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">font_size</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span> <span class="n">font_color</span><span class="o">=</span><span class="s1">&#39;#ffffff&#39;</span>
+    <span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">show_weights</span><span class="p">:</span>
+        <span class="c1"># Initialize the edges labels, using the CPTs</span>
+        <span class="k">for</span> <span class="n">node_id</span> <span class="ow">in</span> <span class="n">graph</span><span class="o">.</span><span class="n">nodes</span><span class="p">:</span>
+            <span class="n">attr</span> <span class="o">=</span> <span class="n">graph</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">node_id</span><span class="p">]</span>
+            <span class="n">scope</span> <span class="o">=</span> <span class="n">attr</span><span class="p">[</span><span class="s1">&#39;scope&#39;</span><span class="p">]</span>
+            <span class="n">weight</span> <span class="o">=</span> <span class="n">attr</span><span class="p">[</span><span class="s1">&#39;weight&#39;</span><span class="p">]</span>
+            <span class="k">for</span> <span class="n">child_id</span><span class="p">,</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">graph</span><span class="o">.</span><span class="n">in_edges</span><span class="p">(</span><span class="n">node_id</span><span class="p">):</span>
+                <span class="n">cpt</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">around</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">weight</span><span class="p">),</span> <span class="mi">2</span><span class="p">)</span>
+                <span class="n">label</span> <span class="o">=</span> <span class="s2">&quot;$P(X_{{</span><span class="si">{}</span><span class="s2">}}|0)$ </span><span class="si">{:.2f}</span><span class="s2"> </span><span class="si">{:.2f}</span><span class="se">\n</span><span class="s2">$P(X_{{</span><span class="si">{}</span><span class="s2">}}|1)$ </span><span class="si">{:.2f}</span><span class="s2"> </span><span class="si">{:.2f}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                    <span class="n">scope</span><span class="p">,</span> <span class="n">cpt</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">cpt</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">scope</span><span class="p">,</span> <span class="n">cpt</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">cpt</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>
+                <span class="p">)</span>
+                <span class="n">graph</span><span class="o">.</span><span class="n">edges</span><span class="p">[</span><span class="n">child_id</span><span class="p">,</span> <span class="n">node_id</span><span class="p">][</span><span class="s1">&#39;weight&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">label</span>
+
+        <span class="c1"># Initialize the root node label, using the root CPT</span>
+        <span class="n">root_id</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="n">node_id</span> <span class="k">for</span> <span class="n">node_id</span><span class="p">,</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">graph</span><span class="o">.</span><span class="n">in_degree</span><span class="p">()</span> <span class="k">if</span> <span class="n">c</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="n">attr</span> <span class="o">=</span> <span class="n">graph</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">root_id</span><span class="p">]</span>
+        <span class="n">scope</span> <span class="o">=</span> <span class="n">attr</span><span class="p">[</span><span class="s1">&#39;scope&#39;</span><span class="p">]</span>
+        <span class="n">weight</span> <span class="o">=</span> <span class="n">attr</span><span class="p">[</span><span class="s1">&#39;weight&#39;</span><span class="p">]</span>
+        <span class="n">cpt</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">around</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">weight</span><span class="p">),</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="n">root_label</span> <span class="o">=</span> <span class="s2">&quot;$P(X_{{</span><span class="si">{}</span><span class="s2">}})$ </span><span class="si">{:.2f}</span><span class="s2"> </span><span class="si">{:.2f}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">scope</span><span class="p">,</span> <span class="n">cpt</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">cpt</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
+
+        <span class="c1"># Draw root node CPT and other nodes CPTs</span>
+        <span class="n">cpt_style_kwargs</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;font_size&#39;</span><span class="p">:</span> <span class="mi">6</span><span class="p">,</span> <span class="s1">&#39;font_color&#39;</span><span class="p">:</span> <span class="s1">&#39;#000000&#39;</span><span class="p">,</span> <span class="s1">&#39;font_family&#39;</span><span class="p">:</span> <span class="s1">&#39;monospace&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;bbox&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;boxstyle&#39;</span><span class="p">:</span> <span class="s1">&#39;round&#39;</span><span class="p">,</span> <span class="s1">&#39;ec&#39;</span><span class="p">:</span> <span class="s1">&#39;#444444&#39;</span><span class="p">,</span> <span class="s1">&#39;fc&#39;</span><span class="p">:</span> <span class="s1">&#39;#ffffff&#39;</span><span class="p">,</span> <span class="s1">&#39;pad&#39;</span><span class="p">:</span> <span class="mf">0.2</span><span class="p">}</span>
+        <span class="p">}</span>
+        <span class="n">root_label_delta</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">+</span> <span class="mf">0.667</span> <span class="o">/</span> <span class="n">figdim</span>
+        <span class="n">nx</span><span class="o">.</span><span class="n">draw_networkx_labels</span><span class="p">(</span>
+            <span class="n">graph</span><span class="p">,</span> <span class="n">pos</span><span class="o">=</span><span class="p">{</span><span class="n">root_id</span><span class="p">:</span> <span class="p">(</span><span class="n">pos</span><span class="p">[</span><span class="n">root_id</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> <span class="n">pos</span><span class="p">[</span><span class="n">root_id</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">root_label_delta</span><span class="p">)},</span> <span class="n">labels</span><span class="o">=</span><span class="p">{</span><span class="n">root_id</span><span class="p">:</span> <span class="n">root_label</span><span class="p">},</span>
+            <span class="o">**</span><span class="n">cpt_style_kwargs</span>
+        <span class="p">)</span>
+        <span class="n">nx</span><span class="o">.</span><span class="n">draw_networkx_edge_labels</span><span class="p">(</span>
+            <span class="n">graph</span><span class="p">,</span> <span class="n">pos</span><span class="o">=</span><span class="n">pos</span><span class="p">,</span> <span class="n">edge_labels</span><span class="o">=</span><span class="n">nx</span><span class="o">.</span><span class="n">get_edge_attributes</span><span class="p">(</span><span class="n">graph</span><span class="p">,</span> <span class="s1">&#39;weight&#39;</span><span class="p">),</span>
+            <span class="n">rotate</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">cpt_style_kwargs</span>
+        <span class="p">)</span>
+
+    <span class="c1"># Plot the final figure</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="s1">&#39;off&#39;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">bbox_inches</span><span class="o">=</span><span class="s1">&#39;tight&#39;</span><span class="p">,</span> <span class="n">pad_inches</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">clf</span><span class="p">()</span></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, Lorenzo Loconte, Gennaro Gala.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    <span class="fa fa-book"> Other Versions</span>
+    v: v1.0.0
+    <span class="fa fa-caret-down"></span>
+  </span>
+  <div class="rst-other-versions">
+    <dl>
+      <dt>Tags</dt>
+      <dd><a href="io.html">v1.0.0</a></dd>
+      <dd><a href="../../../../../v1.1.0/index.html">v1.1.0</a></dd>
+    </dl>
+    <dl>
+      <dt>Branches</dt>
+      <dd><a href="../../../../../main/index.html">main</a></dd>
+    </dl>
+  </div>
+</div><script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

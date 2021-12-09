@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Abstract &mdash; DeeProb-kit 1.0.0 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/custom.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Documentation" href="docs.html" />
+    <link rel="prev" title="A Python library for Deep Probabilistic Modeling" href="../index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> DeeProb-kit
+            <img src="../_static/deeprob-logo-minimal.svg" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Read Me</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Abstract</a></li>
+<li class="toctree-l1"><a class="reference internal" href="#features">Features</a></li>
+<li class="toctree-l1"><a class="reference internal" href="#installation">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="#project-directories">Project Directories</a></li>
+<li class="toctree-l1"><a class="reference internal" href="#related-repositories">Related Repositories</a></li>
+<li class="toctree-l1"><a class="reference internal" href="#references">References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="docs.html">Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html">Code Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="experiments.html">Experiments</a></li>
+<li class="toctree-l1"><a class="reference internal" href="benchmark.html">Benchmark</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Modules</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../api/deeprob.html">deeprob package</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">DeeProb-kit</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+      <li>Abstract</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/markdown/home.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <p><a class="reference external" href="https://lbesson.mit-license.org/"><img alt="MIT license" src="https://img.shields.io/badge/License-MIT-blue.svg" /></a>
+<a class="reference external" href="https://badge.fury.io/py/deeprob-kit"><img alt="PyPI version" src="https://badge.fury.io/py/deeprob-kit.svg" /></a></p>
+<p><img alt="Logo" src="../_images/deeprob-logo.svg" /></p>
+<section id="abstract">
+<h1>Abstract<a class="headerlink" href="#abstract" title="Permalink to this headline"></a></h1>
+<p><strong>DeeProb-kit</strong> is a general-purpose Python library providing a collection of deep probabilistic models (DPMs) which
+are easy to use and extend.
+It also includes efficiently implemented learning techniques, inference routines and statistical algorithms.
+The availability of a representative selection of the most common DPMs in a single library makes it possible to combine
+them in a straightforward manner, a common practice in deep learning research nowadays, which however is still missing
+for certain class of models.
+Moreover, <strong>DeeProb-kit</strong> provides high-quality fully-documented APIs, and it will help the community to accelerate research
+on DPMs as well as improve experiments’ reproducibility.</p>
+</section>
+<section id="features">
+<h1>Features<a class="headerlink" href="#features" title="Permalink to this headline"></a></h1>
+<ul class="simple">
+<li><p>Inference algorithms for SPNs. <sup><a class="reference external" href="#r1">1</a> <a class="reference external" href="#r4">4</a></sup></p></li>
+<li><p>Learning algorithms for SPNs structure. <sup><a class="reference external" href="#r1">1</a> <a class="reference external" href="#r2">2</a> <a class="reference external" href="#r3">3</a> <a class="reference external" href="#r4">4</a> <a class="reference external" href="#r5">5</a></sup></p></li>
+<li><p>Chow-Liu Trees (CLT) as SPN leaves. <sup><a class="reference external" href="#r12">12</a> <a class="reference external" href="#r13">13</a></sup></p></li>
+<li><p>Batch Expectation-Maximization (EM) for SPNs with arbitrarily leaves. <sup><a class="reference external" href="#r14">14</a> <a class="reference external" href="#r15">15</a></sup></p></li>
+<li><p>Structural marginalization and pruning algorithms for SPNs.</p></li>
+<li><p>High-order moments computation for SPNs.</p></li>
+<li><p>JSON I/O operations for SPNs and CLTs. <sup><a class="reference external" href="#r4">4</a></sup></p></li>
+<li><p>Plotting operations based on NetworkX for SPNs and CLTs. <sup><a class="reference external" href="#r4">4</a></sup></p></li>
+<li><p>Randomized And Tensorized SPNs (RAT-SPNs). <sup><a class="reference external" href="#r6">6</a></sup></p></li>
+<li><p>Deep Generalized Convolutional SPNs (DGC-SPNs). <sup><a class="reference external" href="#r11">11</a></sup></p></li>
+<li><p>Masked Autoregressive Flows (MAFs). <sup><a class="reference external" href="#r7">7</a></sup></p></li>
+<li><p>Real Non-Volume-Preserving (RealNVP) flows. <sup><a class="reference external" href="#r8">8</a></sup></p></li>
+<li><p>Non-linear Independent Component Estimation (NICE) flows. <sup><a class="reference external" href="#r9">9</a></sup></p></li>
+</ul>
+<p>The collection of implemented models is summarized in the following table.
+The supported data dimensionality for each model is showed in the <em>Input Dimensionality</em> column.
+Moreover, the <em>Supervised</em> column tells which model is suitable for a supervised learning task,
+other than density estimation task.</p>
+<p>Legend — D: one-dimensional size, C: channels, H: height, W: width.</p>
+<table class="colwidths-auto docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Model</p></th>
+<th class="head"><p>Description</p></th>
+<th class="text-align:center head"><p>Input Dimensionality</p></th>
+<th class="text-align:center head"><p>Supervised</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Binary-CLT</p></td>
+<td><p>Binary Chow-Liu Tree (CLT)</p></td>
+<td class="text-align:center"><p>D</p></td>
+<td class="text-align:center"><p>❌</p></td>
+</tr>
+<tr class="row-odd"><td><p>SPN</p></td>
+<td><p>Vanilla Sum-Product Network</p></td>
+<td class="text-align:center"><p>D</p></td>
+<td class="text-align:center"><p>✔</p></td>
+</tr>
+<tr class="row-even"><td><p>MSPN</p></td>
+<td><p>Mixed Sum-Product Network</p></td>
+<td class="text-align:center"><p>D</p></td>
+<td class="text-align:center"><p>✔</p></td>
+</tr>
+<tr class="row-odd"><td><p>XPC</p></td>
+<td><p>Random Probabilistic Circuit</p></td>
+<td class="text-align:center"><p>D</p></td>
+<td class="text-align:center"><p>✔</p></td>
+</tr>
+<tr class="row-even"><td><p>RAT-SPN</p></td>
+<td><p>Randomized and Tensorized Sum-Product Network</p></td>
+<td class="text-align:center"><p>D</p></td>
+<td class="text-align:center"><p>✔</p></td>
+</tr>
+<tr class="row-odd"><td><p>DGC-SPN</p></td>
+<td><p>Deep Generalized Convolutional Sum-Product Network</p></td>
+<td class="text-align:center"><p>(C, D, D)</p></td>
+<td class="text-align:center"><p>✔</p></td>
+</tr>
+<tr class="row-even"><td><p>MAF</p></td>
+<td><p>Masked Autoregressive Flow</p></td>
+<td class="text-align:center"><p>D</p></td>
+<td class="text-align:center"><p>❌</p></td>
+</tr>
+<tr class="row-odd"><td><p>NICE</p></td>
+<td><p>Non-linear Independent Components Estimation Flow</p></td>
+<td class="text-align:center"><p>D and (C, H, W)</p></td>
+<td class="text-align:center"><p>❌</p></td>
+</tr>
+<tr class="row-even"><td><p>RealNVP</p></td>
+<td><p>Real-valued Non-Volume-Preserving Flow</p></td>
+<td class="text-align:center"><p>D and (C, H, W)</p></td>
+<td class="text-align:center"><p>❌</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="installation">
+<h1>Installation<a class="headerlink" href="#installation" title="Permalink to this headline"></a></h1>
+<p>The library can be installed either from PIP repository or by source code.</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="c1"># Install from PIP repository</span>
+pip install deeprob-kit
+</pre></div>
+</div>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="c1"># Install from `main` git branch</span>
+pip install -e git+https://github.com/deeprob-org/deeprob-kit.git@main#egg<span class="o">=</span>deeprob-kit
+</pre></div>
+</div>
+</section>
+<section id="project-directories">
+<h1>Project Directories<a class="headerlink" href="#project-directories" title="Permalink to this headline"></a></h1>
+<p>The documentation is generated automatically by Sphinx using sources stored in the <a class="reference internal" href="docs.html"><span class="doc std std-doc">docs</span></a> directory.</p>
+<p>A collection of code examples and experiments can be found in the <a class="reference internal" href="examples.html"><span class="doc std std-doc">examples</span></a> and <a class="reference internal" href="experiments.html"><span class="doc std std-doc">experiments</span></a>
+directories respectively.
+Moreover, benchmark code can be found in the <a class="reference internal" href="benchmark.html"><span class="doc std std-doc">benchmark</span></a> directory.</p>
+</section>
+<section id="related-repositories">
+<h1>Related Repositories<a class="headerlink" href="#related-repositories" title="Permalink to this headline"></a></h1>
+<ul class="simple">
+<li><p><a class="reference external" href="https://github.com/SPFlow/SPFlow">SPFlow</a></p></li>
+<li><p><a class="reference external" href="https://github.com/cambridge-mlg/RAT-SPN">RAT-SPN</a></p></li>
+<li><p><a class="reference external" href="https://github.com/gengala/Random-Probabilistic-Circuits">Random-PC</a></p></li>
+<li><p><a class="reference external" href="https://github.com/pronobis/libspn-keras">LibSPN-Keras</a></p></li>
+<li><p><a class="reference external" href="https://github.com/gpapamak/maf">MAF</a></p></li>
+<li><p><a class="reference external" href="https://github.com/chrischute/real-nvp">RealNVP</a></p></li>
+</ul>
+</section>
+<section id="references">
+<h1>References<a class="headerlink" href="#references" title="Permalink to this headline"></a></h1>
+<p><b id="r1">1.</b> Peharz et al. <a class="reference external" href="http://proceedings.mlr.press/v38/peharz15.pdf"><em>On Theoretical Properties of Sum-Product Networks</em></a>. AISTATS (2015).</p>
+<p><b id="r2">2.</b> Poon and Domingos. <a class="reference external" href="https://arxiv.org/pdf/1202.3732.pdf"><em>Sum-Product Networks: A New Deep Architecture</em></a>. UAI (2011).</p>
+<p><b id="r3">3.</b> Molina, Vergari et al. <a class="reference external" href="https://www.aaai.org/ocs/index.php/AAAI/AAAI18/paper/viewFile/16865/16619"><em>Mixed Sum-Product Networks: A Deep Architecture for Hybrid Domains</em></a>. AAAI (2018).</p>
+<p><b id="r4">4.</b> Molina, Vergari et al. <a class="reference external" href="https://arxiv.org/pdf/1901.03704.pdf"><em>SPFLOW : An easy and extensible library for deep probabilistic learning using Sum-Product Networks</em></a>. CoRR (2019).</p>
+<p><b id="r5">5.</b> Di Mauro et al. <a class="reference external" href="http://www.di.uniba.it/~ndm/pubs/dimauro18ia.pdf"><em>Sum-Product Network structure learning by efficient product nodes discovery</em></a>. AIxIA (2018).</p>
+<p><b id="r6">6.</b> Peharz et al. <a class="reference external" href="http://proceedings.mlr.press/v115/peharz20a/peharz20a.pdf"><em>Probabilistic Deep Learning using Random Sum-Product Networks</em></a>. UAI (2020).</p>
+<p><b id="r7">7.</b> Papamakarios et al. <a class="reference external" href="https://proceedings.neurips.cc/paper/2017/file/6c1da886822c67822bcf3679d04369fa-Paper.pdf"><em>Masked Autoregressive Flow for Density Estimation</em></a>. NeurIPS (2017).</p>
+<p><b id="r8">8.</b> Dinh et al. <a class="reference external" href="https://arxiv.org/pdf/1605.08803v3.pdf"><em>Density Estimation using RealNVP</em></a>. ICLR (2017).</p>
+<p><b id="r9">9.</b> Dinh et al. <a class="reference external" href="https://arxiv.org/pdf/1410.8516.pdf"><em>NICE: Non-linear Independent Components Estimation</em></a>. ICLR (2015).</p>
+<p><b id="r10">10.</b> Papamakarios, Nalisnick et al. <a class="reference external" href="https://www.jmlr.org/papers/volume22/19-1028/19-1028.pdf"><em>Normalizing Flows for Probabilistic Modeling and Inference</em></a>. JMLR (2021).</p>
+<p><b id="r11">11.</b> Van de Wolfshaar and Pronobis. <a class="reference external" href="http://proceedings.mlr.press/v138/wolfshaar20a/wolfshaar20a.pdf"><em>Deep Generalized Convolutional Sum-Product Networks for Probabilistic Image Representations</em></a>. PGM (2020).</p>
+<p><b id="r12">12.</b> Rahman et al. <a class="reference external" href="https://link.springer.com/content/pdf/10.1007%2F978-3-662-44851-9_40.pdf"><em>Cutset Networks: A Simple, Tractable, and Scalable Approach for Improving the Accuracy of Chow-Liu Trees</em></a>. ECML-PKDD (2014).</p>
+<p><b id="r13">13.</b> Di Mauro, Gala et al. <a class="reference external" href="https://openreview.net/pdf?id=xzn1RVTCyB"><em>Random Probabilistic Circuits</em></a>. UAI (2021).</p>
+<p><b id="r14">14.</b> Desana and Schnörr. <a class="reference external" href="https://arxiv.org/pdf/1604.07243.pdf"><em>Learning Arbitrary Sum-Product Network Leaves with Expectation-Maximization</em></a>. CoRR (2016).</p>
+<p><b id="r15">15.</b> Peharz et al. <a class="reference external" href="http://proceedings.mlr.press/v119/peharz20a/peharz20a.pdf"><em>Einsum Networks: Fast and Scalable Learning of Tractable Probabilistic Circuits</em></a>. ICML (2020).</p>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../index.html" class="btn btn-neutral float-left" title="A Python library for Deep Probabilistic Modeling" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="docs.html" class="btn btn-neutral float-right" title="Documentation" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, Lorenzo Loconte, Gennaro Gala.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    <span class="fa fa-book"> Other Versions</span>
+    v: main
+    <span class="fa fa-caret-down"></span>
+  </span>
+  <div class="rst-other-versions">
+    <dl>
+      <dt>Tags</dt>
+      <dd><a href="../../v1.0.0/index.html">v1.0.0</a></dd>
+      <dd><a href="../../v1.1.0/markdown/home.html">v1.1.0</a></dd>
+    </dl>
+    <dl>
+      <dt>Branches</dt>
+      <dd><a href="home.html">main</a></dd>
+    </dl>
+  </div>
+</div><script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>deeprob.spn.learning.leaf &mdash; DeeProb-kit 1.0.0 documentation</title>
+      <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../../_static/css/custom.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js"></script>
+        <script src="../../../../_static/jquery.js"></script>
+        <script src="../../../../_static/underscore.js"></script>
+        <script src="../../../../_static/doctools.js"></script>
+    <script src="../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../../../index.html" class="icon icon-home"> DeeProb-kit
+            <img src="../../../../_static/deeprob-logo-minimal.svg" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Read Me</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../markdown/home.html">Abstract</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../markdown/home.html#features">Features</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../markdown/home.html#installation">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../markdown/home.html#project-directories">Project Directories</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../markdown/home.html#related-repositories">Related Repositories</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../markdown/home.html#references">References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../markdown/docs.html">Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../markdown/examples.html">Code Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../markdown/experiments.html">Experiments</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../markdown/benchmark.html">Benchmark</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Modules</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../api/deeprob.html">deeprob package</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">DeeProb-kit</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="../../../index.html">Module code</a> &raquo;</li>
+      <li>deeprob.spn.learning.leaf</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for deeprob.spn.learning.leaf</h1><div class="highlight"><pre>
+<span></span><span class="c1"># MIT License: Copyright (c) 2021 Lorenzo Loconte, Gennaro Gala</span>
+
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Type</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Any</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="kn">from</span> <span class="nn">deeprob.utils.random</span> <span class="kn">import</span> <span class="n">RandomState</span>
+<span class="kn">from</span> <span class="nn">deeprob.spn.structure.node</span> <span class="kn">import</span> <span class="n">Node</span><span class="p">,</span> <span class="n">Product</span>
+<span class="kn">from</span> <span class="nn">deeprob.spn.structure.leaf</span> <span class="kn">import</span> <span class="n">LeafType</span><span class="p">,</span> <span class="n">Leaf</span><span class="p">,</span> <span class="n">Bernoulli</span><span class="p">,</span> <span class="n">Isotonic</span>
+<span class="kn">from</span> <span class="nn">deeprob.spn.structure.cltree</span> <span class="kn">import</span> <span class="n">BinaryCLT</span>
+
+<span class="c1">#: A signature for a learn SPN leaf function.</span>
+<span class="n">LearnLeafFunc</span> <span class="o">=</span> <span class="n">Callable</span><span class="p">[</span>
+    <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>                <span class="c1"># The data</span>
+     <span class="n">List</span><span class="p">[</span><span class="n">Type</span><span class="p">[</span><span class="n">Leaf</span><span class="p">]],</span>          <span class="c1"># The distributions</span>
+     <span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">]],</span>  <span class="c1"># The domains</span>
+     <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span>                 <span class="c1"># The scope</span>
+     <span class="n">Any</span><span class="p">],</span>                      <span class="c1"># Other arguments</span>
+    <span class="n">Node</span>                        <span class="c1"># A SPN node</span>
+<span class="p">]</span>
+
+
+<div class="viewcode-block" id="get_learn_leaf_method"><a class="viewcode-back" href="../../../../api/deeprob.spn.learning.html#deeprob.spn.learning.leaf.get_learn_leaf_method">[docs]</a><span class="k">def</span> <span class="nf">get_learn_leaf_method</span><span class="p">(</span><span class="n">learn_leaf</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">LearnLeafFunc</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Get the learn leaf method.</span>
+
+<span class="sd">    :param learn_leaf: The learn leaf method string to use.</span>
+<span class="sd">    :return: A learn leaf function.</span>
+<span class="sd">    :raises ValueError: If the leaf learning method is unknown.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">learn_leaf</span> <span class="o">==</span> <span class="s1">&#39;mle&#39;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">learn_mle</span>
+    <span class="k">if</span> <span class="n">learn_leaf</span> <span class="o">==</span> <span class="s1">&#39;isotonic&#39;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">learn_isotonic</span>
+    <span class="k">if</span> <span class="n">learn_leaf</span> <span class="o">==</span> <span class="s1">&#39;binary-clt&#39;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">learn_binary_clt</span>
+    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Unknown learn leaf method called </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">learn_leaf</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="learn_mle"><a class="viewcode-back" href="../../../../api/deeprob.spn.learning.html#deeprob.spn.learning.leaf.learn_mle">[docs]</a><span class="k">def</span> <span class="nf">learn_mle</span><span class="p">(</span>
+    <span class="n">data</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+    <span class="n">distributions</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Type</span><span class="p">[</span><span class="n">Leaf</span><span class="p">]],</span>
+    <span class="n">domains</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">]],</span>
+    <span class="n">scope</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span>
+    <span class="n">alpha</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.1</span><span class="p">,</span>
+    <span class="n">random_state</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">RandomState</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Node</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Learn a leaf using Maximum Likelihood Estimate (MLE).</span>
+<span class="sd">    If the data is multivariate, a naive factorized model is learned.</span>
+
+<span class="sd">    :param data: The data, where each column correspond to a random variable.</span>
+<span class="sd">    :param distributions: The distributions of the random variables.</span>
+<span class="sd">    :param domains: The domains of the random variables.</span>
+<span class="sd">    :param scope: The scope of the leaf.</span>
+<span class="sd">    :param alpha: Laplace smoothing factor.</span>
+<span class="sd">    :param random_state: The random state. It can be None.</span>
+<span class="sd">    :return: A leaf distribution.</span>
+<span class="sd">    :raises ValueError: If there are inconsistencies between the data, distributions and domains.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">scope</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">distributions</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">domains</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">distributions</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Each data column should correspond to a random variable having a distribution and a domain&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">scope</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">sc</span><span class="p">,</span> <span class="n">dist</span><span class="p">,</span> <span class="n">dom</span> <span class="o">=</span> <span class="n">scope</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">distributions</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">domains</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">leaf</span> <span class="o">=</span> <span class="n">dist</span><span class="p">(</span><span class="n">sc</span><span class="p">)</span>
+        <span class="n">leaf</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">dom</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="n">alpha</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">leaf</span>
+
+    <span class="k">return</span> <span class="n">learn_naive_factorization</span><span class="p">(</span>
+        <span class="n">data</span><span class="p">,</span> <span class="n">distributions</span><span class="p">,</span> <span class="n">domains</span><span class="p">,</span> <span class="n">scope</span><span class="p">,</span> <span class="n">learn_mle</span><span class="p">,</span>
+        <span class="n">alpha</span><span class="o">=</span><span class="n">alpha</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="n">random_state</span>
+    <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="learn_isotonic"><a class="viewcode-back" href="../../../../api/deeprob.spn.learning.html#deeprob.spn.learning.leaf.learn_isotonic">[docs]</a><span class="k">def</span> <span class="nf">learn_isotonic</span><span class="p">(</span>
+    <span class="n">data</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+    <span class="n">distributions</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Type</span><span class="p">[</span><span class="n">Leaf</span><span class="p">]],</span>
+    <span class="n">domains</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">]],</span>
+    <span class="n">scope</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span>
+    <span class="n">alpha</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.1</span><span class="p">,</span>
+    <span class="n">random_state</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">RandomState</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Node</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Learn a leaf using Isotonic method.</span>
+<span class="sd">    If the data is multivariate, a naive factorized model is learned.</span>
+
+<span class="sd">    :param data: The data.</span>
+<span class="sd">    :param distributions: The distribution of the random variables.</span>
+<span class="sd">    :param domains: The domain of the random variables.</span>
+<span class="sd">    :param scope: The scope of the leaf.</span>
+<span class="sd">    :param alpha: Laplace smoothing factor.</span>
+<span class="sd">    :param random_state: The random sate. It can be None.</span>
+<span class="sd">    :return: A leaf distribution.</span>
+<span class="sd">    :raises ValueError: If there are inconsistencies between the data, distributions and domains.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">scope</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">distributions</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">domains</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">distributions</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Each data column should correspond to a random variable having a distribution and a domain&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">scope</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">sc</span><span class="p">,</span> <span class="n">dist</span><span class="p">,</span> <span class="n">dom</span> <span class="o">=</span> <span class="n">scope</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">distributions</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">domains</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">leaf</span> <span class="o">=</span> <span class="n">Isotonic</span><span class="p">(</span><span class="n">sc</span><span class="p">)</span> <span class="k">if</span> <span class="n">dist</span><span class="o">.</span><span class="n">LEAF_TYPE</span> <span class="o">==</span> <span class="n">LeafType</span><span class="o">.</span><span class="n">CONTINUOUS</span> <span class="k">else</span> <span class="n">dist</span><span class="p">(</span><span class="n">sc</span><span class="p">)</span>
+        <span class="n">leaf</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">dom</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="n">alpha</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">leaf</span>
+
+    <span class="k">return</span> <span class="n">learn_naive_factorization</span><span class="p">(</span>
+        <span class="n">data</span><span class="p">,</span> <span class="n">distributions</span><span class="p">,</span> <span class="n">domains</span><span class="p">,</span> <span class="n">scope</span><span class="p">,</span> <span class="n">learn_isotonic</span><span class="p">,</span>
+        <span class="n">alpha</span><span class="o">=</span><span class="n">alpha</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="n">random_state</span>
+    <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="learn_binary_clt"><a class="viewcode-back" href="../../../../api/deeprob.spn.learning.html#deeprob.spn.learning.leaf.learn_binary_clt">[docs]</a><span class="k">def</span> <span class="nf">learn_binary_clt</span><span class="p">(</span>
+    <span class="n">data</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+    <span class="n">distributions</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Type</span><span class="p">[</span><span class="n">Leaf</span><span class="p">]],</span>
+    <span class="n">domains</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">]],</span>
+    <span class="n">scope</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span>
+    <span class="n">to_pc</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="n">alpha</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.1</span><span class="p">,</span>
+    <span class="n">random_state</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">RandomState</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Node</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Learn a leaf using a Binary Chow-Liu Tree (CLT).</span>
+<span class="sd">    If the data is univariate, a Maximum Likelihood Estimate (MLE) leaf is returned.</span>
+
+<span class="sd">    :param data: The data.</span>
+<span class="sd">    :param distributions: The distributions of the random variables.</span>
+<span class="sd">    :param domains: The domains of the random variables.</span>
+<span class="sd">    :param scope: The scope of the leaf.</span>
+<span class="sd">    :param to_pc: Whether to convert the CLT into an equivalent PC.</span>
+<span class="sd">    :param alpha: Laplace smoothing factor.</span>
+<span class="sd">    :param random_state: The random state. It can be None.</span>
+<span class="sd">    :return: A leaf distribution.</span>
+<span class="sd">    :raises ValueError: If there are inconsistencies between the data, distributions and domains.</span>
+<span class="sd">    :raises ValueError: If the data doesn&#39;t follow a Bernoulli distribution.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">scope</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">distributions</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">domains</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">distributions</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Each data column should correspond to a random variable having a distribution and a domain&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">d</span> <span class="o">!=</span> <span class="n">Bernoulli</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">distributions</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Binary Chow-Liu trees are only available for Bernoulli data&quot;</span><span class="p">)</span>
+
+    <span class="c1"># If univariate, learn using MLE instead</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">scope</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">learn_mle</span><span class="p">(</span>
+            <span class="n">data</span><span class="p">,</span> <span class="n">distributions</span><span class="p">,</span> <span class="n">domains</span><span class="p">,</span> <span class="n">scope</span><span class="p">,</span>
+            <span class="n">alpha</span><span class="o">=</span><span class="n">alpha</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="n">random_state</span>
+        <span class="p">)</span>
+
+    <span class="c1"># If multivariate, learn a binary CLTree</span>
+    <span class="n">leaf</span> <span class="o">=</span> <span class="n">BinaryCLT</span><span class="p">(</span><span class="n">scope</span><span class="p">)</span>
+    <span class="n">leaf</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">domains</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="n">alpha</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="n">random_state</span><span class="p">)</span>
+
+    <span class="c1"># Make the conversion to a probabilistic circuit, if specified</span>
+    <span class="k">if</span> <span class="n">to_pc</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">leaf</span><span class="o">.</span><span class="n">to_pc</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">leaf</span></div>
+
+
+<div class="viewcode-block" id="learn_naive_factorization"><a class="viewcode-back" href="../../../../api/deeprob.spn.learning.html#deeprob.spn.learning.leaf.learn_naive_factorization">[docs]</a><span class="k">def</span> <span class="nf">learn_naive_factorization</span><span class="p">(</span>
+    <span class="n">data</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+    <span class="n">distributions</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Type</span><span class="p">[</span><span class="n">Leaf</span><span class="p">]],</span>
+    <span class="n">domains</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">]],</span>
+    <span class="n">scope</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span>
+    <span class="n">learn_leaf_func</span><span class="p">:</span> <span class="n">LearnLeafFunc</span><span class="p">,</span>
+    <span class="o">**</span><span class="n">learn_leaf_kwargs</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Node</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Learn a leaf as a naive factorized model.</span>
+
+<span class="sd">    :param data: The data.</span>
+<span class="sd">    :param distributions: The distribution of the random variables.</span>
+<span class="sd">    :param domains: The domain of the random variables.</span>
+<span class="sd">    :param scope: The scope of the leaf.</span>
+<span class="sd">    :param learn_leaf_func: The function to use to learn the sub-distributions parameters.</span>
+<span class="sd">    :param learn_leaf_kwargs: Additional parameters for learn_leaf_func.</span>
+<span class="sd">    :return: A naive factorized model.</span>
+<span class="sd">    :raises ValueError: If there are inconsistencies between the data, distributions and domains.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">scope</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">distributions</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">domains</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">distributions</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Each data column should correspond to a random variable having a distribution and a domain&quot;</span><span class="p">)</span>
+
+    <span class="n">node</span> <span class="o">=</span> <span class="n">Product</span><span class="p">(</span><span class="n">scope</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">s</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">scope</span><span class="p">):</span>
+        <span class="n">leaf</span> <span class="o">=</span> <span class="n">learn_leaf_func</span><span class="p">(</span><span class="n">data</span><span class="p">[:,</span> <span class="p">[</span><span class="n">i</span><span class="p">]],</span> <span class="p">[</span><span class="n">distributions</span><span class="p">[</span><span class="n">i</span><span class="p">]],</span> <span class="p">[</span><span class="n">domains</span><span class="p">[</span><span class="n">i</span><span class="p">]],</span> <span class="p">[</span><span class="n">s</span><span class="p">],</span> <span class="o">**</span><span class="n">learn_leaf_kwargs</span><span class="p">)</span>
+        <span class="n">leaf</span><span class="o">.</span><span class="n">id</span> <span class="o">=</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">1</span>  <span class="c1"># Set the leaves ids sequentially</span>
+        <span class="n">node</span><span class="o">.</span><span class="n">children</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">leaf</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">node</span></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, Lorenzo Loconte, Gennaro Gala.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    <span class="fa fa-book"> Other Versions</span>
+    v: v1.1.0
+    <span class="fa fa-caret-down"></span>
+  </span>
+  <div class="rst-other-versions">
+    <dl>
+      <dt>Tags</dt>
+      <dd><a href="../../../../../v1.0.0/index.html">v1.0.0</a></dd>
+      <dd><a href="leaf.html">v1.1.0</a></dd>
+    </dl>
+    <dl>
+      <dt>Branches</dt>
+      <dd><a href="../../../../../main/index.html">main</a></dd>
+    </dl>
+  </div>
+</div><script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

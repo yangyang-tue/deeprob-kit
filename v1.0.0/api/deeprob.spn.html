@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>deeprob.spn package &mdash; DeeProb-kit 0.6.4 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/custom.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="deeprob.spn.algorithms package" href="deeprob.spn.algorithms.html" />
+    <link rel="prev" title="deeprob.flows.models package" href="deeprob.flows.models.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> DeeProb-kit
+            <img src="../_static/deeprob-logo-minimal.svg" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Read Me</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../home.html">Abstract</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../home.html#features">Features</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../home.html#installation-documentation">Installation &amp; Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../home.html#datasets-and-experiments">Datasets and Experiments</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../home.html#code-examples">Code Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../home.html#related-repositories">Related Repositories</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../home.html#references">References</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Modules</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="deeprob.html">deeprob package</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="deeprob.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="deeprob.flows.html">deeprob.flows package</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">deeprob.spn package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#subpackages">Subpackages</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="deeprob.spn.algorithms.html">deeprob.spn.algorithms package</a></li>
+<li class="toctree-l5"><a class="reference internal" href="deeprob.spn.layers.html">deeprob.spn.layers package</a></li>
+<li class="toctree-l5"><a class="reference internal" href="deeprob.spn.learning.html">deeprob.spn.learning package</a></li>
+<li class="toctree-l5"><a class="reference internal" href="deeprob.spn.models.html">deeprob.spn.models package</a></li>
+<li class="toctree-l5"><a class="reference internal" href="deeprob.spn.structure.html">deeprob.spn.structure package</a></li>
+<li class="toctree-l5"><a class="reference internal" href="deeprob.spn.utils.html">deeprob.spn.utils package</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="#module-deeprob.spn">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="deeprob.torch.html">deeprob.torch package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="deeprob.utils.html">deeprob.utils package</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="deeprob.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="deeprob.html#module-deeprob.context">deeprob.context module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="deeprob.html#module-deeprob">Module contents</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">DeeProb-kit</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="deeprob.html">deeprob package</a> &raquo;</li>
+      <li>deeprob.spn package</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/api/deeprob.spn.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="deeprob-spn-package">
+<h1>deeprob.spn package<a class="headerlink" href="#deeprob-spn-package" title="Permalink to this headline"></a></h1>
+<section id="subpackages">
+<h2>Subpackages<a class="headerlink" href="#subpackages" title="Permalink to this headline"></a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="deeprob.spn.algorithms.html">deeprob.spn.algorithms package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="deeprob.spn.algorithms.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="deeprob.spn.algorithms.html#module-deeprob.spn.algorithms.evaluation">deeprob.spn.algorithms.evaluation module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="deeprob.spn.algorithms.html#module-deeprob.spn.algorithms.gradient">deeprob.spn.algorithms.gradient module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="deeprob.spn.algorithms.html#module-deeprob.spn.algorithms.inference">deeprob.spn.algorithms.inference module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="deeprob.spn.algorithms.html#module-deeprob.spn.algorithms.moments">deeprob.spn.algorithms.moments module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="deeprob.spn.algorithms.html#module-deeprob.spn.algorithms.sampling">deeprob.spn.algorithms.sampling module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="deeprob.spn.algorithms.html#module-deeprob.spn.algorithms.structure">deeprob.spn.algorithms.structure module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="deeprob.spn.algorithms.html#module-deeprob.spn.algorithms">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="deeprob.spn.layers.html">deeprob.spn.layers package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="deeprob.spn.layers.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="deeprob.spn.layers.html#module-deeprob.spn.layers.dgcspn">deeprob.spn.layers.dgcspn module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="deeprob.spn.layers.html#module-deeprob.spn.layers.ratspn">deeprob.spn.layers.ratspn module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="deeprob.spn.layers.html#module-deeprob.spn.layers">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="deeprob.spn.learning.html">deeprob.spn.learning package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="deeprob.spn.learning.html#subpackages">Subpackages</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="deeprob.spn.learning.splitting.html">deeprob.spn.learning.splitting package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="deeprob.spn.learning.splitting.html#submodules">Submodules</a></li>
+<li class="toctree-l4"><a class="reference internal" href="deeprob.spn.learning.splitting.html#module-deeprob.spn.learning.splitting.cluster">deeprob.spn.learning.splitting.cluster module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="deeprob.spn.learning.splitting.html#module-deeprob.spn.learning.splitting.cols">deeprob.spn.learning.splitting.cols module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="deeprob.spn.learning.splitting.html#module-deeprob.spn.learning.splitting.gvs">deeprob.spn.learning.splitting.gvs module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="deeprob.spn.learning.splitting.html#module-deeprob.spn.learning.splitting.random">deeprob.spn.learning.splitting.random module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="deeprob.spn.learning.splitting.html#module-deeprob.spn.learning.splitting.rdc">deeprob.spn.learning.splitting.rdc module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="deeprob.spn.learning.splitting.html#module-deeprob.spn.learning.splitting.rows">deeprob.spn.learning.splitting.rows module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="deeprob.spn.learning.splitting.html#module-deeprob.spn.learning.splitting">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="deeprob.spn.learning.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="deeprob.spn.learning.html#module-deeprob.spn.learning.em">deeprob.spn.learning.em module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="deeprob.spn.learning.html#module-deeprob.spn.learning.leaf">deeprob.spn.learning.leaf module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="deeprob.spn.learning.html#module-deeprob.spn.learning.learnspn">deeprob.spn.learning.learnspn module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="deeprob.spn.learning.html#module-deeprob.spn.learning.wrappers">deeprob.spn.learning.wrappers module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="deeprob.spn.learning.html#module-deeprob.spn.learning.xpc">deeprob.spn.learning.xpc module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="deeprob.spn.learning.html#module-deeprob.spn.learning">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="deeprob.spn.models.html">deeprob.spn.models package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="deeprob.spn.models.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="deeprob.spn.models.html#module-deeprob.spn.models.dgcspn">deeprob.spn.models.dgcspn module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="deeprob.spn.models.html#module-deeprob.spn.models.ratspn">deeprob.spn.models.ratspn module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="deeprob.spn.models.html#module-deeprob.spn.models.sklearn">deeprob.spn.models.sklearn module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="deeprob.spn.models.html#module-deeprob.spn.models">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="deeprob.spn.structure.html">deeprob.spn.structure package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="deeprob.spn.structure.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="deeprob.spn.structure.html#module-deeprob.spn.structure.cltree">deeprob.spn.structure.cltree module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="deeprob.spn.structure.html#module-deeprob.spn.structure.io">deeprob.spn.structure.io module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="deeprob.spn.structure.html#module-deeprob.spn.structure.leaf">deeprob.spn.structure.leaf module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="deeprob.spn.structure.html#module-deeprob.spn.structure.node">deeprob.spn.structure.node module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="deeprob.spn.structure.html#module-deeprob.spn.structure">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="deeprob.spn.utils.html">deeprob.spn.utils package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="deeprob.spn.utils.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="deeprob.spn.utils.html#module-deeprob.spn.utils.filter">deeprob.spn.utils.filter module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="deeprob.spn.utils.html#module-deeprob.spn.utils.partitioning">deeprob.spn.utils.partitioning module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="deeprob.spn.utils.html#module-deeprob.spn.utils.statistics">deeprob.spn.utils.statistics module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="deeprob.spn.utils.html#module-deeprob.spn.utils.validity">deeprob.spn.utils.validity module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="deeprob.spn.utils.html#module-deeprob.spn.utils">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</section>
+<section id="module-deeprob.spn">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-deeprob.spn" title="Permalink to this headline"></a></h2>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="deeprob.flows.models.html" class="btn btn-neutral float-left" title="deeprob.flows.models package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="deeprob.spn.algorithms.html" class="btn btn-neutral float-right" title="deeprob.spn.algorithms package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, Lorenzo Loconte, Gennaro Gala.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    <span class="fa fa-book"> Other Versions</span>
+    v: v1.0.0
+    <span class="fa fa-caret-down"></span>
+  </span>
+  <div class="rst-other-versions">
+    <dl>
+      <dt>Tags</dt>
+      <dd><a href="deeprob.spn.html">v1.0.0</a></dd>
+      <dd><a href="../../v1.1.0/index.html">v1.1.0</a></dd>
+    </dl>
+    <dl>
+      <dt>Branches</dt>
+      <dd><a href="../../main/index.html">main</a></dd>
+    </dl>
+  </div>
+</div><script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

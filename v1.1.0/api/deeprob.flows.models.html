@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>deeprob.flows.models package &mdash; DeeProb-kit 1.0.0 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/custom.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="deeprob.spn package" href="deeprob.spn.html" />
+    <link rel="prev" title="deeprob.flows.layers package" href="deeprob.flows.layers.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> DeeProb-kit
+            <img src="../_static/deeprob-logo-minimal.svg" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Read Me</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../markdown/home.html">Abstract</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../markdown/home.html#features">Features</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../markdown/home.html#installation">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../markdown/home.html#project-directories">Project Directories</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../markdown/home.html#related-repositories">Related Repositories</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../markdown/home.html#references">References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../markdown/docs.html">Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../markdown/examples.html">Code Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../markdown/experiments.html">Experiments</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../markdown/benchmark.html">Benchmark</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Modules</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="deeprob.html">deeprob package</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="deeprob.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="deeprob.flows.html">deeprob.flows package</a><ul class="current">
+<li class="toctree-l4 current"><a class="reference internal" href="deeprob.flows.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l5"><a class="reference internal" href="deeprob.flows.layers.html">deeprob.flows.layers package</a></li>
+<li class="toctree-l5 current"><a class="current reference internal" href="#">deeprob.flows.models package</a><ul>
+<li class="toctree-l6"><a class="reference internal" href="#submodules">Submodules</a></li>
+<li class="toctree-l6"><a class="reference internal" href="#module-deeprob.flows.models.base">deeprob.flows.models.base module</a></li>
+<li class="toctree-l6"><a class="reference internal" href="#module-deeprob.flows.models.maf">deeprob.flows.models.maf module</a></li>
+<li class="toctree-l6"><a class="reference internal" href="#module-deeprob.flows.models.realnvp">deeprob.flows.models.realnvp module</a></li>
+<li class="toctree-l6"><a class="reference internal" href="#module-deeprob.flows.models">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="deeprob.flows.html#submodules">Submodules</a></li>
+<li class="toctree-l4"><a class="reference internal" href="deeprob.flows.html#module-deeprob.flows.utils">deeprob.flows.utils module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="deeprob.flows.html#module-deeprob.flows">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="deeprob.spn.html">deeprob.spn package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="deeprob.torch.html">deeprob.torch package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="deeprob.utils.html">deeprob.utils package</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="deeprob.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="deeprob.html#module-deeprob.context">deeprob.context module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="deeprob.html#module-deeprob">Module contents</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">DeeProb-kit</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="deeprob.html">deeprob package</a> &raquo;</li>
+          <li><a href="deeprob.flows.html">deeprob.flows package</a> &raquo;</li>
+      <li>deeprob.flows.models package</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/api/deeprob.flows.models.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="deeprob-flows-models-package">
+<h1>deeprob.flows.models package<a class="headerlink" href="#deeprob-flows-models-package" title="Permalink to this headline"></a></h1>
+<section id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline"></a></h2>
+</section>
+<section id="module-deeprob.flows.models.base">
+<span id="deeprob-flows-models-base-module"></span><h2>deeprob.flows.models.base module<a class="headerlink" href="#module-deeprob.flows.models.base" title="Permalink to this headline"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="deeprob.flows.models.base.NormalizingFlow">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">deeprob.flows.models.base.</span></span><span class="sig-name descname"><span class="pre">NormalizingFlow</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">in_features</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dequantize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">in_base</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprob/flows/models/base.html#NormalizingFlow"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#deeprob.flows.models.base.NormalizingFlow" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="deeprob.torch.html#deeprob.torch.base.ProbabilisticModel" title="deeprob.torch.base.ProbabilisticModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">deeprob.torch.base.ProbabilisticModel</span></code></a></p>
+<p>Initialize an abstract Normalizing Flow model.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>in_features</strong> – The input size.</p></li>
+<li><p><strong>dequantize</strong> (<em>bool</em>) – Whether to apply the dequantization transformation.</p></li>
+<li><p><strong>logit</strong> (<em>Optional</em><em>[</em><em>float</em><em>]</em>) – The logit factor to use. Use None to disable the logit transformation.</p></li>
+<li><p><strong>in_base</strong> (<em>Optional</em><em>[</em><em>Union</em><em>[</em><a class="reference internal" href="deeprob.torch.html#deeprob.torch.base.ProbabilisticModel" title="deeprob.torch.base.ProbabilisticModel"><em>deeprob.torch.base.ProbabilisticModel</em></a><em>, </em><em>torch.distributions.distribution.Distribution</em><em>]</em><em>]</em>) – The input base distribution to use. If None, the standard Normal distribution is used.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>ValueError</strong> – If the number of input features is invalid.</p></li>
+<li><p><strong>ValueError</strong> – If the logit value is invalid.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="deeprob.flows.models.base.NormalizingFlow.train">
+<span class="sig-name descname"><span class="pre">train</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">base_mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprob/flows/models/base.html#NormalizingFlow.train"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#deeprob.flows.models.base.NormalizingFlow.train" title="Permalink to this definition"></a></dt>
+<dd><p>Set the training mode.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>mode</strong> (<em>bool</em>) – The training mode for the flows layers.</p></li>
+<li><p><strong>base_mode</strong> (<em>bool</em>) – The training mode for the in_base distribution.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Itself.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="deeprob.flows.models.base.NormalizingFlow.eval">
+<span class="sig-name descname"><span class="pre">eval</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprob/flows/models/base.html#NormalizingFlow.eval"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#deeprob.flows.models.base.NormalizingFlow.eval" title="Permalink to this definition"></a></dt>
+<dd><p>Turn off the training mode for both the flows layers and the in_base distribution.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>Itself.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="deeprob.flows.models.base.NormalizingFlow.preprocess">
+<span class="sig-name descname"><span class="pre">preprocess</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprob/flows/models/base.html#NormalizingFlow.preprocess"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#deeprob.flows.models.base.NormalizingFlow.preprocess" title="Permalink to this definition"></a></dt>
+<dd><p>Preprocess the data batch before feeding it to the probabilistic model (forward mode).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>x</strong> (<em>torch.Tensor</em>) – The input data batch.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The preprocessed data batch and the inv-log-det-jacobian.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>Tuple[torch.Tensor, torch.Tensor]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="deeprob.flows.models.base.NormalizingFlow.unpreprocess">
+<span class="sig-name descname"><span class="pre">unpreprocess</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprob/flows/models/base.html#NormalizingFlow.unpreprocess"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#deeprob.flows.models.base.NormalizingFlow.unpreprocess" title="Permalink to this definition"></a></dt>
+<dd><p>Preprocess the data batch before feeding it to the probabilistic model (backward mode).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>x</strong> (<em>torch.Tensor</em>) – The input data batch.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The unpreprocessed data batch and the log-det-jacobian.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>Tuple[torch.Tensor, torch.Tensor]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="deeprob.flows.models.base.NormalizingFlow.forward">
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprob/flows/models/base.html#NormalizingFlow.forward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#deeprob.flows.models.base.NormalizingFlow.forward" title="Permalink to this definition"></a></dt>
+<dd><p>Compute the log-likelihood given complete evidence.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>x</strong> (<em>torch.Tensor</em>) – The inputs.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The log-likelihoods.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>torch.Tensor</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="deeprob.flows.models.base.NormalizingFlow.sample">
+<span class="sig-name descname"><span class="pre">sample</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_samples</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprob/flows/models/base.html#NormalizingFlow.sample"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#deeprob.flows.models.base.NormalizingFlow.sample" title="Permalink to this definition"></a></dt>
+<dd><p>Sample some values from the modeled distribution.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>n_samples</strong> (<em>int</em>) – The number of samples.</p></li>
+<li><p><strong>y</strong> (<em>Optional</em><em>[</em><em>torch.Tensor</em><em>]</em>) – The samples labels. It can be None.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The samples.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>torch.Tensor</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="deeprob.flows.models.base.NormalizingFlow.apply_backward">
+<span class="sig-name descname"><span class="pre">apply_backward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprob/flows/models/base.html#NormalizingFlow.apply_backward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#deeprob.flows.models.base.NormalizingFlow.apply_backward" title="Permalink to this definition"></a></dt>
+<dd><p>Apply the backward transformation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>x</strong> (<em>torch.Tensor</em>) – The inputs.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The transformed samples and the backward log-det-jacobian.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>Tuple[torch.Tensor, torch.Tensor]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="deeprob.flows.models.base.NormalizingFlow.training">
+<span class="sig-name descname"><span class="pre">training</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#deeprob.flows.models.base.NormalizingFlow.training" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="deeprob.flows.models.base.NormalizingFlow.apply_forward">
+<span class="sig-name descname"><span class="pre">apply_forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprob/flows/models/base.html#NormalizingFlow.apply_forward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#deeprob.flows.models.base.NormalizingFlow.apply_forward" title="Permalink to this definition"></a></dt>
+<dd><p>Apply the forward transformation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>x</strong> (<em>torch.Tensor</em>) – the inputs.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The transformed samples and the forward log-det-jacobian.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>Tuple[torch.Tensor, torch.Tensor]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="deeprob.flows.models.base.NormalizingFlow.loss">
+<span class="sig-name descname"><span class="pre">loss</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprob/flows/models/base.html#NormalizingFlow.loss"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#deeprob.flows.models.base.NormalizingFlow.loss" title="Permalink to this definition"></a></dt>
+<dd><p>Compute the loss of the model.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> (<em>torch.Tensor</em>) – The outputs of the model.</p></li>
+<li><p><strong>y</strong> (<em>Optional</em><em>[</em><em>torch.Tensor</em><em>]</em>) – The ground-truth. It can be None.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The loss.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>torch.Tensor</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-deeprob.flows.models.maf">
+<span id="deeprob-flows-models-maf-module"></span><h2>deeprob.flows.models.maf module<a class="headerlink" href="#module-deeprob.flows.models.maf" title="Permalink to this headline"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="deeprob.flows.models.maf.MAF">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">deeprob.flows.models.maf.</span></span><span class="sig-name descname"><span class="pre">MAF</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">in_features</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dequantize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">in_base</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_flows</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">depth</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">units</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">128</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_norm</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">activation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'relu'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sequential</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">random_state</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprob/flows/models/maf.html#MAF"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#deeprob.flows.models.maf.MAF" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#deeprob.flows.models.base.NormalizingFlow" title="deeprob.flows.models.base.NormalizingFlow"><code class="xref py py-class docutils literal notranslate"><span class="pre">deeprob.flows.models.base.NormalizingFlow</span></code></a></p>
+<p>Initialize a Masked Autorefressive Flow (MAF) model.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>in_features</strong> (<em>int</em>) – The number of input features.</p></li>
+<li><p><strong>dequantize</strong> (<em>bool</em>) – Whether to apply the dequantization transformation.</p></li>
+<li><p><strong>logit</strong> (<em>Optional</em><em>[</em><em>float</em><em>]</em>) – The logit factor to use. Use None to disable the logit transformation.</p></li>
+<li><p><strong>in_base</strong> (<em>Optional</em><em>[</em><em>Union</em><em>[</em><a class="reference internal" href="deeprob.torch.html#deeprob.torch.base.ProbabilisticModel" title="deeprob.torch.base.ProbabilisticModel"><em>deeprob.torch.base.ProbabilisticModel</em></a><em>, </em><em>torch.distributions.distribution.Distribution</em><em>]</em><em>]</em>) – The input base distribution to use. If None, the standard Normal distribution is used.</p></li>
+<li><p><strong>n_flows</strong> (<em>int</em>) – The number of sequential autoregressive layers.</p></li>
+<li><p><strong>depth</strong> (<em>int</em>) – The number of hidden layers of flows conditioners.</p></li>
+<li><p><strong>units</strong> (<em>int</em>) – The number of hidden units per layer of flows conditioners.</p></li>
+<li><p><strong>batch_norm</strong> (<em>bool</em>) – Whether to apply batch normalization after each autoregressive layer.</p></li>
+<li><p><strong>activation</strong> (<em>str</em>) – The activation function name to use for the flows conditioners hidden layers.</p></li>
+<li><p><strong>sequential</strong> (<em>bool</em>) – If True build masks degrees sequentially, otherwise randomly.</p></li>
+<li><p><strong>random_state</strong> (<em>Optional</em><em>[</em><em>Union</em><em>[</em><em>int</em><em>, </em><em>numpy.random.mtrand.RandomState</em><em>]</em><em>]</em>) – The random state used to generate the masks degrees. Used only if sequential is False.
+It can be either a seed integer or a np.random.RandomState instance.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><strong>ValueError</strong> – If a parameter is out of domain.</p>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="deeprob.flows.models.maf.MAF.training">
+<span class="sig-name descname"><span class="pre">training</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#deeprob.flows.models.maf.MAF.training" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-deeprob.flows.models.realnvp">
+<span id="deeprob-flows-models-realnvp-module"></span><h2>deeprob.flows.models.realnvp module<a class="headerlink" href="#module-deeprob.flows.models.realnvp" title="Permalink to this headline"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="deeprob.flows.models.realnvp.RealNVP1d">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">deeprob.flows.models.realnvp.</span></span><span class="sig-name descname"><span class="pre">RealNVP1d</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">in_features</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dequantize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">in_base</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_flows</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">depth</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">units</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">128</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_norm</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">affine</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprob/flows/models/realnvp.html#RealNVP1d"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#deeprob.flows.models.realnvp.RealNVP1d" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#deeprob.flows.models.base.NormalizingFlow" title="deeprob.flows.models.base.NormalizingFlow"><code class="xref py py-class docutils literal notranslate"><span class="pre">deeprob.flows.models.base.NormalizingFlow</span></code></a></p>
+<p>Real Non-Volume-Preserving (RealNVP) 1D normalizing flow model.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>in_features</strong> (<em>int</em>) – The number of input features.</p></li>
+<li><p><strong>dequantize</strong> (<em>bool</em>) – Whether to apply the dequantization transformation.</p></li>
+<li><p><strong>logit</strong> (<em>Optional</em><em>[</em><em>float</em><em>]</em>) – The logit factor to use. Use None to disable the logit transformation.</p></li>
+<li><p><strong>in_base</strong> (<em>Optional</em><em>[</em><em>Union</em><em>[</em><a class="reference internal" href="deeprob.torch.html#deeprob.torch.base.ProbabilisticModel" title="deeprob.torch.base.ProbabilisticModel"><em>deeprob.torch.base.ProbabilisticModel</em></a><em>, </em><em>torch.distributions.distribution.Distribution</em><em>]</em><em>]</em>) – The input base distribution to use. If None, the standard Normal distribution is used.</p></li>
+<li><p><strong>n_flows</strong> (<em>int</em>) – The number of sequential coupling flows.</p></li>
+<li><p><strong>depth</strong> (<em>int</em>) – The number of hidden layers of flows conditioners.</p></li>
+<li><p><strong>units</strong> (<em>int</em>) – The number of hidden units per layer of flows conditioners.</p></li>
+<li><p><strong>batch_norm</strong> (<em>bool</em>) – Whether to apply batch normalization after each coupling layer.</p></li>
+<li><p><strong>affine</strong> (<em>bool</em>) – Whether to use affine transformation. If False then use only translation (as in NICE).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><strong>ValueError</strong> – If a parameter is out of scope.</p>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="deeprob.flows.models.realnvp.RealNVP1d.training">
+<span class="sig-name descname"><span class="pre">training</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#deeprob.flows.models.realnvp.RealNVP1d.training" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="deeprob.flows.models.realnvp.RealNVP2d">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">deeprob.flows.models.realnvp.</span></span><span class="sig-name descname"><span class="pre">RealNVP2d</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">in_features</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dequantize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">in_base</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">network</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'resnet'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_flows</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_blocks</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">channels</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">32</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">affine</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprob/flows/models/realnvp.html#RealNVP2d"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#deeprob.flows.models.realnvp.RealNVP2d" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#deeprob.flows.models.base.NormalizingFlow" title="deeprob.flows.models.base.NormalizingFlow"><code class="xref py py-class docutils literal notranslate"><span class="pre">deeprob.flows.models.base.NormalizingFlow</span></code></a></p>
+<p>Real Non-Volume-Preserving (RealNVP) 2D normalizing flow model.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>in_features</strong> (<em>Tuple</em><em>[</em><em>int</em><em>, </em><em>int</em><em>, </em><em>int</em><em>]</em>) – The input size as a (C, H, W) tuple.</p></li>
+<li><p><strong>dequantize</strong> (<em>bool</em>) – Whether to apply the dequantization transformation.</p></li>
+<li><p><strong>logit</strong> (<em>Optional</em><em>[</em><em>float</em><em>]</em>) – The logit factor to use. Use None to disable the logit transformation.</p></li>
+<li><p><strong>in_base</strong> (<em>Optional</em><em>[</em><em>Union</em><em>[</em><a class="reference internal" href="deeprob.torch.html#deeprob.torch.base.ProbabilisticModel" title="deeprob.torch.base.ProbabilisticModel"><em>deeprob.torch.base.ProbabilisticModel</em></a><em>, </em><em>torch.distributions.distribution.Distribution</em><em>]</em><em>]</em>) – The input base distribution to use. If None, the standard Normal distribution is used.</p></li>
+<li><p><strong>network</strong> (<em>str</em>) – The neural network conditioner to use. It can be either ‘resnet’ or ‘densenet’.</p></li>
+<li><p><strong>n_flows</strong> (<em>int</em>) – The number of sequential multi-scale architectures.</p></li>
+<li><p><strong>n_blocks</strong> (<em>int</em>) – The number of residual blocks or dense blocks.</p></li>
+<li><p><strong>channels</strong> (<em>int</em>) – The number of output channels of each convolutional layer.</p></li>
+<li><p><strong>affine</strong> (<em>bool</em>) – Whether to use affine transformation. If False then use only translation (as in NICE).</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="deeprob.flows.models.realnvp.RealNVP2d.build_permutation_matrix">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">build_permutation_matrix</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">channels</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprob/flows/models/realnvp.html#RealNVP2d.build_permutation_matrix"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#deeprob.flows.models.realnvp.RealNVP2d.build_permutation_matrix" title="Permalink to this definition"></a></dt>
+<dd><p>Build the permutation matrix that defines (a non-trivial) variables ordering
+when downscaling or upscaling as in RealNVP.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>channels</strong> (<em>int</em>) – The number of input channels.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The permutation matrix tensor.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>torch.Tensor</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="deeprob.flows.models.realnvp.RealNVP2d.apply_backward">
+<span class="sig-name descname"><span class="pre">apply_backward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprob/flows/models/realnvp.html#RealNVP2d.apply_backward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#deeprob.flows.models.realnvp.RealNVP2d.apply_backward" title="Permalink to this definition"></a></dt>
+<dd><p>Apply the backward transformation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>x</strong> (<em>torch.Tensor</em>) – The inputs.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The transformed samples and the backward log-det-jacobian.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>Tuple[torch.Tensor, torch.Tensor]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="deeprob.flows.models.realnvp.RealNVP2d.apply_forward">
+<span class="sig-name descname"><span class="pre">apply_forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprob/flows/models/realnvp.html#RealNVP2d.apply_forward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#deeprob.flows.models.realnvp.RealNVP2d.apply_forward" title="Permalink to this definition"></a></dt>
+<dd><p>Apply the forward transformation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>x</strong> (<em>torch.Tensor</em>) – the inputs.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The transformed samples and the forward log-det-jacobian.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>Tuple[torch.Tensor, torch.Tensor]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="deeprob.flows.models.realnvp.RealNVP2d.training">
+<span class="sig-name descname"><span class="pre">training</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#deeprob.flows.models.realnvp.RealNVP2d.training" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-deeprob.flows.models">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-deeprob.flows.models" title="Permalink to this headline"></a></h2>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="deeprob.flows.layers.html" class="btn btn-neutral float-left" title="deeprob.flows.layers package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="deeprob.spn.html" class="btn btn-neutral float-right" title="deeprob.spn package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, Lorenzo Loconte, Gennaro Gala.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    <span class="fa fa-book"> Other Versions</span>
+    v: v1.1.0
+    <span class="fa fa-caret-down"></span>
+  </span>
+  <div class="rst-other-versions">
+    <dl>
+      <dt>Tags</dt>
+      <dd><a href="../../v1.0.0/index.html">v1.0.0</a></dd>
+      <dd><a href="deeprob.flows.models.html">v1.1.0</a></dd>
+    </dl>
+    <dl>
+      <dt>Branches</dt>
+      <dd><a href="../../main/index.html">main</a></dd>
+    </dl>
+  </div>
+</div><script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

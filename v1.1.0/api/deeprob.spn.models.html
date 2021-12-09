@@ -1,0 +1,687 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>deeprob.spn.models package &mdash; DeeProb-kit 1.0.0 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/custom.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="deeprob.spn.structure package" href="deeprob.spn.structure.html" />
+    <link rel="prev" title="deeprob.spn.learning.splitting package" href="deeprob.spn.learning.splitting.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> DeeProb-kit
+            <img src="../_static/deeprob-logo-minimal.svg" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Read Me</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../markdown/home.html">Abstract</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../markdown/home.html#features">Features</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../markdown/home.html#installation">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../markdown/home.html#project-directories">Project Directories</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../markdown/home.html#related-repositories">Related Repositories</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../markdown/home.html#references">References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../markdown/docs.html">Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../markdown/examples.html">Code Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../markdown/experiments.html">Experiments</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../markdown/benchmark.html">Benchmark</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Modules</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="deeprob.html">deeprob package</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="deeprob.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="deeprob.flows.html">deeprob.flows package</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="deeprob.spn.html">deeprob.spn package</a><ul class="current">
+<li class="toctree-l4 current"><a class="reference internal" href="deeprob.spn.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l5"><a class="reference internal" href="deeprob.spn.algorithms.html">deeprob.spn.algorithms package</a></li>
+<li class="toctree-l5"><a class="reference internal" href="deeprob.spn.layers.html">deeprob.spn.layers package</a></li>
+<li class="toctree-l5"><a class="reference internal" href="deeprob.spn.learning.html">deeprob.spn.learning package</a></li>
+<li class="toctree-l5 current"><a class="current reference internal" href="#">deeprob.spn.models package</a><ul>
+<li class="toctree-l6"><a class="reference internal" href="#submodules">Submodules</a></li>
+<li class="toctree-l6"><a class="reference internal" href="#module-deeprob.spn.models.dgcspn">deeprob.spn.models.dgcspn module</a></li>
+<li class="toctree-l6"><a class="reference internal" href="#module-deeprob.spn.models.ratspn">deeprob.spn.models.ratspn module</a></li>
+<li class="toctree-l6"><a class="reference internal" href="#module-deeprob.spn.models.sklearn">deeprob.spn.models.sklearn module</a></li>
+<li class="toctree-l6"><a class="reference internal" href="#module-deeprob.spn.models">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l5"><a class="reference internal" href="deeprob.spn.structure.html">deeprob.spn.structure package</a></li>
+<li class="toctree-l5"><a class="reference internal" href="deeprob.spn.utils.html">deeprob.spn.utils package</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="deeprob.spn.html#module-deeprob.spn">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="deeprob.torch.html">deeprob.torch package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="deeprob.utils.html">deeprob.utils package</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="deeprob.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="deeprob.html#module-deeprob.context">deeprob.context module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="deeprob.html#module-deeprob">Module contents</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">DeeProb-kit</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="deeprob.html">deeprob package</a> &raquo;</li>
+          <li><a href="deeprob.spn.html">deeprob.spn package</a> &raquo;</li>
+      <li>deeprob.spn.models package</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/api/deeprob.spn.models.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="deeprob-spn-models-package">
+<h1>deeprob.spn.models package<a class="headerlink" href="#deeprob-spn-models-package" title="Permalink to this headline"></a></h1>
+<section id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline"></a></h2>
+</section>
+<section id="module-deeprob.spn.models.dgcspn">
+<span id="deeprob-spn-models-dgcspn-module"></span><h2>deeprob.spn.models.dgcspn module<a class="headerlink" href="#module-deeprob.spn.models.dgcspn" title="Permalink to this headline"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="deeprob.spn.models.dgcspn.DgcSpn">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">deeprob.spn.models.dgcspn.</span></span><span class="sig-name descname"><span class="pre">DgcSpn</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">in_features</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">out_classes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_batch</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">8</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sum_channels</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">8</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">depthwise</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_pooling</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">optimize_scale</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">in_dropout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sum_dropout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">quantiles_loc</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">uniform_loc</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprob/spn/models/dgcspn.html#DgcSpn"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#deeprob.spn.models.dgcspn.DgcSpn" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="deeprob.torch.html#deeprob.torch.base.ProbabilisticModel" title="deeprob.torch.base.ProbabilisticModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">deeprob.torch.base.ProbabilisticModel</span></code></a></p>
+<p>Initialize a Deep Generalized Convolutional Sum-Product Network (DGC-SPN).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>in_features</strong> (<em>Tuple</em><em>[</em><em>int</em><em>, </em><em>int</em><em>, </em><em>int</em><em>]</em>) – The input size as a (C, D, D) tuple.</p></li>
+<li><p><strong>out_classes</strong> (<em>int</em>) – The number of output classes. Specify 1 in case of plain density estimation.</p></li>
+<li><p><strong>n_batch</strong> (<em>int</em>) – The number of output channels of the base layer.</p></li>
+<li><p><strong>sum_channels</strong> (<em>int</em>) – The number of output channels of spatial sum layers.</p></li>
+<li><p><strong>depthwise</strong> (<em>Union</em><em>[</em><em>bool</em><em>, </em><em>List</em><em>[</em><em>bool</em><em>]</em><em>]</em>) – Whether to use depthwise convolutions as product layers at each depth level.
+The last flag of the list will be considered as the one for the rest of the network.
+If a single boolean is passed, it will be used for all the network’s product layers.</p></li>
+<li><p><strong>n_pooling</strong> (<em>int</em>) – The number of initial pooling spatial product layers.</p></li>
+<li><p><strong>optimize_scale</strong> (<em>bool</em>) – Whether to train scale and location jointly.</p></li>
+<li><p><strong>in_dropout</strong> (<em>Optional</em><em>[</em><em>float</em><em>]</em>) – The dropout rate for probabilistic dropout at distributions layer outputs. It can be None.</p></li>
+<li><p><strong>sum_dropout</strong> (<em>Optional</em><em>[</em><em>float</em><em>]</em>) – The dropout rate for probabilistic dropout at sum layers. It can be None.</p></li>
+<li><p><strong>quantiles_loc</strong> (<em>Optional</em><em>[</em><em>numpy.ndarray</em><em>]</em>) – The mean quantiles for location initialization. It can be None.</p></li>
+<li><p><strong>uniform_loc</strong> (<em>Optional</em><em>[</em><em>Tuple</em><em>[</em><em>float</em><em>, </em><em>float</em><em>]</em><em>]</em>) – The uniform range for location initialization. It can be None.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><strong>ValueError</strong> – If a parameter is out of domain.</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="deeprob.spn.models.dgcspn.DgcSpn.forward">
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprob/spn/models/dgcspn.html#DgcSpn.forward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#deeprob.spn.models.dgcspn.DgcSpn.forward" title="Permalink to this definition"></a></dt>
+<dd><p>Compute the log-likelihood given some evidence.
+Random variables can be marginalized using NaN values.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>x</strong> (<em>torch.Tensor</em>) – The inputs.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The outputs.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>torch.Tensor</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="deeprob.spn.models.dgcspn.DgcSpn.mpe">
+<span class="sig-name descname"><span class="pre">mpe</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprob/spn/models/dgcspn.html#DgcSpn.mpe"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#deeprob.spn.models.dgcspn.DgcSpn.mpe" title="Permalink to this definition"></a></dt>
+<dd><p>Compute the maximum at posteriori estimation.
+Random variables can be marginalized using NaN values.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>x</strong> (<em>torch.Tensor</em>) – The inputs.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The outputs.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>torch.Tensor</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="deeprob.spn.models.dgcspn.DgcSpn.sample">
+<span class="sig-name descname"><span class="pre">sample</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_samples</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprob/spn/models/dgcspn.html#DgcSpn.sample"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#deeprob.spn.models.dgcspn.DgcSpn.sample" title="Permalink to this definition"></a></dt>
+<dd><p>Sample some values from the modeled distribution.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>n_samples</strong> (<em>int</em>) – The number of samples.</p></li>
+<li><p><strong>y</strong> (<em>Optional</em><em>[</em><em>torch.Tensor</em><em>]</em>) – The samples labels. It can be None.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The samples.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>torch.Tensor</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="deeprob.spn.models.dgcspn.DgcSpn.loss">
+<span class="sig-name descname"><span class="pre">loss</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprob/spn/models/dgcspn.html#DgcSpn.loss"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#deeprob.spn.models.dgcspn.DgcSpn.loss" title="Permalink to this definition"></a></dt>
+<dd><p>Compute the loss of the model.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> (<em>torch.Tensor</em>) – The outputs of the model.</p></li>
+<li><p><strong>y</strong> (<em>Optional</em><em>[</em><em>torch.Tensor</em><em>]</em>) – The ground-truth. It can be None.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The loss.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>torch.Tensor</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="deeprob.spn.models.dgcspn.DgcSpn.apply_constraints">
+<span class="sig-name descname"><span class="pre">apply_constraints</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprob/spn/models/dgcspn.html#DgcSpn.apply_constraints"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#deeprob.spn.models.dgcspn.DgcSpn.apply_constraints" title="Permalink to this definition"></a></dt>
+<dd><p>Apply the constraints specified by the model.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="deeprob.spn.models.dgcspn.DgcSpn.training">
+<span class="sig-name descname"><span class="pre">training</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#deeprob.spn.models.dgcspn.DgcSpn.training" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-deeprob.spn.models.ratspn">
+<span id="deeprob-spn-models-ratspn-module"></span><h2>deeprob.spn.models.ratspn module<a class="headerlink" href="#module-deeprob.spn.models.ratspn" title="Permalink to this headline"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="deeprob.spn.models.ratspn.RatSpn">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">deeprob.spn.models.ratspn.</span></span><span class="sig-name descname"><span class="pre">RatSpn</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">in_features</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">base_cls</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">base_kwargs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">out_classes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rg_depth</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rg_repetitions</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rg_batch</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rg_sum</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">in_dropout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sum_dropout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">random_state</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprob/spn/models/ratspn.html#RatSpn"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#deeprob.spn.models.ratspn.RatSpn" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="deeprob.torch.html#deeprob.torch.base.ProbabilisticModel" title="deeprob.torch.base.ProbabilisticModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">deeprob.torch.base.ProbabilisticModel</span></code></a></p>
+<p>Initialize a RAT-SPN.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>in_features</strong> (<em>int</em>) – The number of input features.</p></li>
+<li><p><strong>base_cls</strong> (<em>Type</em><em>[</em><a class="reference internal" href="deeprob.spn.layers.html#deeprob.spn.layers.ratspn.RegionGraphLayer" title="deeprob.spn.layers.ratspn.RegionGraphLayer"><em>deeprob.spn.layers.ratspn.RegionGraphLayer</em></a><em>]</em>) – The base distribution’s class. It must be a sub-class of RegionGraphLayer.</p></li>
+<li><p><strong>base_kwargs</strong> (<em>Optional</em><em>[</em><em>dict</em><em>]</em>) – Optional additiona parameters to pass to the base distribution’s class constructor.</p></li>
+<li><p><strong>out_classes</strong> (<em>int</em>) – The number of output classes. Specify 1 in case of plain density estimation.</p></li>
+<li><p><strong>rg_depth</strong> (<em>int</em>) – The depth of the region graph.</p></li>
+<li><p><strong>rg_repetitions</strong> (<em>int</em>) – The number of independent repetitions of the region graph.</p></li>
+<li><p><strong>rg_batch</strong> (<em>int</em>) – The number of base distribution batches.</p></li>
+<li><p><strong>rg_sum</strong> (<em>int</em>) – The number of sum nodes per region.</p></li>
+<li><p><strong>in_dropout</strong> (<em>Optional</em><em>[</em><em>float</em><em>]</em>) – The dropout rate for probabilistic dropout at distributions layer outputs. It can be None.</p></li>
+<li><p><strong>sum_dropout</strong> (<em>Optional</em><em>[</em><em>float</em><em>]</em>) – The dropout rate for probabilistic dropout at sum layers. It can be None.</p></li>
+<li><p><strong>random_state</strong> (<em>Optional</em><em>[</em><em>Union</em><em>[</em><em>int</em><em>, </em><em>numpy.random.mtrand.RandomState</em><em>]</em><em>]</em>) – The random state. It can be either None, a seed integer or a Numpy RandomState.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><strong>ValueError</strong> – If a parameter is out of domain.</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="deeprob.spn.models.ratspn.RatSpn.forward">
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprob/spn/models/ratspn.html#RatSpn.forward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#deeprob.spn.models.ratspn.RatSpn.forward" title="Permalink to this definition"></a></dt>
+<dd><p>Compute the log-likelihood given some evidence.
+Random variables can be marginalized using NaN values.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>x</strong> (<em>torch.Tensor</em>) – The inputs.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The outputs.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>torch.Tensor</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="deeprob.spn.models.ratspn.RatSpn.mpe">
+<span class="sig-name descname"><span class="pre">mpe</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprob/spn/models/ratspn.html#RatSpn.mpe"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#deeprob.spn.models.ratspn.RatSpn.mpe" title="Permalink to this definition"></a></dt>
+<dd><p>Compute the maximum at posteriori estimation.
+Random variables can be marginalized using NaN values.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> (<em>torch.Tensor</em>) – The inputs tensor.</p></li>
+<li><p><strong>y</strong> (<em>Optional</em><em>[</em><em>torch.Tensor</em><em>]</em>) – The target classes tensor. It can be None for unlabeled maximum at posteriori estimation.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The output of the model.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>torch.Tensor</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="deeprob.spn.models.ratspn.RatSpn.sample">
+<span class="sig-name descname"><span class="pre">sample</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_samples</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprob/spn/models/ratspn.html#RatSpn.sample"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#deeprob.spn.models.ratspn.RatSpn.sample" title="Permalink to this definition"></a></dt>
+<dd><p>Sample some values from the modeled distribution.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>n_samples</strong> (<em>int</em>) – The number of samples.</p></li>
+<li><p><strong>y</strong> (<em>Optional</em><em>[</em><em>torch.Tensor</em><em>]</em>) – The samples labels. It can be None.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The samples.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>torch.Tensor</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="deeprob.spn.models.ratspn.RatSpn.loss">
+<span class="sig-name descname"><span class="pre">loss</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprob/spn/models/ratspn.html#RatSpn.loss"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#deeprob.spn.models.ratspn.RatSpn.loss" title="Permalink to this definition"></a></dt>
+<dd><p>Compute the loss of the model.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> (<em>torch.Tensor</em>) – The outputs of the model.</p></li>
+<li><p><strong>y</strong> (<em>Optional</em><em>[</em><em>torch.Tensor</em><em>]</em>) – The ground-truth. It can be None.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The loss.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>torch.Tensor</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="deeprob.spn.models.ratspn.RatSpn.training">
+<span class="sig-name descname"><span class="pre">training</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#deeprob.spn.models.ratspn.RatSpn.training" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="deeprob.spn.models.ratspn.GaussianRatSpn">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">deeprob.spn.models.ratspn.</span></span><span class="sig-name descname"><span class="pre">GaussianRatSpn</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">in_features</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">out_classes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rg_depth</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rg_repetitions</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rg_batch</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rg_sum</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">in_dropout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sum_dropout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">random_state</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">uniform_loc</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">optimize_scale</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprob/spn/models/ratspn.html#GaussianRatSpn"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#deeprob.spn.models.ratspn.GaussianRatSpn" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#deeprob.spn.models.ratspn.RatSpn" title="deeprob.spn.models.ratspn.RatSpn"><code class="xref py py-class docutils literal notranslate"><span class="pre">deeprob.spn.models.ratspn.RatSpn</span></code></a></p>
+<p>Initialize a Gaussian RAT-SPN.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>in_features</strong> (<em>int</em>) – The number of input features.</p></li>
+<li><p><strong>out_classes</strong> (<em>int</em>) – The number of output classes. Specify 1 in case of plain density estimation.</p></li>
+<li><p><strong>rg_depth</strong> (<em>int</em>) – The depth of the region graph.</p></li>
+<li><p><strong>rg_repetitions</strong> (<em>int</em>) – The number of independent repetitions of the region graph.</p></li>
+<li><p><strong>rg_batch</strong> (<em>int</em>) – The number of base distributions batches.</p></li>
+<li><p><strong>rg_sum</strong> (<em>int</em>) – The number of sum nodes per region.</p></li>
+<li><p><strong>in_dropout</strong> (<em>Optional</em><em>[</em><em>float</em><em>]</em>) – The dropout rate for probabilistic dropout at distributions layer outputs. It can be None.</p></li>
+<li><p><strong>sum_dropout</strong> (<em>Optional</em><em>[</em><em>float</em><em>]</em>) – The dropout rate for probabilistic dropout at sum layers. It can be None.</p></li>
+<li><p><strong>random_state</strong> (<em>Optional</em><em>[</em><em>Union</em><em>[</em><em>int</em><em>, </em><em>numpy.random.mtrand.RandomState</em><em>]</em><em>]</em>) – The random state. It can be either None, a seed integer or a Numpy RandomState.</p></li>
+<li><p><strong>uniform_loc</strong> (<em>Optional</em><em>[</em><em>Tuple</em><em>[</em><em>float</em><em>, </em><em>float</em><em>]</em><em>]</em>) – The optional uniform distribution parameters for location initialization.</p></li>
+<li><p><strong>optimize_scale</strong> (<em>bool</em>) – Whether to train scale and location jointly.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="deeprob.spn.models.ratspn.GaussianRatSpn.apply_constraints">
+<span class="sig-name descname"><span class="pre">apply_constraints</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprob/spn/models/ratspn.html#GaussianRatSpn.apply_constraints"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#deeprob.spn.models.ratspn.GaussianRatSpn.apply_constraints" title="Permalink to this definition"></a></dt>
+<dd><p>Apply the constraints specified by the model.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="deeprob.spn.models.ratspn.GaussianRatSpn.training">
+<span class="sig-name descname"><span class="pre">training</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#deeprob.spn.models.ratspn.GaussianRatSpn.training" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="deeprob.spn.models.ratspn.BernoulliRatSpn">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">deeprob.spn.models.ratspn.</span></span><span class="sig-name descname"><span class="pre">BernoulliRatSpn</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">in_features</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">out_classes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rg_depth</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rg_repetitions</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rg_batch</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rg_sum</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">in_dropout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sum_dropout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">random_state</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprob/spn/models/ratspn.html#BernoulliRatSpn"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#deeprob.spn.models.ratspn.BernoulliRatSpn" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#deeprob.spn.models.ratspn.RatSpn" title="deeprob.spn.models.ratspn.RatSpn"><code class="xref py py-class docutils literal notranslate"><span class="pre">deeprob.spn.models.ratspn.RatSpn</span></code></a></p>
+<p>Initialize a Bernoulli RAT-SPN.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>in_features</strong> (<em>int</em>) – The number of input features.</p></li>
+<li><p><strong>out_classes</strong> (<em>int</em>) – The number of output classes. Specify 1 in case of plain density estimation.</p></li>
+<li><p><strong>rg_depth</strong> (<em>int</em>) – The depth of the region graph.</p></li>
+<li><p><strong>rg_repetitions</strong> (<em>int</em>) – The number of independent repetitions of the region graph.</p></li>
+<li><p><strong>rg_batch</strong> (<em>int</em>) – The number of base distributions batches.</p></li>
+<li><p><strong>rg_sum</strong> (<em>int</em>) – The number of sum nodes per region.</p></li>
+<li><p><strong>in_dropout</strong> (<em>Optional</em><em>[</em><em>float</em><em>]</em>) – The dropout rate for probabilistic dropout at distributions layer outputs. It can be None.</p></li>
+<li><p><strong>sum_dropout</strong> (<em>Optional</em><em>[</em><em>float</em><em>]</em>) – The dropout rate for probabilistic dropout at product layer outputs. It can be None.</p></li>
+<li><p><strong>random_state</strong> (<em>Optional</em><em>[</em><em>Union</em><em>[</em><em>int</em><em>, </em><em>numpy.random.mtrand.RandomState</em><em>]</em><em>]</em>) – The random state. It can be either None, a seed integer or a Numpy RandomState.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="deeprob.spn.models.ratspn.BernoulliRatSpn.training">
+<span class="sig-name descname"><span class="pre">training</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#deeprob.spn.models.ratspn.BernoulliRatSpn.training" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-deeprob.spn.models.sklearn">
+<span id="deeprob-spn-models-sklearn-module"></span><h2>deeprob.spn.models.sklearn module<a class="headerlink" href="#module-deeprob.spn.models.sklearn" title="Permalink to this headline"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="deeprob.spn.models.sklearn.SPNEstimator">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">deeprob.spn.models.sklearn.</span></span><span class="sig-name descname"><span class="pre">SPNEstimator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">distributions</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">domains</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprob/spn/models/sklearn.html#SPNEstimator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#deeprob.spn.models.sklearn.SPNEstimator" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">sklearn.base.BaseEstimator</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">sklearn.base.DensityMixin</span></code></p>
+<p>Scikit-learn density estimator model for Sum Product Networks (SPNs).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>distributions</strong> (<em>List</em><em>[</em><em>Type</em><em>[</em><a class="reference internal" href="deeprob.spn.structure.html#deeprob.spn.structure.leaf.Leaf" title="deeprob.spn.structure.leaf.Leaf"><em>deeprob.spn.structure.leaf.Leaf</em></a><em>]</em><em>]</em>) – A list of distribution classes (one for each feature).</p></li>
+<li><p><strong>domains</strong> (<em>Optional</em><em>[</em><em>List</em><em>[</em><em>Union</em><em>[</em><em>list</em><em>, </em><em>tuple</em><em>]</em><em>]</em><em>]</em>) – A list of domains (one for each feature).</p></li>
+<li><p><strong>kwargs</strong> – Additional arguments to pass to the SPN learner.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="deeprob.spn.models.sklearn.SPNEstimator.fit">
+<span class="sig-name descname"><span class="pre">fit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprob/spn/models/sklearn.html#SPNEstimator.fit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#deeprob.spn.models.sklearn.SPNEstimator.fit" title="Permalink to this definition"></a></dt>
+<dd><p>Fit the SPN density estimator.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>X</strong> (<em>numpy.ndarray</em>) – The training data.</p></li>
+<li><p><strong>y</strong> (<em>Optional</em><em>[</em><em>numpy.ndarray</em><em>]</em>) – Ignored, only for scikit-learn API convention.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Itself.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="deeprob.spn.models.sklearn.SPNEstimator.predict_log_proba">
+<span class="sig-name descname"><span class="pre">predict_log_proba</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprob/spn/models/sklearn.html#SPNEstimator.predict_log_proba"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#deeprob.spn.models.sklearn.SPNEstimator.predict_log_proba" title="Permalink to this definition"></a></dt>
+<dd><p>Predict using the SPN density estimator, i.e. compute the log-likelihood.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>X</strong> (<em>numpy.ndarray</em>) – The inputs. They can be marginalized using NaNs.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The log-likelihood of the inputs.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>numpy.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="deeprob.spn.models.sklearn.SPNEstimator.mpe">
+<span class="sig-name descname"><span class="pre">mpe</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprob/spn/models/sklearn.html#SPNEstimator.mpe"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#deeprob.spn.models.sklearn.SPNEstimator.mpe" title="Permalink to this definition"></a></dt>
+<dd><p>Predict the un-observed variable by maximum at posterior estimation (MPE).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>X</strong> (<em>numpy.ndarray</em>) – The inputs having some NaN values.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The MPE assignment to un-observed variables.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>numpy.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="deeprob.spn.models.sklearn.SPNEstimator.sample">
+<span class="sig-name descname"><span class="pre">sample</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">X</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprob/spn/models/sklearn.html#SPNEstimator.sample"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#deeprob.spn.models.sklearn.SPNEstimator.sample" title="Permalink to this definition"></a></dt>
+<dd><p>Sample from the modeled distribution.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>n</strong> (<em>Optional</em><em>[</em><em>int</em><em>]</em>) – The number of samples. It must be None if X is not None. If None, n=1 is assumed.</p></li>
+<li><p><strong>X</strong> (<em>Optional</em><em>[</em><em>numpy.ndarray</em><em>]</em>) – Data used for conditional sampling. It can be None for full sampling.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The samples.</p>
+</dd>
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><p><strong>ValueError</strong> – If both parameters ‘n’ and ‘X’ are passed by.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>numpy.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="deeprob.spn.models.sklearn.SPNEstimator.score">
+<span class="sig-name descname"><span class="pre">score</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprob/spn/models/sklearn.html#SPNEstimator.score"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#deeprob.spn.models.sklearn.SPNEstimator.score" title="Permalink to this definition"></a></dt>
+<dd><p>Return the mean log-likelihood and two standard deviations on the given test data.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>X</strong> (<em>numpy.ndarray</em>) – The inputs. They can be marginalized using NaNs.</p></li>
+<li><p><strong>y</strong> (<em>Optional</em><em>[</em><em>numpy.ndarray</em><em>]</em>) – Ignored. Specified only for scikit-learn API compatibility.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A dictionary consisting of two keys “mean_ll” and “stddev_ll”,
+representing respectively the mean log-likelihood and two standard deviations.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="deeprob.spn.models.sklearn.SPNClassifier">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">deeprob.spn.models.sklearn.</span></span><span class="sig-name descname"><span class="pre">SPNClassifier</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">distributions</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">domains</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprob/spn/models/sklearn.html#SPNClassifier"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#deeprob.spn.models.sklearn.SPNClassifier" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">sklearn.base.BaseEstimator</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">sklearn.base.ClassifierMixin</span></code></p>
+<p>Scikit-learn classifier model for Sum Product Networks (SPNs).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>distributions</strong> (<em>List</em><em>[</em><em>Type</em><em>[</em><a class="reference internal" href="deeprob.spn.structure.html#deeprob.spn.structure.leaf.Leaf" title="deeprob.spn.structure.leaf.Leaf"><em>deeprob.spn.structure.leaf.Leaf</em></a><em>]</em><em>]</em>) – A list of distribution classes (one for each feature).</p></li>
+<li><p><strong>domains</strong> (<em>Optional</em><em>[</em><em>List</em><em>[</em><em>Union</em><em>[</em><em>list</em><em>, </em><em>tuple</em><em>]</em><em>]</em><em>]</em>) – A list of domains (one for each feature).</p></li>
+<li><p><strong>kwargs</strong> – Additional arguments to pass to the SPN learner.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="deeprob.spn.models.sklearn.SPNClassifier.fit">
+<span class="sig-name descname"><span class="pre">fit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprob/spn/models/sklearn.html#SPNClassifier.fit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#deeprob.spn.models.sklearn.SPNClassifier.fit" title="Permalink to this definition"></a></dt>
+<dd><p>Fit the SPN density estimator.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>X</strong> (<em>numpy.ndarray</em>) – The training data.</p></li>
+<li><p><strong>y</strong> (<em>numpy.ndarray</em>) – The data labels.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Itself.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="deeprob.spn.models.sklearn.SPNClassifier.predict">
+<span class="sig-name descname"><span class="pre">predict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprob/spn/models/sklearn.html#SPNClassifier.predict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#deeprob.spn.models.sklearn.SPNClassifier.predict" title="Permalink to this definition"></a></dt>
+<dd><p>Predict using the SPN classifier.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>X</strong> (<em>numpy.ndarray</em>) – The inputs. They can be marginalized using NaNs.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The predicted classes.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>numpy.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="deeprob.spn.models.sklearn.SPNClassifier.predict_proba">
+<span class="sig-name descname"><span class="pre">predict_proba</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprob/spn/models/sklearn.html#SPNClassifier.predict_proba"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#deeprob.spn.models.sklearn.SPNClassifier.predict_proba" title="Permalink to this definition"></a></dt>
+<dd><p>Predict using the SPN classifier, using probabilities.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>X</strong> (<em>numpy.ndarray</em>) – The inputs. They can be marginalized using NaNs.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The prediction probabilities for each class.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>numpy.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="deeprob.spn.models.sklearn.SPNClassifier.predict_log_proba">
+<span class="sig-name descname"><span class="pre">predict_log_proba</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprob/spn/models/sklearn.html#SPNClassifier.predict_log_proba"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#deeprob.spn.models.sklearn.SPNClassifier.predict_log_proba" title="Permalink to this definition"></a></dt>
+<dd><p>Predict using the SPN classifier, using log-probabilities.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>X</strong> (<em>numpy.ndarray</em>) – The inputs. They can be marginalized using NaNs.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The prediction log-probabilities for each class.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>numpy.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="deeprob.spn.models.sklearn.SPNClassifier.sample">
+<span class="sig-name descname"><span class="pre">sample</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprob/spn/models/sklearn.html#SPNClassifier.sample"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#deeprob.spn.models.sklearn.SPNClassifier.sample" title="Permalink to this definition"></a></dt>
+<dd><p>Sample from the modeled conditional distribution.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>n</strong> (<em>Optional</em><em>[</em><em>int</em><em>]</em>) – The number of samples. It must be None if y is not None. If None, n=1 is assumed.</p></li>
+<li><p><strong>y</strong> (<em>Optional</em><em>[</em><em>numpy.ndarray</em><em>]</em>) – Labels used for conditional sampling. It can be None for un-conditional sampling.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The samples.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>numpy.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-deeprob.spn.models">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-deeprob.spn.models" title="Permalink to this headline"></a></h2>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="deeprob.spn.learning.splitting.html" class="btn btn-neutral float-left" title="deeprob.spn.learning.splitting package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="deeprob.spn.structure.html" class="btn btn-neutral float-right" title="deeprob.spn.structure package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, Lorenzo Loconte, Gennaro Gala.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    <span class="fa fa-book"> Other Versions</span>
+    v: v1.1.0
+    <span class="fa fa-caret-down"></span>
+  </span>
+  <div class="rst-other-versions">
+    <dl>
+      <dt>Tags</dt>
+      <dd><a href="../../v1.0.0/index.html">v1.0.0</a></dd>
+      <dd><a href="deeprob.spn.models.html">v1.1.0</a></dd>
+    </dl>
+    <dl>
+      <dt>Branches</dt>
+      <dd><a href="../../main/index.html">main</a></dd>
+    </dl>
+  </div>
+</div><script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

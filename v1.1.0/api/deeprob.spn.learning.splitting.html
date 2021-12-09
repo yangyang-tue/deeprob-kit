@@ -1,0 +1,806 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>deeprob.spn.learning.splitting package &mdash; DeeProb-kit 1.0.0 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/custom.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="deeprob.spn.models package" href="deeprob.spn.models.html" />
+    <link rel="prev" title="deeprob.spn.learning package" href="deeprob.spn.learning.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> DeeProb-kit
+            <img src="../_static/deeprob-logo-minimal.svg" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Read Me</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../markdown/home.html">Abstract</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../markdown/home.html#features">Features</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../markdown/home.html#installation">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../markdown/home.html#project-directories">Project Directories</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../markdown/home.html#related-repositories">Related Repositories</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../markdown/home.html#references">References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../markdown/docs.html">Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../markdown/examples.html">Code Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../markdown/experiments.html">Experiments</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../markdown/benchmark.html">Benchmark</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Modules</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="deeprob.html">deeprob package</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="deeprob.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="deeprob.flows.html">deeprob.flows package</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="deeprob.spn.html">deeprob.spn package</a><ul class="current">
+<li class="toctree-l4 current"><a class="reference internal" href="deeprob.spn.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l5"><a class="reference internal" href="deeprob.spn.algorithms.html">deeprob.spn.algorithms package</a></li>
+<li class="toctree-l5"><a class="reference internal" href="deeprob.spn.layers.html">deeprob.spn.layers package</a></li>
+<li class="toctree-l5 current"><a class="reference internal" href="deeprob.spn.learning.html">deeprob.spn.learning package</a><ul class="current">
+<li class="toctree-l6 current"><a class="reference internal" href="deeprob.spn.learning.html#subpackages">Subpackages</a></li>
+<li class="toctree-l6"><a class="reference internal" href="deeprob.spn.learning.html#submodules">Submodules</a></li>
+<li class="toctree-l6"><a class="reference internal" href="deeprob.spn.learning.html#module-deeprob.spn.learning.em">deeprob.spn.learning.em module</a></li>
+<li class="toctree-l6"><a class="reference internal" href="deeprob.spn.learning.html#module-deeprob.spn.learning.leaf">deeprob.spn.learning.leaf module</a></li>
+<li class="toctree-l6"><a class="reference internal" href="deeprob.spn.learning.html#module-deeprob.spn.learning.learnspn">deeprob.spn.learning.learnspn module</a></li>
+<li class="toctree-l6"><a class="reference internal" href="deeprob.spn.learning.html#module-deeprob.spn.learning.wrappers">deeprob.spn.learning.wrappers module</a></li>
+<li class="toctree-l6"><a class="reference internal" href="deeprob.spn.learning.html#module-deeprob.spn.learning.xpc">deeprob.spn.learning.xpc module</a></li>
+<li class="toctree-l6"><a class="reference internal" href="deeprob.spn.learning.html#module-deeprob.spn.learning">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l5"><a class="reference internal" href="deeprob.spn.models.html">deeprob.spn.models package</a></li>
+<li class="toctree-l5"><a class="reference internal" href="deeprob.spn.structure.html">deeprob.spn.structure package</a></li>
+<li class="toctree-l5"><a class="reference internal" href="deeprob.spn.utils.html">deeprob.spn.utils package</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="deeprob.spn.html#module-deeprob.spn">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="deeprob.torch.html">deeprob.torch package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="deeprob.utils.html">deeprob.utils package</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="deeprob.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="deeprob.html#module-deeprob.context">deeprob.context module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="deeprob.html#module-deeprob">Module contents</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">DeeProb-kit</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="deeprob.html">deeprob package</a> &raquo;</li>
+          <li><a href="deeprob.spn.html">deeprob.spn package</a> &raquo;</li>
+          <li><a href="deeprob.spn.learning.html">deeprob.spn.learning package</a> &raquo;</li>
+      <li>deeprob.spn.learning.splitting package</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/api/deeprob.spn.learning.splitting.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="deeprob-spn-learning-splitting-package">
+<h1>deeprob.spn.learning.splitting package<a class="headerlink" href="#deeprob-spn-learning-splitting-package" title="Permalink to this headline"></a></h1>
+<section id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline"></a></h2>
+</section>
+<section id="module-deeprob.spn.learning.splitting.cluster">
+<span id="deeprob-spn-learning-splitting-cluster-module"></span><h2>deeprob.spn.learning.splitting.cluster module<a class="headerlink" href="#module-deeprob.spn.learning.splitting.cluster" title="Permalink to this headline"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="deeprob.spn.learning.splitting.cluster.gmm">
+<span class="sig-prename descclassname"><span class="pre">deeprob.spn.learning.splitting.cluster.</span></span><span class="sig-name descname"><span class="pre">gmm</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">distributions</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">domains</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">random_state</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprob/spn/learning/splitting/cluster.html#gmm"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#deeprob.spn.learning.splitting.cluster.gmm" title="Permalink to this definition"></a></dt>
+<dd><p>Execute GMM clustering on some data.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> (<em>numpy.ndarray</em>) – The data.</p></li>
+<li><p><strong>distributions</strong> (<em>List</em><em>[</em><em>Type</em><em>[</em><a class="reference internal" href="deeprob.spn.structure.html#deeprob.spn.structure.leaf.Leaf" title="deeprob.spn.structure.leaf.Leaf"><em>deeprob.spn.structure.leaf.Leaf</em></a><em>]</em><em>]</em>) – The data distributions.</p></li>
+<li><p><strong>domains</strong> (<em>List</em><em>[</em><em>Union</em><em>[</em><em>list</em><em>, </em><em>tuple</em><em>]</em><em>]</em>) – The data domains.</p></li>
+<li><p><strong>random_state</strong> (<em>numpy.random.mtrand.RandomState</em>) – The random state.</p></li>
+<li><p><strong>n</strong> (<em>int</em>) – The number of clusters.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>An array where each element is the cluster where the corresponding data belong.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>numpy.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="deeprob.spn.learning.splitting.cluster.kmeans">
+<span class="sig-prename descclassname"><span class="pre">deeprob.spn.learning.splitting.cluster.</span></span><span class="sig-name descname"><span class="pre">kmeans</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">distributions</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">domains</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">random_state</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprob/spn/learning/splitting/cluster.html#kmeans"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#deeprob.spn.learning.splitting.cluster.kmeans" title="Permalink to this definition"></a></dt>
+<dd><p>Execute K-Means clustering on some data.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> (<em>numpy.ndarray</em>) – The data.</p></li>
+<li><p><strong>distributions</strong> (<em>List</em><em>[</em><em>Type</em><em>[</em><a class="reference internal" href="deeprob.spn.structure.html#deeprob.spn.structure.leaf.Leaf" title="deeprob.spn.structure.leaf.Leaf"><em>deeprob.spn.structure.leaf.Leaf</em></a><em>]</em><em>]</em>) – The data distributions.</p></li>
+<li><p><strong>domains</strong> (<em>List</em><em>[</em><em>Union</em><em>[</em><em>list</em><em>, </em><em>tuple</em><em>]</em><em>]</em>) – The data domains.</p></li>
+<li><p><strong>random_state</strong> (<em>numpy.random.mtrand.RandomState</em>) – The random state.</p></li>
+<li><p><strong>n</strong> (<em>int</em>) – The number of clusters.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>An array where each element is the cluster where the corresponding data belong.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>numpy.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="deeprob.spn.learning.splitting.cluster.kmeans_mb">
+<span class="sig-prename descclassname"><span class="pre">deeprob.spn.learning.splitting.cluster.</span></span><span class="sig-name descname"><span class="pre">kmeans_mb</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">distributions</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">domains</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">random_state</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprob/spn/learning/splitting/cluster.html#kmeans_mb"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#deeprob.spn.learning.splitting.cluster.kmeans_mb" title="Permalink to this definition"></a></dt>
+<dd><p>Execute MiniBatch K-Means clustering on some data.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> (<em>numpy.ndarray</em>) – The data.</p></li>
+<li><p><strong>distributions</strong> (<em>List</em><em>[</em><em>Type</em><em>[</em><a class="reference internal" href="deeprob.spn.structure.html#deeprob.spn.structure.leaf.Leaf" title="deeprob.spn.structure.leaf.Leaf"><em>deeprob.spn.structure.leaf.Leaf</em></a><em>]</em><em>]</em>) – The data distributions.</p></li>
+<li><p><strong>domains</strong> (<em>List</em><em>[</em><em>Union</em><em>[</em><em>list</em><em>, </em><em>tuple</em><em>]</em><em>]</em>) – The data domains.</p></li>
+<li><p><strong>random_state</strong> (<em>numpy.random.mtrand.RandomState</em>) – The random state.</p></li>
+<li><p><strong>n</strong> (<em>int</em>) – The number of clusters.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>An array where each element is the cluster where the corresponding data belong.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>numpy.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="deeprob.spn.learning.splitting.cluster.dbscan">
+<span class="sig-prename descclassname"><span class="pre">deeprob.spn.learning.splitting.cluster.</span></span><span class="sig-name descname"><span class="pre">dbscan</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">distributions</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">domains</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">random_state</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprob/spn/learning/splitting/cluster.html#dbscan"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#deeprob.spn.learning.splitting.cluster.dbscan" title="Permalink to this definition"></a></dt>
+<dd><p>Execute DBSCAN clustering on some data (only on discrete data).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> (<em>numpy.ndarray</em>) – The data.</p></li>
+<li><p><strong>distributions</strong> (<em>List</em><em>[</em><em>Type</em><em>[</em><a class="reference internal" href="deeprob.spn.structure.html#deeprob.spn.structure.leaf.Leaf" title="deeprob.spn.structure.leaf.Leaf"><em>deeprob.spn.structure.leaf.Leaf</em></a><em>]</em><em>]</em>) – The data distributions.</p></li>
+<li><p><strong>domains</strong> (<em>List</em><em>[</em><em>Union</em><em>[</em><em>list</em><em>, </em><em>tuple</em><em>]</em><em>]</em>) – The data domains.</p></li>
+<li><p><strong>random_state</strong> (<em>numpy.random.mtrand.RandomState</em>) – The random state.</p></li>
+<li><p><strong>n</strong> (<em>int</em>) – The number of clusters.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>An array where each element is the cluster where the corresponding data belong.</p>
+</dd>
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><p><strong>ValueError</strong> – If the leaf distributions are NOT discrete.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>numpy.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="deeprob.spn.learning.splitting.cluster.wald">
+<span class="sig-prename descclassname"><span class="pre">deeprob.spn.learning.splitting.cluster.</span></span><span class="sig-name descname"><span class="pre">wald</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">distributions</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">domains</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">random_state</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprob/spn/learning/splitting/cluster.html#wald"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#deeprob.spn.learning.splitting.cluster.wald" title="Permalink to this definition"></a></dt>
+<dd><p>Execute Ward (Hierarchical) clustering on some data (only discrete data).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> (<em>numpy.ndarray</em>) – The data.</p></li>
+<li><p><strong>distributions</strong> (<em>List</em><em>[</em><em>Type</em><em>[</em><a class="reference internal" href="deeprob.spn.structure.html#deeprob.spn.structure.leaf.Leaf" title="deeprob.spn.structure.leaf.Leaf"><em>deeprob.spn.structure.leaf.Leaf</em></a><em>]</em><em>]</em>) – The data distributions.</p></li>
+<li><p><strong>domains</strong> (<em>List</em><em>[</em><em>Union</em><em>[</em><em>list</em><em>, </em><em>tuple</em><em>]</em><em>]</em>) – The data domains.</p></li>
+<li><p><strong>random_state</strong> (<em>numpy.random.mtrand.RandomState</em>) – The random state.</p></li>
+<li><p><strong>n</strong> (<em>int</em>) – The number of clusters.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>An array where each element is the cluster where the corresponding data belong.</p>
+</dd>
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><p><strong>ValueError</strong> – If the leaf distributions are NOT discrete.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>numpy.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-deeprob.spn.learning.splitting.cols">
+<span id="deeprob-spn-learning-splitting-cols-module"></span><h2>deeprob.spn.learning.splitting.cols module<a class="headerlink" href="#module-deeprob.spn.learning.splitting.cols" title="Permalink to this headline"></a></h2>
+<dl class="py data">
+<dt class="sig sig-object py" id="deeprob.spn.learning.splitting.cols.SplitColsFunc">
+<span class="sig-prename descclassname"><span class="pre">deeprob.spn.learning.splitting.cols.</span></span><span class="sig-name descname"><span class="pre">SplitColsFunc</span></span><a class="headerlink" href="#deeprob.spn.learning.splitting.cols.SplitColsFunc" title="Permalink to this definition"></a></dt>
+<dd><p>A signature for a columns splitting function.</p>
+<p>alias of <code class="xref py py-class docutils literal notranslate"><span class="pre">Callable</span></code>[[<code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Type</span></code>[<a class="reference internal" href="deeprob.spn.structure.html#deeprob.spn.structure.leaf.Leaf" title="deeprob.spn.structure.leaf.Leaf"><code class="xref py py-class docutils literal notranslate"><span class="pre">deeprob.spn.structure.leaf.Leaf</span></code></a>]], <code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-obj docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code>]], <code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.random.mtrand.RandomState</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">Any</span></code>], <code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray</span></code>]</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="deeprob.spn.learning.splitting.cols.split_cols_clusters">
+<span class="sig-prename descclassname"><span class="pre">deeprob.spn.learning.splitting.cols.</span></span><span class="sig-name descname"><span class="pre">split_cols_clusters</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">clusters</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scope</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprob/spn/learning/splitting/cols.html#split_cols_clusters"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#deeprob.spn.learning.splitting.cols.split_cols_clusters" title="Permalink to this definition"></a></dt>
+<dd><p>Split the data vertically given the clusters.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> (<em>numpy.ndarray</em>) – The data.</p></li>
+<li><p><strong>clusters</strong> (<em>numpy.ndarray</em>) – The clusters.</p></li>
+<li><p><strong>scope</strong> (<em>List</em><em>[</em><em>int</em><em>]</em>) – The original scope.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>(slices, scopes) where slices is a list of partial data and
+scopes is a list of partial scopes.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>Tuple[List[numpy.ndarray], List[List[int]]]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="deeprob.spn.learning.splitting.cols.get_split_cols_method">
+<span class="sig-prename descclassname"><span class="pre">deeprob.spn.learning.splitting.cols.</span></span><span class="sig-name descname"><span class="pre">get_split_cols_method</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">split_cols</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprob/spn/learning/splitting/cols.html#get_split_cols_method"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#deeprob.spn.learning.splitting.cols.get_split_cols_method" title="Permalink to this definition"></a></dt>
+<dd><p>Get the columns splitting method given a string.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>split_cols</strong> (<em>str</em>) – The string of the method do get.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The corresponding columns splitting function.</p>
+</dd>
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><p><strong>ValueError</strong> – If the columns splitting method is unknown.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>Callable[[numpy.ndarray, List[Type[<a class="reference internal" href="deeprob.spn.structure.html#deeprob.spn.structure.leaf.Leaf" title="deeprob.spn.structure.leaf.Leaf">deeprob.spn.structure.leaf.Leaf</a>]], List[Union[list, tuple]], numpy.random.mtrand.RandomState, Any], numpy.ndarray]</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-deeprob.spn.learning.splitting.entropy">
+<span id="deeprob-spn-learning-splitting-entropy-module"></span><h2>deeprob.spn.learning.splitting.entropy module<a class="headerlink" href="#module-deeprob.spn.learning.splitting.entropy" title="Permalink to this headline"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="deeprob.spn.learning.splitting.entropy.entropy_cols">
+<span class="sig-prename descclassname"><span class="pre">deeprob.spn.learning.splitting.entropy.</span></span><span class="sig-name descname"><span class="pre">entropy_cols</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">distributions</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">domains</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">random_state</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">e</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprob/spn/learning/splitting/entropy.html#entropy_cols"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#deeprob.spn.learning.splitting.entropy.entropy_cols" title="Permalink to this definition"></a></dt>
+<dd><p>Entropy based column splitting method.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> (<em>numpy.ndarray</em>) – The data.</p></li>
+<li><p><strong>distributions</strong> (<em>List</em><em>[</em><em>Type</em><em>[</em><a class="reference internal" href="deeprob.spn.structure.html#deeprob.spn.structure.leaf.Leaf" title="deeprob.spn.structure.leaf.Leaf"><em>deeprob.spn.structure.leaf.Leaf</em></a><em>]</em><em>]</em>) – Distributions of the features.</p></li>
+<li><p><strong>domains</strong> (<em>List</em><em>[</em><em>Union</em><em>[</em><em>list</em><em>, </em><em>tuple</em><em>]</em><em>]</em>) – Range of values of the features.</p></li>
+<li><p><strong>e</strong> (<em>float</em>) – Threshold of the considered entropy to be signficant.</p></li>
+<li><p><strong>alpha</strong> (<em>float</em>) – laplacian alpha to apply at frequence.</p></li>
+<li><p><strong>random_state</strong> (<em>numpy.random.mtrand.RandomState</em>) – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A partitioning of features.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>numpy.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="deeprob.spn.learning.splitting.entropy.entropy_adaptive_cols">
+<span class="sig-prename descclassname"><span class="pre">deeprob.spn.learning.splitting.entropy.</span></span><span class="sig-name descname"><span class="pre">entropy_adaptive_cols</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">distributions</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">domains</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">random_state</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">e</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprob/spn/learning/splitting/entropy.html#entropy_adaptive_cols"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#deeprob.spn.learning.splitting.entropy.entropy_adaptive_cols" title="Permalink to this definition"></a></dt>
+<dd><p>Adaptive Entropy based column splitting method.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> (<em>numpy.ndarray</em>) – The data.</p></li>
+<li><p><strong>distributions</strong> (<em>List</em><em>[</em><em>Type</em><em>[</em><a class="reference internal" href="deeprob.spn.structure.html#deeprob.spn.structure.leaf.Leaf" title="deeprob.spn.structure.leaf.Leaf"><em>deeprob.spn.structure.leaf.Leaf</em></a><em>]</em><em>]</em>) – Distributions of the features.</p></li>
+<li><p><strong>domains</strong> (<em>List</em><em>[</em><em>Union</em><em>[</em><em>list</em><em>, </em><em>tuple</em><em>]</em><em>]</em>) – Range of values of the features.</p></li>
+<li><p><strong>e</strong> (<em>float</em>) – Threshold of the considered entropy to be signficant.</p></li>
+<li><p><strong>alpha</strong> (<em>float</em>) – laplacian alpha to apply at frequence.</p></li>
+<li><p><strong>size</strong> (<em>Optional</em><em>[</em><em>int</em><em>]</em>) – Size of whole dataset.</p></li>
+<li><p><strong>random_state</strong> (<em>numpy.random.mtrand.RandomState</em>) – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A partitioning of features.</p>
+</dd>
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><p><strong>ValueError</strong> – If the size of the data is missing.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>numpy.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-deeprob.spn.learning.splitting.gini">
+<span id="deeprob-spn-learning-splitting-gini-module"></span><h2>deeprob.spn.learning.splitting.gini module<a class="headerlink" href="#module-deeprob.spn.learning.splitting.gini" title="Permalink to this headline"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="deeprob.spn.learning.splitting.gini.gini_cols">
+<span class="sig-prename descclassname"><span class="pre">deeprob.spn.learning.splitting.gini.</span></span><span class="sig-name descname"><span class="pre">gini_cols</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">distributions</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">domains</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">random_state</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">e</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprob/spn/learning/splitting/gini.html#gini_cols"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#deeprob.spn.learning.splitting.gini.gini_cols" title="Permalink to this definition"></a></dt>
+<dd><p>Gini index column splitting method.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> (<em>numpy.ndarray</em>) – The data.</p></li>
+<li><p><strong>distributions</strong> (<em>List</em><em>[</em><em>Type</em><em>[</em><a class="reference internal" href="deeprob.spn.structure.html#deeprob.spn.structure.leaf.Leaf" title="deeprob.spn.structure.leaf.Leaf"><em>deeprob.spn.structure.leaf.Leaf</em></a><em>]</em><em>]</em>) – Distributions of the features.</p></li>
+<li><p><strong>domains</strong> (<em>List</em><em>[</em><em>Union</em><em>[</em><em>list</em><em>, </em><em>tuple</em><em>]</em><em>]</em>) – Range of values of the features.</p></li>
+<li><p><strong>e</strong> (<em>float</em>) – Threshold of the considered entropy to be signficant.</p></li>
+<li><p><strong>alpha</strong> (<em>float</em>) – laplacian alpha to apply at frequence.</p></li>
+<li><p><strong>random_state</strong> (<em>numpy.random.mtrand.RandomState</em>) – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A partitioning of features.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>numpy.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="deeprob.spn.learning.splitting.gini.gini_adaptive_cols">
+<span class="sig-prename descclassname"><span class="pre">deeprob.spn.learning.splitting.gini.</span></span><span class="sig-name descname"><span class="pre">gini_adaptive_cols</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">distributions</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">domains</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">random_state</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">e</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprob/spn/learning/splitting/gini.html#gini_adaptive_cols"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#deeprob.spn.learning.splitting.gini.gini_adaptive_cols" title="Permalink to this definition"></a></dt>
+<dd><p>Adaptive Gini index column splitting method.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> (<em>numpy.ndarray</em>) – The data.</p></li>
+<li><p><strong>distributions</strong> (<em>List</em><em>[</em><em>Type</em><em>[</em><a class="reference internal" href="deeprob.spn.structure.html#deeprob.spn.structure.leaf.Leaf" title="deeprob.spn.structure.leaf.Leaf"><em>deeprob.spn.structure.leaf.Leaf</em></a><em>]</em><em>]</em>) – Distributions of the features.</p></li>
+<li><p><strong>domains</strong> (<em>List</em><em>[</em><em>Union</em><em>[</em><em>list</em><em>, </em><em>tuple</em><em>]</em><em>]</em>) – Range of values of the features.</p></li>
+<li><p><strong>e</strong> (<em>float</em>) – Threshold of the considered entropy to be signficant.</p></li>
+<li><p><strong>alpha</strong> (<em>float</em>) – laplacian alpha to apply at frequence.</p></li>
+<li><p><strong>size</strong> (<em>Optional</em><em>[</em><em>int</em><em>]</em>) – Size of whole dataset.</p></li>
+<li><p><strong>random_state</strong> (<em>numpy.random.mtrand.RandomState</em>) – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A partitioning of features.</p>
+</dd>
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><p><strong>ValueError</strong> – If the size of the data is missing.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>numpy.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-deeprob.spn.learning.splitting.gvs">
+<span id="deeprob-spn-learning-splitting-gvs-module"></span><h2>deeprob.spn.learning.splitting.gvs module<a class="headerlink" href="#module-deeprob.spn.learning.splitting.gvs" title="Permalink to this headline"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="deeprob.spn.learning.splitting.gvs.gvs_cols">
+<span class="sig-prename descclassname"><span class="pre">deeprob.spn.learning.splitting.gvs.</span></span><span class="sig-name descname"><span class="pre">gvs_cols</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">distributions</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">domains</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">random_state</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5.0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprob/spn/learning/splitting/gvs.html#gvs_cols"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#deeprob.spn.learning.splitting.gvs.gvs_cols" title="Permalink to this definition"></a></dt>
+<dd><p>Greedy Variable Splitting (GVS) independence test.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> (<em>numpy.ndarray</em>) – The data.</p></li>
+<li><p><strong>distributions</strong> (<em>List</em><em>[</em><em>Type</em><em>[</em><a class="reference internal" href="deeprob.spn.structure.html#deeprob.spn.structure.leaf.Leaf" title="deeprob.spn.structure.leaf.Leaf"><em>deeprob.spn.structure.leaf.Leaf</em></a><em>]</em><em>]</em>) – The distributions.</p></li>
+<li><p><strong>domains</strong> (<em>List</em><em>[</em><em>Union</em><em>[</em><em>list</em><em>, </em><em>tuple</em><em>]</em><em>]</em>) – The domains.</p></li>
+<li><p><strong>random_state</strong> (<em>numpy.random.mtrand.RandomState</em>) – The random state.</p></li>
+<li><p><strong>p</strong> (<em>float</em>) – The threshold for the G-Test.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A partitioning of features.</p>
+</dd>
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><p><strong>ValueError</strong> – If the leaf distributions are discrete and continuous.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>numpy.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="deeprob.spn.learning.splitting.gvs.rgvs_cols">
+<span class="sig-prename descclassname"><span class="pre">deeprob.spn.learning.splitting.gvs.</span></span><span class="sig-name descname"><span class="pre">rgvs_cols</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">distributions</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">domains</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">random_state</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5.0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprob/spn/learning/splitting/gvs.html#rgvs_cols"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#deeprob.spn.learning.splitting.gvs.rgvs_cols" title="Permalink to this definition"></a></dt>
+<dd><p>Random Greedy Variable Splitting (RGVS) independence test.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> (<em>numpy.ndarray</em>) – The data.</p></li>
+<li><p><strong>distributions</strong> (<em>List</em><em>[</em><em>Type</em><em>[</em><a class="reference internal" href="deeprob.spn.structure.html#deeprob.spn.structure.leaf.Leaf" title="deeprob.spn.structure.leaf.Leaf"><em>deeprob.spn.structure.leaf.Leaf</em></a><em>]</em><em>]</em>) – The distributions.</p></li>
+<li><p><strong>domains</strong> (<em>List</em><em>[</em><em>Union</em><em>[</em><em>list</em><em>, </em><em>tuple</em><em>]</em><em>]</em>) – The domains.</p></li>
+<li><p><strong>random_state</strong> (<em>numpy.random.mtrand.RandomState</em>) – The random state.</p></li>
+<li><p><strong>p</strong> (<em>float</em>) – The threshold for the G-Test.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A partitioning of features.</p>
+</dd>
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><p><strong>ValueError</strong> – If the leaf distributions are discrete and continuous.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>numpy.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="deeprob.spn.learning.splitting.gvs.wrgvs_cols">
+<span class="sig-prename descclassname"><span class="pre">deeprob.spn.learning.splitting.gvs.</span></span><span class="sig-name descname"><span class="pre">wrgvs_cols</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">distributions</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">domains</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">random_state</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5.0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprob/spn/learning/splitting/gvs.html#wrgvs_cols"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#deeprob.spn.learning.splitting.gvs.wrgvs_cols" title="Permalink to this definition"></a></dt>
+<dd><p>Wiser Random Greedy Variable Splitting (WRGVS) independence test.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> (<em>numpy.ndarray</em>) – The data.</p></li>
+<li><p><strong>distributions</strong> (<em>List</em><em>[</em><em>Type</em><em>[</em><a class="reference internal" href="deeprob.spn.structure.html#deeprob.spn.structure.leaf.Leaf" title="deeprob.spn.structure.leaf.Leaf"><em>deeprob.spn.structure.leaf.Leaf</em></a><em>]</em><em>]</em>) – The distributions.</p></li>
+<li><p><strong>domains</strong> (<em>List</em><em>[</em><em>Union</em><em>[</em><em>list</em><em>, </em><em>tuple</em><em>]</em><em>]</em>) – The domains.</p></li>
+<li><p><strong>random_state</strong> (<em>numpy.random.mtrand.RandomState</em>) – The random state.</p></li>
+<li><p><strong>p</strong> (<em>float</em>) – The threshold for the G-Test.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A partitioning of features.</p>
+</dd>
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><p><strong>ValueError</strong> – If the leaf distributions are discrete and continuous.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>numpy.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="deeprob.spn.learning.splitting.gvs.gtest">
+<span class="sig-prename descclassname"><span class="pre">deeprob.spn.learning.splitting.gvs.</span></span><span class="sig-name descname"><span class="pre">gtest</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">i</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">j</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">distributions</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">domains</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">test</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprob/spn/learning/splitting/gvs.html#gtest"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#deeprob.spn.learning.splitting.gvs.gtest" title="Permalink to this definition"></a></dt>
+<dd><p>The G-Test independence test between two features.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> (<em>numpy.ndarray</em>) – The data.</p></li>
+<li><p><strong>i</strong> (<em>int</em>) – The index of the first feature.</p></li>
+<li><p><strong>j</strong> (<em>int</em>) – The index of the second feature.</p></li>
+<li><p><strong>distributions</strong> (<em>List</em><em>[</em><em>Type</em><em>[</em><a class="reference internal" href="deeprob.spn.structure.html#deeprob.spn.structure.leaf.Leaf" title="deeprob.spn.structure.leaf.Leaf"><em>deeprob.spn.structure.leaf.Leaf</em></a><em>]</em><em>]</em>) – The distributions.</p></li>
+<li><p><strong>domains</strong> (<em>List</em><em>[</em><em>Union</em><em>[</em><em>list</em><em>, </em><em>tuple</em><em>]</em><em>]</em>) – The domains.</p></li>
+<li><p><strong>p</strong> (<em>float</em>) – The threshold for the G-Test.</p></li>
+<li><p><strong>test</strong> (<em>bool</em>) – If the method is called as test (true) or as value of statistics (false), default True.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>False if the features are assumed to be dependent, True otherwise.</p>
+</dd>
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><p><strong>ValueError</strong> – If the leaf distributions are discrete and continuous.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>Union[bool, float]</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-deeprob.spn.learning.splitting.random">
+<span id="deeprob-spn-learning-splitting-random-module"></span><h2>deeprob.spn.learning.splitting.random module<a class="headerlink" href="#module-deeprob.spn.learning.splitting.random" title="Permalink to this headline"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="deeprob.spn.learning.splitting.random.random_rows">
+<span class="sig-prename descclassname"><span class="pre">deeprob.spn.learning.splitting.random.</span></span><span class="sig-name descname"><span class="pre">random_rows</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">distributions</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">domains</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">random_state</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">a</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2.0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprob/spn/learning/splitting/random.html#random_rows"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#deeprob.spn.learning.splitting.random.random_rows" title="Permalink to this definition"></a></dt>
+<dd><p>Choose a binary partition horizontally randomly.
+The proportion of the split is sampled from a beta distribution.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> (<em>numpy.ndarray</em>) – The data.</p></li>
+<li><p><strong>distributions</strong> (<em>List</em><em>[</em><em>Type</em><em>[</em><a class="reference internal" href="deeprob.spn.structure.html#deeprob.spn.structure.leaf.Leaf" title="deeprob.spn.structure.leaf.Leaf"><em>deeprob.spn.structure.leaf.Leaf</em></a><em>]</em><em>]</em>) – The data distributions (not used).</p></li>
+<li><p><strong>domains</strong> (<em>List</em><em>[</em><em>Union</em><em>[</em><em>list</em><em>, </em><em>tuple</em><em>]</em><em>]</em>) – The data domains (not used).</p></li>
+<li><p><strong>random_state</strong> (<em>numpy.random.mtrand.RandomState</em>) – The random state.</p></li>
+<li><p><strong>a</strong> (<em>float</em>) – The alpha parameter of the beta distribution.</p></li>
+<li><p><strong>b</strong> (<em>float</em>) – The beta parameter of the beta distribution.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A binary partition.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>numpy.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="deeprob.spn.learning.splitting.random.random_cols">
+<span class="sig-prename descclassname"><span class="pre">deeprob.spn.learning.splitting.random.</span></span><span class="sig-name descname"><span class="pre">random_cols</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">distributions</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">domains</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">random_state</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">a</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2.0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprob/spn/learning/splitting/random.html#random_cols"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#deeprob.spn.learning.splitting.random.random_cols" title="Permalink to this definition"></a></dt>
+<dd><p>Choose a binary partition vertically randomly.
+The proportion of the split is sampled from a beta distribution.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> (<em>numpy.ndarray</em>) – The data.</p></li>
+<li><p><strong>distributions</strong> (<em>List</em><em>[</em><em>Type</em><em>[</em><a class="reference internal" href="deeprob.spn.structure.html#deeprob.spn.structure.leaf.Leaf" title="deeprob.spn.structure.leaf.Leaf"><em>deeprob.spn.structure.leaf.Leaf</em></a><em>]</em><em>]</em>) – The data distributions (not used).</p></li>
+<li><p><strong>domains</strong> (<em>List</em><em>[</em><em>Union</em><em>[</em><em>list</em><em>, </em><em>tuple</em><em>]</em><em>]</em>) – The data domains (not used).</p></li>
+<li><p><strong>random_state</strong> (<em>numpy.random.mtrand.RandomState</em>) – The random state.</p></li>
+<li><p><strong>a</strong> (<em>float</em>) – The alpha parameter of the beta distribution.</p></li>
+<li><p><strong>b</strong> (<em>float</em>) – The beta parameter of the beta distribution.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A binary partition.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>numpy.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-deeprob.spn.learning.splitting.rdc">
+<span id="deeprob-spn-learning-splitting-rdc-module"></span><h2>deeprob.spn.learning.splitting.rdc module<a class="headerlink" href="#module-deeprob.spn.learning.splitting.rdc" title="Permalink to this headline"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="deeprob.spn.learning.splitting.rdc.rdc_cols">
+<span class="sig-prename descclassname"><span class="pre">deeprob.spn.learning.splitting.rdc.</span></span><span class="sig-name descname"><span class="pre">rdc_cols</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">distributions</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">domains</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">random_state</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">d=0.3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">k=20</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">s=0.16666666666666666</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nl=&lt;ufunc</span> <span class="pre">'sin'&gt;</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprob/spn/learning/splitting/rdc.html#rdc_cols"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#deeprob.spn.learning.splitting.rdc.rdc_cols" title="Permalink to this definition"></a></dt>
+<dd><p>Split the features using the RDC (Randomized Dependency Coefficient) method.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> (<em>numpy.ndarray</em>) – The data.</p></li>
+<li><p><strong>distributions</strong> (<em>List</em><em>[</em><em>Type</em><em>[</em><a class="reference internal" href="deeprob.spn.structure.html#deeprob.spn.structure.leaf.Leaf" title="deeprob.spn.structure.leaf.Leaf"><em>deeprob.spn.structure.leaf.Leaf</em></a><em>]</em><em>]</em>) – The data distributions.</p></li>
+<li><p><strong>domains</strong> (<em>List</em><em>[</em><em>Union</em><em>[</em><em>list</em><em>, </em><em>tuple</em><em>]</em><em>]</em>) – The data domains.</p></li>
+<li><p><strong>random_state</strong> (<em>numpy.random.mtrand.RandomState</em>) – The random state.</p></li>
+<li><p><strong>d</strong> (<em>float</em>) – The threshold value that regulates the independence tests among the features.</p></li>
+<li><p><strong>k</strong> (<em>int</em>) – The size of the latent space.</p></li>
+<li><p><strong>s</strong> (<em>float</em>) – The standard deviation of the gaussian distribution.</p></li>
+<li><p><strong>nl</strong> (<em>Callable</em><em>[</em><em>[</em><em>numpy.ndarray</em><em>]</em><em>, </em><em>numpy.ndarray</em><em>]</em>) – The non linear function to use.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A features partitioning.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>numpy.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="deeprob.spn.learning.splitting.rdc.rdc_rows">
+<span class="sig-prename descclassname"><span class="pre">deeprob.spn.learning.splitting.rdc.</span></span><span class="sig-name descname"><span class="pre">rdc_rows</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">distributions</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">domains</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">random_state</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n=2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">k=20</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">s=0.16666666666666666</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nl=&lt;ufunc</span> <span class="pre">'sin'&gt;</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprob/spn/learning/splitting/rdc.html#rdc_rows"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#deeprob.spn.learning.splitting.rdc.rdc_rows" title="Permalink to this definition"></a></dt>
+<dd><p>Split the samples using the RDC (Randomized Dependency Coefficient) method.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> (<em>numpy.ndarray</em>) – The data.</p></li>
+<li><p><strong>distributions</strong> (<em>List</em><em>[</em><em>Type</em><em>[</em><a class="reference internal" href="deeprob.spn.structure.html#deeprob.spn.structure.leaf.Leaf" title="deeprob.spn.structure.leaf.Leaf"><em>deeprob.spn.structure.leaf.Leaf</em></a><em>]</em><em>]</em>) – The data distributions.</p></li>
+<li><p><strong>domains</strong> (<em>List</em><em>[</em><em>Union</em><em>[</em><em>list</em><em>, </em><em>tuple</em><em>]</em><em>]</em>) – The data domains.</p></li>
+<li><p><strong>random_state</strong> (<em>numpy.random.mtrand.RandomState</em>) – The random state.</p></li>
+<li><p><strong>n</strong> (<em>int</em>) – The number of clusters for KMeans.</p></li>
+<li><p><strong>k</strong> (<em>int</em>) – The size of the latent space.</p></li>
+<li><p><strong>s</strong> (<em>float</em>) – The standard deviation of the gaussian distribution.</p></li>
+<li><p><strong>nl</strong> (<em>Callable</em><em>[</em><em>[</em><em>numpy.ndarray</em><em>]</em><em>, </em><em>numpy.ndarray</em><em>]</em>) – The non linear function to use.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A samples partitioning.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>numpy.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="deeprob.spn.learning.splitting.rdc.rdc_scores">
+<span class="sig-prename descclassname"><span class="pre">deeprob.spn.learning.splitting.rdc.</span></span><span class="sig-name descname"><span class="pre">rdc_scores</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">distributions</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">domains</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">random_state</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">k=20</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">s=0.16666666666666666</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nl=&lt;ufunc</span> <span class="pre">'sin'&gt;</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprob/spn/learning/splitting/rdc.html#rdc_scores"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#deeprob.spn.learning.splitting.rdc.rdc_scores" title="Permalink to this definition"></a></dt>
+<dd><p>Compute the RDC (Randomized Dependency Coefficient) score for each pair of features.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> (<em>numpy.ndarray</em>) – The data.</p></li>
+<li><p><strong>distributions</strong> (<em>List</em><em>[</em><em>Type</em><em>[</em><a class="reference internal" href="deeprob.spn.structure.html#deeprob.spn.structure.leaf.Leaf" title="deeprob.spn.structure.leaf.Leaf"><em>deeprob.spn.structure.leaf.Leaf</em></a><em>]</em><em>]</em>) – The data distributions.</p></li>
+<li><p><strong>domains</strong> (<em>List</em><em>[</em><em>Union</em><em>[</em><em>list</em><em>, </em><em>tuple</em><em>]</em><em>]</em>) – The data domains.</p></li>
+<li><p><strong>random_state</strong> (<em>numpy.random.mtrand.RandomState</em>) – The random state.</p></li>
+<li><p><strong>k</strong> (<em>int</em>) – The size of the latent space.</p></li>
+<li><p><strong>s</strong> (<em>float</em>) – The standard deviation of the gaussian distribution.</p></li>
+<li><p><strong>nl</strong> (<em>Callable</em><em>[</em><em>[</em><em>numpy.ndarray</em><em>]</em><em>, </em><em>numpy.ndarray</em><em>]</em>) – The non linear function to use.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The RDC score matrix.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>numpy.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="deeprob.spn.learning.splitting.rdc.rdc_cca">
+<span class="sig-prename descclassname"><span class="pre">deeprob.spn.learning.splitting.rdc.</span></span><span class="sig-name descname"><span class="pre">rdc_cca</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">i</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">j</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">features</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprob/spn/learning/splitting/rdc.html#rdc_cca"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#deeprob.spn.learning.splitting.rdc.rdc_cca" title="Permalink to this definition"></a></dt>
+<dd><p>Compute the RDC (Randomized Dependency Coefficient) using CCA (Canonical Correlation Analysis).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>i</strong> (<em>int</em>) – The index of the first feature.</p></li>
+<li><p><strong>j</strong> (<em>int</em>) – The index of the second feature.</p></li>
+<li><p><strong>features</strong> (<em>List</em><em>[</em><em>numpy.ndarray</em><em>]</em>) – The list of the features.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The RDC coefficient (the largest canonical correlation coefficient).</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="deeprob.spn.learning.splitting.rdc.rdc_transform">
+<span class="sig-prename descclassname"><span class="pre">deeprob.spn.learning.splitting.rdc.</span></span><span class="sig-name descname"><span class="pre">rdc_transform</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">distributions</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">domains</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">random_state</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">k=20</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">s=0.16666666666666666</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nl=&lt;ufunc</span> <span class="pre">'sin'&gt;</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprob/spn/learning/splitting/rdc.html#rdc_transform"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#deeprob.spn.learning.splitting.rdc.rdc_transform" title="Permalink to this definition"></a></dt>
+<dd><p>Execute the RDC (Randomized Dependency Coefficient) pipeline on some data.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> (<em>numpy.ndarray</em>) – The data.</p></li>
+<li><p><strong>distributions</strong> (<em>List</em><em>[</em><em>Type</em><em>[</em><a class="reference internal" href="deeprob.spn.structure.html#deeprob.spn.structure.leaf.Leaf" title="deeprob.spn.structure.leaf.Leaf"><em>deeprob.spn.structure.leaf.Leaf</em></a><em>]</em><em>]</em>) – The data distributions.</p></li>
+<li><p><strong>domains</strong> (<em>List</em><em>[</em><em>Union</em><em>[</em><em>list</em><em>, </em><em>tuple</em><em>]</em><em>]</em>) – The data domains.</p></li>
+<li><p><strong>random_state</strong> (<em>numpy.random.mtrand.RandomState</em>) – The random state.</p></li>
+<li><p><strong>k</strong> (<em>int</em>) – The size of the latent space.</p></li>
+<li><p><strong>s</strong> (<em>float</em>) – The standard deviation of the gaussian distribution.</p></li>
+<li><p><strong>nl</strong> (<em>Callable</em><em>[</em><em>[</em><em>numpy.ndarray</em><em>]</em><em>, </em><em>numpy.ndarray</em><em>]</em>) – The non-linear function to use.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The transformed data.</p>
+</dd>
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><p><strong>ValueError</strong> – If an unknown distribution type is found.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>List[numpy.ndarray]</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-deeprob.spn.learning.splitting.rows">
+<span id="deeprob-spn-learning-splitting-rows-module"></span><h2>deeprob.spn.learning.splitting.rows module<a class="headerlink" href="#module-deeprob.spn.learning.splitting.rows" title="Permalink to this headline"></a></h2>
+<dl class="py data">
+<dt class="sig sig-object py" id="deeprob.spn.learning.splitting.rows.SplitRowsFunc">
+<span class="sig-prename descclassname"><span class="pre">deeprob.spn.learning.splitting.rows.</span></span><span class="sig-name descname"><span class="pre">SplitRowsFunc</span></span><a class="headerlink" href="#deeprob.spn.learning.splitting.rows.SplitRowsFunc" title="Permalink to this definition"></a></dt>
+<dd><p>A signature for a rows splitting function.</p>
+<p>alias of <code class="xref py py-class docutils literal notranslate"><span class="pre">Callable</span></code>[[<code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Type</span></code>[<a class="reference internal" href="deeprob.spn.structure.html#deeprob.spn.structure.leaf.Leaf" title="deeprob.spn.structure.leaf.Leaf"><code class="xref py py-class docutils literal notranslate"><span class="pre">deeprob.spn.structure.leaf.Leaf</span></code></a>]], <code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-obj docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code>]], <code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.random.mtrand.RandomState</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">Any</span></code>], <code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray</span></code>]</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="deeprob.spn.learning.splitting.rows.split_rows_clusters">
+<span class="sig-prename descclassname"><span class="pre">deeprob.spn.learning.splitting.rows.</span></span><span class="sig-name descname"><span class="pre">split_rows_clusters</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">clusters</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprob/spn/learning/splitting/rows.html#split_rows_clusters"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#deeprob.spn.learning.splitting.rows.split_rows_clusters" title="Permalink to this definition"></a></dt>
+<dd><p>Split the data horizontally given the clusters.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> (<em>numpy.ndarray</em>) – The data.</p></li>
+<li><p><strong>clusters</strong> (<em>numpy.ndarray</em>) – The clusters.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>(slices, weights) where slices is a list of partial data and
+weights is a list of proportions of the local data in respect to the original data.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>Tuple[List[numpy.ndarray], List[float]]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="deeprob.spn.learning.splitting.rows.get_split_rows_method">
+<span class="sig-prename descclassname"><span class="pre">deeprob.spn.learning.splitting.rows.</span></span><span class="sig-name descname"><span class="pre">get_split_rows_method</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">split_rows</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprob/spn/learning/splitting/rows.html#get_split_rows_method"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#deeprob.spn.learning.splitting.rows.get_split_rows_method" title="Permalink to this definition"></a></dt>
+<dd><p>Get the rows splitting method given a string.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>split_rows</strong> (<em>str</em>) – The string of the method do get.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The corresponding rows splitting function.</p>
+</dd>
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><p><strong>ValueError</strong> – If the rows splitting method is unknown.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>Callable[[numpy.ndarray, List[Type[<a class="reference internal" href="deeprob.spn.structure.html#deeprob.spn.structure.leaf.Leaf" title="deeprob.spn.structure.leaf.Leaf">deeprob.spn.structure.leaf.Leaf</a>]], List[Union[list, tuple]], numpy.random.mtrand.RandomState, Any], numpy.ndarray]</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-deeprob.spn.learning.splitting">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-deeprob.spn.learning.splitting" title="Permalink to this headline"></a></h2>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="deeprob.spn.learning.html" class="btn btn-neutral float-left" title="deeprob.spn.learning package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="deeprob.spn.models.html" class="btn btn-neutral float-right" title="deeprob.spn.models package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, Lorenzo Loconte, Gennaro Gala.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    <span class="fa fa-book"> Other Versions</span>
+    v: v1.1.0
+    <span class="fa fa-caret-down"></span>
+  </span>
+  <div class="rst-other-versions">
+    <dl>
+      <dt>Tags</dt>
+      <dd><a href="../../v1.0.0/index.html">v1.0.0</a></dd>
+      <dd><a href="deeprob.spn.learning.splitting.html">v1.1.0</a></dd>
+    </dl>
+    <dl>
+      <dt>Branches</dt>
+      <dd><a href="../../main/index.html">main</a></dd>
+    </dl>
+  </div>
+</div><script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

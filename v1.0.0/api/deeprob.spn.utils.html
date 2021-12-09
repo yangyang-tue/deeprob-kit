@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>deeprob.spn.utils package &mdash; DeeProb-kit 0.6.4 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/custom.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="deeprob.torch package" href="deeprob.torch.html" />
+    <link rel="prev" title="deeprob.spn.structure package" href="deeprob.spn.structure.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> DeeProb-kit
+            <img src="../_static/deeprob-logo-minimal.svg" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Read Me</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../home.html">Abstract</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../home.html#features">Features</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../home.html#installation-documentation">Installation &amp; Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../home.html#datasets-and-experiments">Datasets and Experiments</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../home.html#code-examples">Code Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../home.html#related-repositories">Related Repositories</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../home.html#references">References</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Modules</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="deeprob.html">deeprob package</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="deeprob.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="deeprob.flows.html">deeprob.flows package</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="deeprob.spn.html">deeprob.spn package</a><ul class="current">
+<li class="toctree-l4 current"><a class="reference internal" href="deeprob.spn.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l5"><a class="reference internal" href="deeprob.spn.algorithms.html">deeprob.spn.algorithms package</a></li>
+<li class="toctree-l5"><a class="reference internal" href="deeprob.spn.layers.html">deeprob.spn.layers package</a></li>
+<li class="toctree-l5"><a class="reference internal" href="deeprob.spn.learning.html">deeprob.spn.learning package</a></li>
+<li class="toctree-l5"><a class="reference internal" href="deeprob.spn.models.html">deeprob.spn.models package</a></li>
+<li class="toctree-l5"><a class="reference internal" href="deeprob.spn.structure.html">deeprob.spn.structure package</a></li>
+<li class="toctree-l5 current"><a class="current reference internal" href="#">deeprob.spn.utils package</a><ul>
+<li class="toctree-l6"><a class="reference internal" href="#submodules">Submodules</a></li>
+<li class="toctree-l6"><a class="reference internal" href="#module-deeprob.spn.utils.filter">deeprob.spn.utils.filter module</a></li>
+<li class="toctree-l6"><a class="reference internal" href="#module-deeprob.spn.utils.partitioning">deeprob.spn.utils.partitioning module</a></li>
+<li class="toctree-l6"><a class="reference internal" href="#module-deeprob.spn.utils.statistics">deeprob.spn.utils.statistics module</a></li>
+<li class="toctree-l6"><a class="reference internal" href="#module-deeprob.spn.utils.validity">deeprob.spn.utils.validity module</a></li>
+<li class="toctree-l6"><a class="reference internal" href="#module-deeprob.spn.utils">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="deeprob.spn.html#module-deeprob.spn">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="deeprob.torch.html">deeprob.torch package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="deeprob.utils.html">deeprob.utils package</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="deeprob.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="deeprob.html#module-deeprob.context">deeprob.context module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="deeprob.html#module-deeprob">Module contents</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">DeeProb-kit</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="deeprob.html">deeprob package</a> &raquo;</li>
+          <li><a href="deeprob.spn.html">deeprob.spn package</a> &raquo;</li>
+      <li>deeprob.spn.utils package</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/api/deeprob.spn.utils.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="deeprob-spn-utils-package">
+<h1>deeprob.spn.utils package<a class="headerlink" href="#deeprob-spn-utils-package" title="Permalink to this headline"></a></h1>
+<section id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline"></a></h2>
+</section>
+<section id="module-deeprob.spn.utils.filter">
+<span id="deeprob-spn-utils-filter-module"></span><h2>deeprob.spn.utils.filter module<a class="headerlink" href="#module-deeprob.spn.utils.filter" title="Permalink to this headline"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="deeprob.spn.utils.filter.collect_nodes">
+<span class="sig-prename descclassname"><span class="pre">deeprob.spn.utils.filter.</span></span><span class="sig-name descname"><span class="pre">collect_nodes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">root</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprob/spn/utils/filter.html#collect_nodes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#deeprob.spn.utils.filter.collect_nodes" title="Permalink to this definition"></a></dt>
+<dd><p>Get all the nodes in a SPN.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>root</strong> (<a class="reference internal" href="deeprob.spn.structure.html#deeprob.spn.structure.node.Node" title="deeprob.spn.structure.node.Node"><em>deeprob.spn.structure.node.Node</em></a>) – The root of the SPN.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A list of nodes.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>List[<a class="reference internal" href="deeprob.spn.structure.html#deeprob.spn.structure.node.Node" title="deeprob.spn.structure.node.Node">deeprob.spn.structure.node.Node</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="deeprob.spn.utils.filter.filter_nodes_by_type">
+<span class="sig-prename descclassname"><span class="pre">deeprob.spn.utils.filter.</span></span><span class="sig-name descname"><span class="pre">filter_nodes_by_type</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">root</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ntype=&lt;class</span> <span class="pre">'deeprob.spn.structure.node.Node'&gt;</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprob/spn/utils/filter.html#filter_nodes_by_type"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#deeprob.spn.utils.filter.filter_nodes_by_type" title="Permalink to this definition"></a></dt>
+<dd><p>Get the nodes of some specified types in a SPN.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>root</strong> (<a class="reference internal" href="deeprob.spn.structure.html#deeprob.spn.structure.node.Node" title="deeprob.spn.structure.node.Node"><em>deeprob.spn.structure.node.Node</em></a>) – The root of the SPN.</p></li>
+<li><p><strong>ntype</strong> (<em>Union</em><em>[</em><em>Type</em><em>[</em><a class="reference internal" href="deeprob.spn.structure.html#deeprob.spn.structure.node.Node" title="deeprob.spn.structure.node.Node"><em>deeprob.spn.structure.node.Node</em></a><em>]</em><em>, </em><em>Tuple</em><em>[</em><em>Type</em><em>[</em><a class="reference internal" href="deeprob.spn.structure.html#deeprob.spn.structure.node.Node" title="deeprob.spn.structure.node.Node"><em>deeprob.spn.structure.node.Node</em></a><em>]</em><em>, </em><em>...</em><em>]</em><em>]</em>) – The node type. Multiple node types can be specified as a tuple.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A list of nodes of some specific types.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>List[Union[<a class="reference internal" href="deeprob.spn.structure.html#deeprob.spn.structure.node.Node" title="deeprob.spn.structure.node.Node">deeprob.spn.structure.node.Node</a>, <a class="reference internal" href="deeprob.spn.structure.html#deeprob.spn.structure.leaf.Leaf" title="deeprob.spn.structure.leaf.Leaf">deeprob.spn.structure.leaf.Leaf</a>, <a class="reference internal" href="deeprob.spn.structure.html#deeprob.spn.structure.node.Sum" title="deeprob.spn.structure.node.Sum">deeprob.spn.structure.node.Sum</a>, <a class="reference internal" href="deeprob.spn.structure.html#deeprob.spn.structure.node.Product" title="deeprob.spn.structure.node.Product">deeprob.spn.structure.node.Product</a>]]</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-deeprob.spn.utils.partitioning">
+<span id="deeprob-spn-utils-partitioning-module"></span><h2>deeprob.spn.utils.partitioning module<a class="headerlink" href="#module-deeprob.spn.utils.partitioning" title="Permalink to this headline"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="deeprob.spn.utils.partitioning.Partition">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">deeprob.spn.utils.partitioning.</span></span><span class="sig-name descname"><span class="pre">Partition</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">row_ids</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">col_ids</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">uncond_vars</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parent_partition</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_naive</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_conj</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprob/spn/utils/partitioning.html#Partition"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#deeprob.spn.utils.partitioning.Partition" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Create a partition, i.e. an object modeling a data slice (and some of its properties)
+by keeping track of its indices (i.e. row_ids and col_ids).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>row_ids</strong> (<em>list</em>) – The row indices of the modeled slice.</p></li>
+<li><p><strong>col_ids</strong> (<em>list</em>) – The column indices of the modeled slice.</p></li>
+<li><p><strong>uncond_vars</strong> (<em>list</em>) – Ordered list of variables from which the conjunction variables will be extracted
+to horizontally split the current partition.</p></li>
+<li><p><strong>parent_partition</strong> (<em>Optional</em><em>[</em><a class="reference internal" href="#deeprob.spn.utils.partitioning.Partition" title="deeprob.spn.utils.partitioning.Partition"><em>Partition</em></a><em>]</em>) – The optional parent partition</p></li>
+<li><p><strong>is_naive</strong> (<em>Optional</em><em>[</em><em>bool</em><em>]</em>) – If True and determinism is not required, a naive factorization will be learnt over the data
+slice modeled by the current partition; otherwise, if True and determinism is required, a disjunction
+will be learnt over the data slice modeled by the current partition.</p></li>
+<li><p><strong>is_conj</strong> (<em>Optional</em><em>[</em><em>bool</em><em>]</em>) – True if the modeled slice is associated to a conjunction, i.e. every row in the slice is
+equal to the others.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="deeprob.spn.utils.partitioning.Partition.set_parent_partition">
+<span class="sig-name descname"><span class="pre">set_parent_partition</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parent_partition</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprob/spn/utils/partitioning.html#Partition.set_parent_partition"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#deeprob.spn.utils.partitioning.Partition.set_parent_partition" title="Permalink to this definition"></a></dt>
+<dd><p>Set the parent partition and update its sub_partitions attribute.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>parent_partition</strong> (<a class="reference internal" href="#deeprob.spn.utils.partitioning.Partition" title="deeprob.spn.utils.partitioning.Partition"><em>deeprob.spn.utils.partitioning.Partition</em></a>) – The parent partition.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="deeprob.spn.utils.partitioning.Partition.is_partitioned">
+<span class="sig-name descname"><span class="pre">is_partitioned</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprob/spn/utils/partitioning.html#Partition.is_partitioned"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#deeprob.spn.utils.partitioning.Partition.is_partitioned" title="Permalink to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>True if the partition is partitioned, False otherwise.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="deeprob.spn.utils.partitioning.Partition.is_horizontally_partitioned">
+<span class="sig-name descname"><span class="pre">is_horizontally_partitioned</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprob/spn/utils/partitioning.html#Partition.is_horizontally_partitioned"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#deeprob.spn.utils.partitioning.Partition.is_horizontally_partitioned" title="Permalink to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>True if the partition is horizontally partitioned, False otherwise.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="deeprob.spn.utils.partitioning.Partition.get_slice">
+<span class="sig-name descname"><span class="pre">get_slice</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprob/spn/utils/partitioning.html#Partition.get_slice"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#deeprob.spn.utils.partitioning.Partition.get_slice" title="Permalink to this definition"></a></dt>
+<dd><p>Slice the input data matrix according to self.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>data</strong> (<em>numpy.ndarray</em>) – The data to be sliced.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The data slice.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>numpy.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="deeprob.spn.utils.partitioning.Partition.get_vertical_split">
+<span class="sig-name descname"><span class="pre">get_vertical_split</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprob/spn/utils/partitioning.html#Partition.get_vertical_split"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#deeprob.spn.utils.partitioning.Partition.get_vertical_split" title="Permalink to this definition"></a></dt>
+<dd><p>If possible, split vertically the current partition.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>list[np.ndarray, np.ndarray]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="deeprob.spn.utils.partitioning.Partition.get_conj_row_ids">
+<span class="sig-name descname"><span class="pre">get_conj_row_ids</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">conj</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_part_inst</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprob/spn/utils/partitioning.html#Partition.get_conj_row_ids"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#deeprob.spn.utils.partitioning.Partition.get_conj_row_ids" title="Permalink to this definition"></a></dt>
+<dd><p>Return the row ids of the instances satisfying the given conjunction.
+The row ids must be found within the slice modeled by the self partition.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> (<em>numpy.ndarray</em>) – The input data.</p></li>
+<li><p><strong>conj</strong> (<em>list</em>) – Conjunction modeled as a list of two lists: the first contains
+the IDs of the variables, the second  the related assignment.
+For example, [[8,3],[1,0]] models the conjunction X8=1 and X3=0.</p></li>
+<li><p><strong>min_part_inst</strong> (<em>int</em>) – the minimum number of instances allowed to return.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The row ids of the instances satisfying the given conjunction iff
+the number of such instances is greater or equal than the minimum number
+of instances allowed to return; otherwise, an empty array.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>numpy.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="deeprob.spn.utils.partitioning.Partition.get_horizontal_split">
+<span class="sig-name descname"><span class="pre">get_horizontal_split</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_part_inst</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">conj_len</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">arity</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sd</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">random_state</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprob/spn/utils/partitioning.html#Partition.get_horizontal_split"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#deeprob.spn.utils.partitioning.Partition.get_horizontal_split" title="Permalink to this definition"></a></dt>
+<dd><p>If possible, split horizontally the current partition.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> (<em>numpy.ndarray</em>) – The input data matrix.</p></li>
+<li><p><strong>min_part_inst</strong> (<em>int</em>) – The minimum number of instances allowed per partition.</p></li>
+<li><p><strong>conj_len</strong> (<em>int</em>) – The conjunction length.</p></li>
+<li><p><strong>arity</strong> (<em>int</em>) – The maximum number of subpartitions for an horizontal partitioned partition.</p></li>
+<li><p><strong>sd</strong> (<em>bool</em>) – True if the generated tree will be used to model a SD PC, False otherwise.</p></li>
+<li><p><strong>random_state</strong> (<em>numpy.random.mtrand.RandomState</em>) – The random state.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>Tuple[list, numpy.ndarray, list]</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="deeprob.spn.utils.partitioning.generate_random_partitioning">
+<span class="sig-prename descclassname"><span class="pre">deeprob.spn.utils.partitioning.</span></span><span class="sig-name descname"><span class="pre">generate_random_partitioning</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_part_inst</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_max_parts</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">conj_len</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">arity</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sd</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">uncond_vars</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">random_state</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprob/spn/utils/partitioning.html#generate_random_partitioning"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#deeprob.spn.utils.partitioning.generate_random_partitioning" title="Permalink to this definition"></a></dt>
+<dd><p>Create a random partition tree.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> (<em>numpy.ndarray</em>) – The input data matrix.</p></li>
+<li><p><strong>min_part_inst</strong> (<em>int</em>) – The minimum number of instances allowed per partition.</p></li>
+<li><p><strong>n_max_parts</strong> (<em>int</em>) – The maximum number of partitions in the tree.</p></li>
+<li><p><strong>conj_len</strong> (<em>int</em>) – The conjunction length.</p></li>
+<li><p><strong>arity</strong> (<em>int</em>) – The maximum number of subpartitions for an horizontal partitioned partition.</p></li>
+<li><p><strong>sd</strong> (<em>bool</em>) – True if the generated tree will be used to model a SD PC, False otherwise.</p></li>
+<li><p><strong>uncond_vars</strong> (<em>list</em>) – Ordered list of variables from which the first <em>conj_len</em> ones
+are extracted as conjunction variables to partition the root partition.</p></li>
+<li><p><strong>random_state</strong> (<em>numpy.random.mtrand.RandomState</em>) – The random state.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return partition_root</dt>
+<dd class="field-even"><p>The partition root of the tree.</p>
+</dd>
+<dt class="field-odd">Return cl_parts_l</dt>
+<dd class="field-odd"><p>List containing the leaf partitions over which a CLTree will be learnt.</p>
+</dd>
+<dt class="field-even">Return conj_vars_l</dt>
+<dd class="field-even"><p>List of lists. Every sublist contains the variables of a conjunction (e.g. [[3, 5]]).
+If a sublist occurs before another, then the former has been used first. There are no duplicates.</p>
+</dd>
+<dt class="field-odd">Return n_partitions</dt>
+<dd class="field-odd"><p>The number of partitions in the generated tree.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-deeprob.spn.utils.statistics">
+<span id="deeprob-spn-utils-statistics-module"></span><h2>deeprob.spn.utils.statistics module<a class="headerlink" href="#module-deeprob.spn.utils.statistics" title="Permalink to this headline"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="deeprob.spn.utils.statistics.compute_statistics">
+<span class="sig-prename descclassname"><span class="pre">deeprob.spn.utils.statistics.</span></span><span class="sig-name descname"><span class="pre">compute_statistics</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">root</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprob/spn/utils/statistics.html#compute_statistics"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#deeprob.spn.utils.statistics.compute_statistics" title="Permalink to this definition"></a></dt>
+<dd><p>Compute some statistics of a SPN given its root.
+The computed statistics are the following:</p>
+<ul class="simple">
+<li><p>n_nodes, the number of nodes</p></li>
+<li><p>n_sum, the number of sum nodes</p></li>
+<li><p>n_prod, the number of product nodes</p></li>
+<li><p>n_leaves, the number of leaves</p></li>
+<li><p>n_edges, the number of edges</p></li>
+<li><p>n_params, the number of parameters</p></li>
+<li><p>depth, the depth of the network</p></li>
+</ul>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>root</strong> (<a class="reference internal" href="deeprob.spn.structure.html#deeprob.spn.structure.node.Node" title="deeprob.spn.structure.node.Node"><em>deeprob.spn.structure.node.Node</em></a>) – The root of the SPN.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A dictionary containing the statistics.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="deeprob.spn.utils.statistics.compute_edges_count">
+<span class="sig-prename descclassname"><span class="pre">deeprob.spn.utils.statistics.</span></span><span class="sig-name descname"><span class="pre">compute_edges_count</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">root</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprob/spn/utils/statistics.html#compute_edges_count"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#deeprob.spn.utils.statistics.compute_edges_count" title="Permalink to this definition"></a></dt>
+<dd><p>Get the number of edges of a SPN given its root.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>root</strong> (<a class="reference internal" href="deeprob.spn.structure.html#deeprob.spn.structure.node.Node" title="deeprob.spn.structure.node.Node"><em>deeprob.spn.structure.node.Node</em></a>) – The root of the SPN.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The number of edges.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="deeprob.spn.utils.statistics.compute_parameters_count">
+<span class="sig-prename descclassname"><span class="pre">deeprob.spn.utils.statistics.</span></span><span class="sig-name descname"><span class="pre">compute_parameters_count</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">root</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprob/spn/utils/statistics.html#compute_parameters_count"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#deeprob.spn.utils.statistics.compute_parameters_count" title="Permalink to this definition"></a></dt>
+<dd><p>Get the number of parameters of a SPN given its root.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>root</strong> (<a class="reference internal" href="deeprob.spn.structure.html#deeprob.spn.structure.node.Node" title="deeprob.spn.structure.node.Node"><em>deeprob.spn.structure.node.Node</em></a>) – The root of the SPN.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The number of parameters.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="deeprob.spn.utils.statistics.compute_depth">
+<span class="sig-prename descclassname"><span class="pre">deeprob.spn.utils.statistics.</span></span><span class="sig-name descname"><span class="pre">compute_depth</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">root</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprob/spn/utils/statistics.html#compute_depth"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#deeprob.spn.utils.statistics.compute_depth" title="Permalink to this definition"></a></dt>
+<dd><p>Get the depth of the SPN given its root.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>root</strong> (<a class="reference internal" href="deeprob.spn.structure.html#deeprob.spn.structure.node.Node" title="deeprob.spn.structure.node.Node"><em>deeprob.spn.structure.node.Node</em></a>) – The root of the SPN.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The depth of the network.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-deeprob.spn.utils.validity">
+<span id="deeprob-spn-utils-validity-module"></span><h2>deeprob.spn.utils.validity module<a class="headerlink" href="#module-deeprob.spn.utils.validity" title="Permalink to this headline"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="deeprob.spn.utils.validity.check_spn">
+<span class="sig-prename descclassname"><span class="pre">deeprob.spn.utils.validity.</span></span><span class="sig-name descname"><span class="pre">check_spn</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">root</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">labeled</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">smooth</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">decomposable</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">structured_decomposable</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprob/spn/utils/validity.html#check_spn"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#deeprob.spn.utils.validity.check_spn" title="Permalink to this definition"></a></dt>
+<dd><p>Check a SPN have certain properties. Defaults to checking only ‘labeled’.
+This function combines several checks over a SPN, hence reducing the computational effort
+used to retrieve the nodes from the SPN.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>root</strong> (<a class="reference internal" href="deeprob.spn.structure.html#deeprob.spn.structure.node.Node" title="deeprob.spn.structure.node.Node"><em>deeprob.spn.structure.node.Node</em></a>) – The root node of the SPN.</p></li>
+<li><p><strong>labeled</strong> (<em>bool</em>) – Whether to check if the SPN is correctly labeled.</p></li>
+<li><p><strong>smooth</strong> (<em>bool</em>) – Whether to check if the SPN is smooth.</p></li>
+<li><p><strong>decomposable</strong> (<em>bool</em>) – Whether to check if the SPN is decomposable.</p></li>
+<li><p><strong>structured_decomposable</strong> (<em>bool</em>) – Whether to check if the SPN is structured decomposable.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><strong>ValueError</strong> – If the SPN doesn’t have a certain property.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="deeprob.spn.utils.validity.is_smooth">
+<span class="sig-prename descclassname"><span class="pre">deeprob.spn.utils.validity.</span></span><span class="sig-name descname"><span class="pre">is_smooth</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">root</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sum_nodes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprob/spn/utils/validity.html#is_smooth"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#deeprob.spn.utils.validity.is_smooth" title="Permalink to this definition"></a></dt>
+<dd><p>Check if the SPN is smooth (or complete).
+It checks that each child of a sum node has the same scope.
+Furthermore, it checks that the sum of the weights of a sum node is close to 1.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>root</strong> (<a class="reference internal" href="deeprob.spn.structure.html#deeprob.spn.structure.node.Node" title="deeprob.spn.structure.node.Node"><em>deeprob.spn.structure.node.Node</em></a>) – The root of the SPN.</p></li>
+<li><p><strong>sum_nodes</strong> (<em>Optional</em><em>[</em><em>List</em><em>[</em><a class="reference internal" href="deeprob.spn.structure.html#deeprob.spn.structure.node.Sum" title="deeprob.spn.structure.node.Sum"><em>deeprob.spn.structure.node.Sum</em></a><em>]</em><em>]</em>) – The list of sum nodes. If None, it will be retrieved starting from the root node.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>None if the SPN is smooth, a reason otherwise.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>Optional[str]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="deeprob.spn.utils.validity.is_decomposable">
+<span class="sig-prename descclassname"><span class="pre">deeprob.spn.utils.validity.</span></span><span class="sig-name descname"><span class="pre">is_decomposable</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">root</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">product_nodes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprob/spn/utils/validity.html#is_decomposable"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#deeprob.spn.utils.validity.is_decomposable" title="Permalink to this definition"></a></dt>
+<dd><p>Check if the SPN is decomposable (or consistent).
+It checks that each child of a product node has disjointed scopes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>root</strong> (<a class="reference internal" href="deeprob.spn.structure.html#deeprob.spn.structure.node.Node" title="deeprob.spn.structure.node.Node"><em>deeprob.spn.structure.node.Node</em></a>) – The root of the SPN.</p></li>
+<li><p><strong>product_nodes</strong> (<em>Optional</em><em>[</em><em>List</em><em>[</em><a class="reference internal" href="deeprob.spn.structure.html#deeprob.spn.structure.node.Product" title="deeprob.spn.structure.node.Product"><em>deeprob.spn.structure.node.Product</em></a><em>]</em><em>]</em>) – The list of product nodes. If None, it will be retrieved starting from the root node.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>None if the SPN is decomposable, a reason otherwise.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>Optional[str]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="deeprob.spn.utils.validity.is_structured_decomposable">
+<span class="sig-prename descclassname"><span class="pre">deeprob.spn.utils.validity.</span></span><span class="sig-name descname"><span class="pre">is_structured_decomposable</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">root</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nodes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprob/spn/utils/validity.html#is_structured_decomposable"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#deeprob.spn.utils.validity.is_structured_decomposable" title="Permalink to this definition"></a></dt>
+<dd><p>Check if the PC is structured decomposable.
+It checks that product nodes follow a vtree.
+Note that if a PC is structured decomposable then it’s also decomposable / consistent.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>root</strong> (<a class="reference internal" href="deeprob.spn.structure.html#deeprob.spn.structure.node.Node" title="deeprob.spn.structure.node.Node"><em>deeprob.spn.structure.node.Node</em></a>) – The root of the PC.</p></li>
+<li><p><strong>nodes</strong> (<em>Optional</em><em>[</em><em>List</em><em>[</em><a class="reference internal" href="deeprob.spn.structure.html#deeprob.spn.structure.node.Node" title="deeprob.spn.structure.node.Node"><em>deeprob.spn.structure.node.Node</em></a><em>]</em><em>]</em>) – The list of nodes. If None, it will be retrieved starting from the root node.</p></li>
+<li><p><strong>verbose</strong> (<em>bool</em>) – if True, it prints the product nodes scopes in a relevant order.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>None if the PC is structured decomposable, a reason otherwise.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>Optional[str]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="deeprob.spn.utils.validity.is_labeled">
+<span class="sig-prename descclassname"><span class="pre">deeprob.spn.utils.validity.</span></span><span class="sig-name descname"><span class="pre">is_labeled</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">root</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nodes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprob/spn/utils/validity.html#is_labeled"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#deeprob.spn.utils.validity.is_labeled" title="Permalink to this definition"></a></dt>
+<dd><p>Check if the SPN is labeled correctly.
+It checks that the initial id is zero and each id is consecutive.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>root</strong> (<a class="reference internal" href="deeprob.spn.structure.html#deeprob.spn.structure.node.Node" title="deeprob.spn.structure.node.Node"><em>deeprob.spn.structure.node.Node</em></a>) – The root of the SPN.</p></li>
+<li><p><strong>nodes</strong> (<em>Optional</em><em>[</em><em>List</em><em>[</em><a class="reference internal" href="deeprob.spn.structure.html#deeprob.spn.structure.node.Node" title="deeprob.spn.structure.node.Node"><em>deeprob.spn.structure.node.Node</em></a><em>]</em><em>]</em>) – The list of nodes. If None, it will be retrieved starting from the root node.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>None if the SPN is labeled correctly, a reason otherwise.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>Optional[str]</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-deeprob.spn.utils">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-deeprob.spn.utils" title="Permalink to this headline"></a></h2>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="deeprob.spn.structure.html" class="btn btn-neutral float-left" title="deeprob.spn.structure package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="deeprob.torch.html" class="btn btn-neutral float-right" title="deeprob.torch package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, Lorenzo Loconte, Gennaro Gala.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    <span class="fa fa-book"> Other Versions</span>
+    v: v1.0.0
+    <span class="fa fa-caret-down"></span>
+  </span>
+  <div class="rst-other-versions">
+    <dl>
+      <dt>Tags</dt>
+      <dd><a href="deeprob.spn.utils.html">v1.0.0</a></dd>
+      <dd><a href="../../v1.1.0/index.html">v1.1.0</a></dd>
+    </dl>
+    <dl>
+      <dt>Branches</dt>
+      <dd><a href="../../main/index.html">main</a></dd>
+    </dl>
+  </div>
+</div><script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

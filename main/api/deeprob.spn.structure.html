@@ -1,0 +1,2048 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>deeprob.spn.structure package &mdash; DeeProb-kit 1.0.0 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/custom.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="deeprob.spn.utils package" href="deeprob.spn.utils.html" />
+    <link rel="prev" title="deeprob.spn.models package" href="deeprob.spn.models.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> DeeProb-kit
+            <img src="../_static/deeprob-logo-minimal.svg" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Read Me</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../markdown/home.html">Abstract</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../markdown/home.html#features">Features</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../markdown/home.html#installation">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../markdown/home.html#project-directories">Project Directories</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../markdown/home.html#related-repositories">Related Repositories</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../markdown/home.html#references">References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../markdown/docs.html">Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../markdown/examples.html">Code Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../markdown/experiments.html">Experiments</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../markdown/benchmark.html">Benchmark</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Modules</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="deeprob.html">deeprob package</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="deeprob.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="deeprob.flows.html">deeprob.flows package</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="deeprob.spn.html">deeprob.spn package</a><ul class="current">
+<li class="toctree-l4 current"><a class="reference internal" href="deeprob.spn.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l5"><a class="reference internal" href="deeprob.spn.algorithms.html">deeprob.spn.algorithms package</a></li>
+<li class="toctree-l5"><a class="reference internal" href="deeprob.spn.layers.html">deeprob.spn.layers package</a></li>
+<li class="toctree-l5"><a class="reference internal" href="deeprob.spn.learning.html">deeprob.spn.learning package</a></li>
+<li class="toctree-l5"><a class="reference internal" href="deeprob.spn.models.html">deeprob.spn.models package</a></li>
+<li class="toctree-l5 current"><a class="current reference internal" href="#">deeprob.spn.structure package</a><ul>
+<li class="toctree-l6"><a class="reference internal" href="#submodules">Submodules</a></li>
+<li class="toctree-l6"><a class="reference internal" href="#module-deeprob.spn.structure.cltree">deeprob.spn.structure.cltree module</a></li>
+<li class="toctree-l6"><a class="reference internal" href="#module-deeprob.spn.structure.io">deeprob.spn.structure.io module</a></li>
+<li class="toctree-l6"><a class="reference internal" href="#module-deeprob.spn.structure.leaf">deeprob.spn.structure.leaf module</a></li>
+<li class="toctree-l6"><a class="reference internal" href="#module-deeprob.spn.structure.node">deeprob.spn.structure.node module</a></li>
+<li class="toctree-l6"><a class="reference internal" href="#module-deeprob.spn.structure">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l5"><a class="reference internal" href="deeprob.spn.utils.html">deeprob.spn.utils package</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="deeprob.spn.html#module-deeprob.spn">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="deeprob.torch.html">deeprob.torch package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="deeprob.utils.html">deeprob.utils package</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="deeprob.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="deeprob.html#module-deeprob.context">deeprob.context module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="deeprob.html#module-deeprob">Module contents</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">DeeProb-kit</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="deeprob.html">deeprob package</a> &raquo;</li>
+          <li><a href="deeprob.spn.html">deeprob.spn package</a> &raquo;</li>
+      <li>deeprob.spn.structure package</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/api/deeprob.spn.structure.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="deeprob-spn-structure-package">
+<h1>deeprob.spn.structure package<a class="headerlink" href="#deeprob-spn-structure-package" title="Permalink to this headline"></a></h1>
+<section id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline"></a></h2>
+</section>
+<section id="module-deeprob.spn.structure.cltree">
+<span id="deeprob-spn-structure-cltree-module"></span><h2>deeprob.spn.structure.cltree module<a class="headerlink" href="#module-deeprob.spn.structure.cltree" title="Permalink to this headline"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="deeprob.spn.structure.cltree.BinaryCLT">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">deeprob.spn.structure.cltree.</span></span><span class="sig-name descname"><span class="pre">BinaryCLT</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scope</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">root</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tree</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">params</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprob/spn/structure/cltree.html#BinaryCLT"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#deeprob.spn.structure.cltree.BinaryCLT" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#deeprob.spn.structure.leaf.Leaf" title="deeprob.spn.structure.leaf.Leaf"><code class="xref py py-class docutils literal notranslate"><span class="pre">deeprob.spn.structure.leaf.Leaf</span></code></a></p>
+<p>Initialize Binary Chow-Liu Tree (CLT) multi-variate leaf node.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>scope</strong> (<em>List</em><em>[</em><em>int</em><em>]</em>) – The scope of the leaf.</p></li>
+<li><p><strong>root</strong> (<em>Optional</em><em>[</em><em>int</em><em>]</em>) – The root node of the CLT. If None it will be chosen randomly.</p></li>
+<li><p><strong>tree</strong> (<em>Optional</em><em>[</em><em>Union</em><em>[</em><em>List</em><em>[</em><em>int</em><em>]</em><em>, </em><em>np.ndarray</em><em>]</em><em>]</em>) – A sequence of variable ids predecessors (encoding the tree structure).</p></li>
+<li><p><strong>params</strong> (<em>Optional</em><em>[</em><em>Union</em><em>[</em><em>List</em><em>[</em><em>List</em><em>[</em><em>List</em><em>[</em><em>float</em><em>]</em><em>]</em><em>]</em><em>, </em><em>np.ndarray</em><em>]</em><em>]</em>) – The CLT conditional probability tables (CPTs), as a (N, 2, 2) Numpy array in logarithmic scale.
+Note that params[i, l, k] = log P(X_i=k | Pa(X_i)=l).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>ValueError</strong> – If the root variable is not in scope.</p></li>
+<li><p><strong>ValueError</strong> – If the tree structure is not compatible with the number of variables and root node.</p></li>
+<li><p><strong>ValueError</strong> – If the CPTs parameters are invalid.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="deeprob.spn.structure.cltree.BinaryCLT.LEAF_TYPE">
+<span class="sig-name descname"><span class="pre">LEAF_TYPE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1</span></em><a class="headerlink" href="#deeprob.spn.structure.cltree.BinaryCLT.LEAF_TYPE" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="deeprob.spn.structure.cltree.BinaryCLT.compute_clt_parameters">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">compute_clt_parameters</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bfs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tree</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">priors</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">joints</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprob/spn/structure/cltree.html#BinaryCLT.compute_clt_parameters"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#deeprob.spn.structure.cltree.BinaryCLT.compute_clt_parameters" title="Permalink to this definition"></a></dt>
+<dd><p>Compute the parameters of the CLTree given the tree structure and the priors and joints distributions.</p>
+<p>This function returns the conditional probability tables (CPTs) in a tensorized form.
+Note that params[i, l, k] = P(X_i=k | Pa(X_i)=l).
+A special case is made for the root distribution which is not conditioned.
+Note that params[root, :, k] = P(X_root=k).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>bfs</strong> (<em>numpy.ndarray</em>) – The bfs structure, i.e. a sequence of successors in a breadth-first traversal.</p></li>
+<li><p><strong>tree</strong> (<em>numpy.ndarray</em>) – The tree structure, i.e. a sequence of predecessors in a tree structure.</p></li>
+<li><p><strong>priors</strong> (<em>numpy.ndarray</em>) – The priors distributions.</p></li>
+<li><p><strong>joints</strong> (<em>numpy.ndarray</em>) – The joints distributions.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The conditional probability tables (CPTs) in a tensorized form.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>numpy.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="deeprob.spn.structure.cltree.BinaryCLT.em_init">
+<span class="sig-name descname"><span class="pre">em_init</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">random_state</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprob/spn/structure/cltree.html#BinaryCLT.em_init"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#deeprob.spn.structure.cltree.BinaryCLT.em_init" title="Permalink to this definition"></a></dt>
+<dd><p>Random initialize the leaf’s parameters for Expectation-Maximization (EM).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>random_state</strong> (<em>numpy.random.mtrand.RandomState</em>) – The random state.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="deeprob.spn.structure.cltree.BinaryCLT.em_step">
+<span class="sig-name descname"><span class="pre">em_step</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">stats</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">step_size</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprob/spn/structure/cltree.html#BinaryCLT.em_step"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#deeprob.spn.structure.cltree.BinaryCLT.em_step" title="Permalink to this definition"></a></dt>
+<dd><p>Compute a batch Expectation-Maximization (EM) step.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>stats</strong> (<em>numpy.ndarray</em>) – The sufficient statistics of each sample.</p></li>
+<li><p><strong>data</strong> (<em>numpy.ndarray</em>) – The data regarding random variables of the leaf.</p></li>
+<li><p><strong>step_size</strong> (<em>float</em>) – The step size of update.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="deeprob.spn.structure.cltree.BinaryCLT.fit">
+<span class="sig-name descname"><span class="pre">fit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">domain</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">random_state</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprob/spn/structure/cltree.html#BinaryCLT.fit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#deeprob.spn.structure.cltree.BinaryCLT.fit" title="Permalink to this definition"></a></dt>
+<dd><p>Fit the distribution parameters (and structure if necessary) given the domain and some training data.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> (<em>numpy.ndarray</em>) – The training data.</p></li>
+<li><p><strong>domain</strong> (<em>List</em><em>[</em><em>list</em><em>]</em>) – The domain of the distribution leaf.</p></li>
+<li><p><strong>alpha</strong> (<em>float</em>) – The Laplace smoothing factor.</p></li>
+<li><p><strong>random_state</strong> (<em>Optional</em><em>[</em><em>Union</em><em>[</em><em>int</em><em>, </em><em>numpy.random.mtrand.RandomState</em><em>]</em><em>]</em>) – The random state. It can be either None, a seed integer or a Numpy RandomState.</p></li>
+<li><p><strong>kwargs</strong> – Optional parameters.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>ValueError</strong> – If the random state is not valid.</p></li>
+<li><p><strong>ValueError</strong> – If a parameter is out of domain.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="deeprob.spn.structure.cltree.BinaryCLT.message_passing">
+<span class="sig-name descname"><span class="pre">message_passing</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">obs_mask</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_lls</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reduce</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'mar'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprob/spn/structure/cltree.html#BinaryCLT.message_passing"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#deeprob.spn.structure.cltree.BinaryCLT.message_passing" title="Permalink to this definition"></a></dt>
+<dd><p>Compute the messages passed from the leaves to the root node.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> (<em>numpy.ndarray</em>) – The input data.</p></li>
+<li><p><strong>obs_mask</strong> (<em>numpy.ndarray</em>) – The mask of observed values.</p></li>
+<li><p><strong>return_lls</strong> (<em>bool</em>) – Whether to compute and return the log-likelihoods.</p></li>
+<li><p><strong>reduce</strong> (<em>str</em>) – The method used to reduce the messages of missing values.
+It can be either ‘mar’ (marginalize the message) or ‘mpe’ (maximum probable explanation).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The messages array if return_lls is False.
+The log-likelihoods if return_lls is True.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>numpy.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="deeprob.spn.structure.cltree.BinaryCLT.likelihood">
+<span class="sig-name descname"><span class="pre">likelihood</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprob/spn/structure/cltree.html#BinaryCLT.likelihood"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#deeprob.spn.structure.cltree.BinaryCLT.likelihood" title="Permalink to this definition"></a></dt>
+<dd><p>Compute the likelihood of the distribution leaf given some input.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>x</strong> (<em>numpy.ndarray</em>) – The inputs.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The resulting likelihoods.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>numpy.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="deeprob.spn.structure.cltree.BinaryCLT.log_likelihood">
+<span class="sig-name descname"><span class="pre">log_likelihood</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprob/spn/structure/cltree.html#BinaryCLT.log_likelihood"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#deeprob.spn.structure.cltree.BinaryCLT.log_likelihood" title="Permalink to this definition"></a></dt>
+<dd><p>Compute the logarithmic likelihood of the distribution leaf given some input.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>x</strong> (<em>numpy.ndarray</em>) – The inputs.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The resulting log-likelihoods.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>numpy.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="deeprob.spn.structure.cltree.BinaryCLT.mpe">
+<span class="sig-name descname"><span class="pre">mpe</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprob/spn/structure/cltree.html#BinaryCLT.mpe"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#deeprob.spn.structure.cltree.BinaryCLT.mpe" title="Permalink to this definition"></a></dt>
+<dd><p>Compute the maximum at posteriori values.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>x</strong> (<em>numpy.ndarray</em>) – The inputs.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The distribution’s maximum at posteriori values.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>numpy.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="deeprob.spn.structure.cltree.BinaryCLT.sample">
+<span class="sig-name descname"><span class="pre">sample</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprob/spn/structure/cltree.html#BinaryCLT.sample"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#deeprob.spn.structure.cltree.BinaryCLT.sample" title="Permalink to this definition"></a></dt>
+<dd><p>Sample from the leaf distribution.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>x</strong> (<em>numpy.ndarray</em>) – The samples with possible NaN values.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The completed samples.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>numpy.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="deeprob.spn.structure.cltree.BinaryCLT.moment">
+<span class="sig-name descname"><span class="pre">moment</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">k</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprob/spn/structure/cltree.html#BinaryCLT.moment"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#deeprob.spn.structure.cltree.BinaryCLT.moment" title="Permalink to this definition"></a></dt>
+<dd><p>Compute the moment of a given order.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>k</strong> (<em>int</em>) – The order of the moment.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The moment of order k.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="deeprob.spn.structure.cltree.BinaryCLT.params_count">
+<span class="sig-name descname"><span class="pre">params_count</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprob/spn/structure/cltree.html#BinaryCLT.params_count"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#deeprob.spn.structure.cltree.BinaryCLT.params_count" title="Permalink to this definition"></a></dt>
+<dd><p>Get the number of parameters of the distribution leaf.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The number of parameters.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="deeprob.spn.structure.cltree.BinaryCLT.params_dict">
+<span class="sig-name descname"><span class="pre">params_dict</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprob/spn/structure/cltree.html#BinaryCLT.params_dict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#deeprob.spn.structure.cltree.BinaryCLT.params_dict" title="Permalink to this definition"></a></dt>
+<dd><p>Get a dictionary representation of the distribution parameters.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>A dictionary containing the distribution parameters.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="deeprob.spn.structure.cltree.BinaryCLT.to_pc">
+<span class="sig-name descname"><span class="pre">to_pc</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprob/spn/structure/cltree.html#BinaryCLT.to_pc"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#deeprob.spn.structure.cltree.BinaryCLT.to_pc" title="Permalink to this definition"></a></dt>
+<dd><p>Convert a Chow-Liu Tree into a smooth, deterministic and structured-decomposable PC</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>A smooth, deterministic and structured-decomposable PC.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference internal" href="#deeprob.spn.structure.node.Node" title="deeprob.spn.structure.node.Node">deeprob.spn.structure.node.Node</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="deeprob.spn.structure.cltree.BinaryCLT.get_scopes">
+<span class="sig-name descname"><span class="pre">get_scopes</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprob/spn/structure/cltree.html#BinaryCLT.get_scopes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#deeprob.spn.structure.cltree.BinaryCLT.get_scopes" title="Permalink to this definition"></a></dt>
+<dd><p>Return a list containing the scope of every node in the PC equivalent to the
+current CLTree (see to_pc() method). Every scope occurs once in the list.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The list of scopes.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-deeprob.spn.structure.io">
+<span id="deeprob-spn-structure-io-module"></span><h2>deeprob.spn.structure.io module<a class="headerlink" href="#module-deeprob.spn.structure.io" title="Permalink to this headline"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="deeprob.spn.structure.io.save_digraph_json">
+<span class="sig-prename descclassname"><span class="pre">deeprob.spn.structure.io.</span></span><span class="sig-name descname"><span class="pre">save_digraph_json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">graph</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">f</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprob/spn/structure/io.html#save_digraph_json"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#deeprob.spn.structure.io.save_digraph_json" title="Permalink to this definition"></a></dt>
+<dd><p>Save a NetworkX directed graph by using the JSON format.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>graph</strong> (<em>networkx.classes.digraph.DiGraph</em>) – The NetworkX directed graph.</p></li>
+<li><p><strong>f</strong> (<em>Union</em><em>[</em><em>IO</em><em>, </em><em>os.PathLike</em><em>, </em><em>str</em><em>]</em>) – A file-like object or a filepath of the output JSON file.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="deeprob.spn.structure.io.load_digraph_json">
+<span class="sig-prename descclassname"><span class="pre">deeprob.spn.structure.io.</span></span><span class="sig-name descname"><span class="pre">load_digraph_json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">f</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprob/spn/structure/io.html#load_digraph_json"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#deeprob.spn.structure.io.load_digraph_json" title="Permalink to this definition"></a></dt>
+<dd><p>Load a NetworkX directed graph by using the JSON format.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>f</strong> (<em>Union</em><em>[</em><em>IO</em><em>, </em><em>os.PathLike</em><em>, </em><em>str</em><em>]</em>) – A file-like object or a filepath of the input JSON file.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The NetworkX directed graph.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>networkx.classes.digraph.DiGraph</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="deeprob.spn.structure.io.save_spn_json">
+<span class="sig-prename descclassname"><span class="pre">deeprob.spn.structure.io.</span></span><span class="sig-name descname"><span class="pre">save_spn_json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">root</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">f</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprob/spn/structure/io.html#save_spn_json"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#deeprob.spn.structure.io.save_spn_json" title="Permalink to this definition"></a></dt>
+<dd><p>Save SPN to file by using the JSON format.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>root</strong> (<a class="reference internal" href="#deeprob.spn.structure.node.Node" title="deeprob.spn.structure.node.Node"><em>deeprob.spn.structure.node.Node</em></a>) – The root node of the SPN.</p></li>
+<li><p><strong>f</strong> (<em>Union</em><em>[</em><em>IO</em><em>, </em><em>os.PathLike</em><em>, </em><em>str</em><em>]</em>) – A file-like object or a filepath of the output JSON file.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="deeprob.spn.structure.io.load_spn_json">
+<span class="sig-prename descclassname"><span class="pre">deeprob.spn.structure.io.</span></span><span class="sig-name descname"><span class="pre">load_spn_json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">f</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">leaves</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprob/spn/structure/io.html#load_spn_json"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#deeprob.spn.structure.io.load_spn_json" title="Permalink to this definition"></a></dt>
+<dd><p>Load SPN from file by using the JSON format.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>f</strong> (<em>Union</em><em>[</em><em>IO</em><em>, </em><em>os.PathLike</em><em>, </em><em>str</em><em>]</em>) – A file-like object or a filepath of the input JSON file.</p></li>
+<li><p><strong>leaves</strong> (<em>Optional</em><em>[</em><em>List</em><em>[</em><em>Type</em><em>[</em><a class="reference internal" href="#deeprob.spn.structure.leaf.Leaf" title="deeprob.spn.structure.leaf.Leaf"><em>deeprob.spn.structure.leaf.Leaf</em></a><em>]</em><em>]</em><em>]</em>) – An optional list of custom leaf classes. Useful when dealing with user-defined leaves.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The loaded SPN with initialied ids for each node.</p>
+</dd>
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><p><strong>ValueError</strong> – If multiple custom leaf classes with the same name are defined.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference internal" href="#deeprob.spn.structure.node.Node" title="deeprob.spn.structure.node.Node">deeprob.spn.structure.node.Node</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="deeprob.spn.structure.io.save_binary_clt_json">
+<span class="sig-prename descclassname"><span class="pre">deeprob.spn.structure.io.</span></span><span class="sig-name descname"><span class="pre">save_binary_clt_json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">clt</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">f</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprob/spn/structure/io.html#save_binary_clt_json"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#deeprob.spn.structure.io.save_binary_clt_json" title="Permalink to this definition"></a></dt>
+<dd><p>Save Binary Chow-Liu Tree (CLT) to file by using the JSON format.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>clt</strong> (<a class="reference internal" href="#deeprob.spn.structure.cltree.BinaryCLT" title="deeprob.spn.structure.cltree.BinaryCLT"><em>deeprob.spn.structure.cltree.BinaryCLT</em></a>) – The binary CLT.</p></li>
+<li><p><strong>f</strong> (<em>Union</em><em>[</em><em>IO</em><em>, </em><em>os.PathLike</em><em>, </em><em>str</em><em>]</em>) – A file-like object or a filepath of the output JSON file.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="deeprob.spn.structure.io.load_binary_clt_json">
+<span class="sig-prename descclassname"><span class="pre">deeprob.spn.structure.io.</span></span><span class="sig-name descname"><span class="pre">load_binary_clt_json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">f</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprob/spn/structure/io.html#load_binary_clt_json"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#deeprob.spn.structure.io.load_binary_clt_json" title="Permalink to this definition"></a></dt>
+<dd><p>Load Binary Chow-Liu Tree (CLT) from file by using the JSON format.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>f</strong> (<em>Union</em><em>[</em><em>IO</em><em>, </em><em>os.PathLike</em><em>, </em><em>str</em><em>]</em>) – A file-like object or a filepath of the input JSON file.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The loaded binary CLT.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#deeprob.spn.structure.cltree.BinaryCLT" title="deeprob.spn.structure.cltree.BinaryCLT">deeprob.spn.structure.cltree.BinaryCLT</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="deeprob.spn.structure.io.spn_to_digraph">
+<span class="sig-prename descclassname"><span class="pre">deeprob.spn.structure.io.</span></span><span class="sig-name descname"><span class="pre">spn_to_digraph</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">root</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprob/spn/structure/io.html#spn_to_digraph"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#deeprob.spn.structure.io.spn_to_digraph" title="Permalink to this definition"></a></dt>
+<dd><p>Convert a SPN to a NetworkX directed graph.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>root</strong> (<a class="reference internal" href="#deeprob.spn.structure.node.Node" title="deeprob.spn.structure.node.Node"><em>deeprob.spn.structure.node.Node</em></a>) – The root node of the SPN.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The corresponding NetworkX directed graph.</p>
+</dd>
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><p><strong>ValueError</strong> – If the SPN structure is not a directed acyclic graph (DAG).</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>networkx.classes.digraph.DiGraph</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="deeprob.spn.structure.io.digraph_to_spn">
+<span class="sig-prename descclassname"><span class="pre">deeprob.spn.structure.io.</span></span><span class="sig-name descname"><span class="pre">digraph_to_spn</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">graph</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">leaf_map</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprob/spn/structure/io.html#digraph_to_spn"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#deeprob.spn.structure.io.digraph_to_spn" title="Permalink to this definition"></a></dt>
+<dd><p>Convert a NetworkX directed graph to a SPN.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>graph</strong> (<em>networkx.classes.digraph.DiGraph</em>) – The NetworkX directed graph.</p></li>
+<li><p><strong>leaf_map</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>Type</em><em>[</em><a class="reference internal" href="#deeprob.spn.structure.leaf.Leaf" title="deeprob.spn.structure.leaf.Leaf"><em>deeprob.spn.structure.leaf.Leaf</em></a><em>]</em><em>]</em>) – The leaf distributions mapper dictionary.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The corresponding SPN.</p>
+</dd>
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><p><strong>ValueError</strong> – If the graph is not a directed acyclic graph (DAG).</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference internal" href="#deeprob.spn.structure.node.Node" title="deeprob.spn.structure.node.Node">deeprob.spn.structure.node.Node</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="deeprob.spn.structure.io.binary_clt_to_digraph">
+<span class="sig-prename descclassname"><span class="pre">deeprob.spn.structure.io.</span></span><span class="sig-name descname"><span class="pre">binary_clt_to_digraph</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">clt</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprob/spn/structure/io.html#binary_clt_to_digraph"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#deeprob.spn.structure.io.binary_clt_to_digraph" title="Permalink to this definition"></a></dt>
+<dd><p>Convert a binary Chow-Liu Tree (CLT) to a NetworkX directed graph.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>clt</strong> (<a class="reference internal" href="#deeprob.spn.structure.cltree.BinaryCLT" title="deeprob.spn.structure.cltree.BinaryCLT"><em>deeprob.spn.structure.cltree.BinaryCLT</em></a>) – The binary CLT.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The corresponding NetworkX directed graph.</p>
+</dd>
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><p><strong>ValueError</strong> – If the CLT is not initialized.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>networkx.classes.digraph.DiGraph</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="deeprob.spn.structure.io.digraph_to_binary_clt">
+<span class="sig-prename descclassname"><span class="pre">deeprob.spn.structure.io.</span></span><span class="sig-name descname"><span class="pre">digraph_to_binary_clt</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">graph</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprob/spn/structure/io.html#digraph_to_binary_clt"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#deeprob.spn.structure.io.digraph_to_binary_clt" title="Permalink to this definition"></a></dt>
+<dd><p>Convert a NetworkX directed graph to a binary Chow-Liu Tree (CLT).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>graph</strong> (<em>networkx.classes.digraph.DiGraph</em>) – The NetworkX directed graph.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The corresponding Chow-Liu Tree.</p>
+</dd>
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><p><strong>ValueError</strong> – If the graph is not a tree.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference internal" href="#deeprob.spn.structure.cltree.BinaryCLT" title="deeprob.spn.structure.cltree.BinaryCLT">deeprob.spn.structure.cltree.BinaryCLT</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="deeprob.spn.structure.io.plot_spn">
+<span class="sig-prename descclassname"><span class="pre">deeprob.spn.structure.io.</span></span><span class="sig-name descname"><span class="pre">plot_spn</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">root</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">f</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprob/spn/structure/io.html#plot_spn"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#deeprob.spn.structure.io.plot_spn" title="Permalink to this definition"></a></dt>
+<dd><p>Plot a SPN into file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>root</strong> (<a class="reference internal" href="#deeprob.spn.structure.node.Node" title="deeprob.spn.structure.node.Node"><em>deeprob.spn.structure.node.Node</em></a>) – The SPN root node.</p></li>
+<li><p><strong>f</strong> (<em>Union</em><em>[</em><em>IO</em><em>, </em><em>os.PathLike</em><em>, </em><em>str</em><em>]</em>) – A file-like object or a filepath of the output file.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>ValueError</strong> – If an unknown node type is found.</p></li>
+<li><p><strong>ValueError</strong> – If the SPN structure is not a DAG.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="deeprob.spn.structure.io.plot_binary_clt">
+<span class="sig-prename descclassname"><span class="pre">deeprob.spn.structure.io.</span></span><span class="sig-name descname"><span class="pre">plot_binary_clt</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">clt</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">f</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">show_weights</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprob/spn/structure/io.html#plot_binary_clt"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#deeprob.spn.structure.io.plot_binary_clt" title="Permalink to this definition"></a></dt>
+<dd><p>Plot a binary Chow-Liu Tree (CLT) into file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>clt</strong> (<a class="reference internal" href="#deeprob.spn.structure.cltree.BinaryCLT" title="deeprob.spn.structure.cltree.BinaryCLT"><em>deeprob.spn.structure.cltree.BinaryCLT</em></a>) – The binary CLT.</p></li>
+<li><p><strong>f</strong> (<em>Union</em><em>[</em><em>IO</em><em>, </em><em>os.PathLike</em><em>, </em><em>str</em><em>]</em>) – A file-like object or a filepath of the output file.</p></li>
+<li><p><strong>show_weights</strong> (<em>bool</em>) – Whether to show the conditional probability tables (CPTs).</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-deeprob.spn.structure.leaf">
+<span id="deeprob-spn-structure-leaf-module"></span><h2>deeprob.spn.structure.leaf module<a class="headerlink" href="#module-deeprob.spn.structure.leaf" title="Permalink to this headline"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="deeprob.spn.structure.leaf.LeafType">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">deeprob.spn.structure.leaf.</span></span><span class="sig-name descname"><span class="pre">LeafType</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprob/spn/structure/leaf.html#LeafType"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#deeprob.spn.structure.leaf.LeafType" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">enum.Enum</span></code></p>
+<p>The type of the distribution leaf.
+It can be either discrete or continuous.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="deeprob.spn.structure.leaf.LeafType.DISCRETE">
+<span class="sig-name descname"><span class="pre">DISCRETE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1</span></em><a class="headerlink" href="#deeprob.spn.structure.leaf.LeafType.DISCRETE" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="deeprob.spn.structure.leaf.LeafType.CONTINUOUS">
+<span class="sig-name descname"><span class="pre">CONTINUOUS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">2</span></em><a class="headerlink" href="#deeprob.spn.structure.leaf.LeafType.CONTINUOUS" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="deeprob.spn.structure.leaf.Leaf">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">deeprob.spn.structure.leaf.</span></span><span class="sig-name descname"><span class="pre">Leaf</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scope</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprob/spn/structure/leaf.html#Leaf"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#deeprob.spn.structure.leaf.Leaf" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#deeprob.spn.structure.node.Node" title="deeprob.spn.structure.node.Node"><code class="xref py py-class docutils literal notranslate"><span class="pre">deeprob.spn.structure.node.Node</span></code></a></p>
+<p>Initialize a leaf node given its scope.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>scope</strong> (<em>Union</em><em>[</em><em>int</em><em>, </em><em>List</em><em>[</em><em>int</em><em>]</em><em>]</em>) – The scope of the leaf.</p></li>
+<li><p><strong>kwargs</strong> – Additional arguments.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="deeprob.spn.structure.leaf.Leaf.LEAF_TYPE">
+<span class="sig-name descname"><span class="pre">LEAF_TYPE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#deeprob.spn.structure.leaf.Leaf.LEAF_TYPE" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="deeprob.spn.structure.leaf.Leaf.em_init">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">em_init</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">random_state</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprob/spn/structure/leaf.html#Leaf.em_init"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#deeprob.spn.structure.leaf.Leaf.em_init" title="Permalink to this definition"></a></dt>
+<dd><p>Random initialize the leaf’s parameters for Expectation-Maximization (EM).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>random_state</strong> (<em>numpy.random.mtrand.RandomState</em>) – The random state.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="deeprob.spn.structure.leaf.Leaf.em_step">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">em_step</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">stats</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">step_size</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprob/spn/structure/leaf.html#Leaf.em_step"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#deeprob.spn.structure.leaf.Leaf.em_step" title="Permalink to this definition"></a></dt>
+<dd><p>Compute a batch Expectation-Maximization (EM) step.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>stats</strong> (<em>numpy.ndarray</em>) – The sufficient statistics of each sample.</p></li>
+<li><p><strong>data</strong> (<em>numpy.ndarray</em>) – The data regarding random variables of the leaf.</p></li>
+<li><p><strong>step_size</strong> (<em>float</em>) – The step size of update.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="deeprob.spn.structure.leaf.Leaf.fit">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">fit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">domain</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprob/spn/structure/leaf.html#Leaf.fit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#deeprob.spn.structure.leaf.Leaf.fit" title="Permalink to this definition"></a></dt>
+<dd><p>Fit the distribution parameters given the domain and some training data.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> (<em>numpy.ndarray</em>) – The training data.</p></li>
+<li><p><strong>domain</strong> (<em>Union</em><em>[</em><em>list</em><em>, </em><em>tuple</em><em>]</em>) – The domain of the distribution leaf.</p></li>
+<li><p><strong>kwargs</strong> – Optional parameters.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><strong>ValueError</strong> – If a parameter is out of domain.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="deeprob.spn.structure.leaf.Leaf.likelihood">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">likelihood</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprob/spn/structure/leaf.html#Leaf.likelihood"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#deeprob.spn.structure.leaf.Leaf.likelihood" title="Permalink to this definition"></a></dt>
+<dd><p>Compute the likelihood of the distribution leaf given some input.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>x</strong> (<em>numpy.ndarray</em>) – The inputs.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The resulting likelihoods.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>numpy.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="deeprob.spn.structure.leaf.Leaf.log_likelihood">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">log_likelihood</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprob/spn/structure/leaf.html#Leaf.log_likelihood"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#deeprob.spn.structure.leaf.Leaf.log_likelihood" title="Permalink to this definition"></a></dt>
+<dd><p>Compute the logarithmic likelihood of the distribution leaf given some input.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>x</strong> (<em>numpy.ndarray</em>) – The inputs.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The resulting log-likelihoods.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>numpy.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="deeprob.spn.structure.leaf.Leaf.mpe">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">mpe</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprob/spn/structure/leaf.html#Leaf.mpe"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#deeprob.spn.structure.leaf.Leaf.mpe" title="Permalink to this definition"></a></dt>
+<dd><p>Compute the maximum at posteriori values.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>x</strong> (<em>numpy.ndarray</em>) – The inputs.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The distribution’s maximum at posteriori values.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>numpy.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="deeprob.spn.structure.leaf.Leaf.sample">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">sample</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprob/spn/structure/leaf.html#Leaf.sample"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#deeprob.spn.structure.leaf.Leaf.sample" title="Permalink to this definition"></a></dt>
+<dd><p>Sample from the leaf distribution.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>x</strong> (<em>numpy.ndarray</em>) – The samples with possible NaN values.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The completed samples.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>numpy.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="deeprob.spn.structure.leaf.Leaf.moment">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">moment</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">k</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprob/spn/structure/leaf.html#Leaf.moment"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#deeprob.spn.structure.leaf.Leaf.moment" title="Permalink to this definition"></a></dt>
+<dd><p>Compute the moment of a given order.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>k</strong> (<em>int</em>) – The order of the moment.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The moment of order k.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="deeprob.spn.structure.leaf.Leaf.params_count">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">params_count</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprob/spn/structure/leaf.html#Leaf.params_count"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#deeprob.spn.structure.leaf.Leaf.params_count" title="Permalink to this definition"></a></dt>
+<dd><p>Get the number of parameters of the distribution leaf.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The number of parameters.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="deeprob.spn.structure.leaf.Leaf.params_dict">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">params_dict</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprob/spn/structure/leaf.html#Leaf.params_dict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#deeprob.spn.structure.leaf.Leaf.params_dict" title="Permalink to this definition"></a></dt>
+<dd><p>Get a dictionary representation of the distribution parameters.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>A dictionary containing the distribution parameters.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="deeprob.spn.structure.leaf.Bernoulli">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">deeprob.spn.structure.leaf.</span></span><span class="sig-name descname"><span class="pre">Bernoulli</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scope</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.5</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprob/spn/structure/leaf.html#Bernoulli"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#deeprob.spn.structure.leaf.Bernoulli" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#deeprob.spn.structure.leaf.Leaf" title="deeprob.spn.structure.leaf.Leaf"><code class="xref py py-class docutils literal notranslate"><span class="pre">deeprob.spn.structure.leaf.Leaf</span></code></a></p>
+<p>Initialize a Bernoulli leaf node given its scope.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>scope</strong> (<em>int</em>) – The scope of the leaf.</p></li>
+<li><p><strong>p</strong> (<em>float</em>) – The Bernoulli probability.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><strong>ValueError</strong> – If a parameter is out of domain.</p>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="deeprob.spn.structure.leaf.Bernoulli.LEAF_TYPE">
+<span class="sig-name descname"><span class="pre">LEAF_TYPE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1</span></em><a class="headerlink" href="#deeprob.spn.structure.leaf.Bernoulli.LEAF_TYPE" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="deeprob.spn.structure.leaf.Bernoulli.fit">
+<span class="sig-name descname"><span class="pre">fit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">domain</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.1</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprob/spn/structure/leaf.html#Bernoulli.fit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#deeprob.spn.structure.leaf.Bernoulli.fit" title="Permalink to this definition"></a></dt>
+<dd><p>Fit the distribution parameters given the domain and some training data.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> (<em>numpy.ndarray</em>) – The training data.</p></li>
+<li><p><strong>domain</strong> (<em>list</em>) – The domain of the distribution leaf.</p></li>
+<li><p><strong>alpha</strong> (<em>float</em>) – The Laplace smoothing factor.</p></li>
+<li><p><strong>kwargs</strong> – Optional parameters.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><strong>ValueError</strong> – If a parameter is out of domain.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="deeprob.spn.structure.leaf.Bernoulli.em_init">
+<span class="sig-name descname"><span class="pre">em_init</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">random_state</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprob/spn/structure/leaf.html#Bernoulli.em_init"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#deeprob.spn.structure.leaf.Bernoulli.em_init" title="Permalink to this definition"></a></dt>
+<dd><p>Random initialize the leaf’s parameters for Expectation-Maximization (EM).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>random_state</strong> (<em>numpy.random.mtrand.RandomState</em>) – The random state.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="deeprob.spn.structure.leaf.Bernoulli.em_step">
+<span class="sig-name descname"><span class="pre">em_step</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">stats</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">step_size</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprob/spn/structure/leaf.html#Bernoulli.em_step"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#deeprob.spn.structure.leaf.Bernoulli.em_step" title="Permalink to this definition"></a></dt>
+<dd><p>Compute a batch Expectation-Maximization (EM) step.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>stats</strong> (<em>numpy.ndarray</em>) – The sufficient statistics of each sample.</p></li>
+<li><p><strong>data</strong> (<em>numpy.ndarray</em>) – The data regarding random variables of the leaf.</p></li>
+<li><p><strong>step_size</strong> (<em>float</em>) – The step size of update.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="deeprob.spn.structure.leaf.Bernoulli.likelihood">
+<span class="sig-name descname"><span class="pre">likelihood</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprob/spn/structure/leaf.html#Bernoulli.likelihood"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#deeprob.spn.structure.leaf.Bernoulli.likelihood" title="Permalink to this definition"></a></dt>
+<dd><p>Compute the likelihood of the distribution leaf given some input.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>x</strong> (<em>numpy.ndarray</em>) – The inputs.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The resulting likelihoods.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>numpy.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="deeprob.spn.structure.leaf.Bernoulli.log_likelihood">
+<span class="sig-name descname"><span class="pre">log_likelihood</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprob/spn/structure/leaf.html#Bernoulli.log_likelihood"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#deeprob.spn.structure.leaf.Bernoulli.log_likelihood" title="Permalink to this definition"></a></dt>
+<dd><p>Compute the logarithmic likelihood of the distribution leaf given some input.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>x</strong> (<em>numpy.ndarray</em>) – The inputs.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The resulting log-likelihoods.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>numpy.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="deeprob.spn.structure.leaf.Bernoulli.mpe">
+<span class="sig-name descname"><span class="pre">mpe</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprob/spn/structure/leaf.html#Bernoulli.mpe"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#deeprob.spn.structure.leaf.Bernoulli.mpe" title="Permalink to this definition"></a></dt>
+<dd><p>Compute the maximum at posteriori values.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>x</strong> (<em>numpy.ndarray</em>) – The inputs.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The distribution’s maximum at posteriori values.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>numpy.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="deeprob.spn.structure.leaf.Bernoulli.sample">
+<span class="sig-name descname"><span class="pre">sample</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprob/spn/structure/leaf.html#Bernoulli.sample"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#deeprob.spn.structure.leaf.Bernoulli.sample" title="Permalink to this definition"></a></dt>
+<dd><p>Sample from the leaf distribution.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>x</strong> (<em>numpy.ndarray</em>) – The samples with possible NaN values.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The completed samples.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>numpy.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="deeprob.spn.structure.leaf.Bernoulli.moment">
+<span class="sig-name descname"><span class="pre">moment</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">k</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprob/spn/structure/leaf.html#Bernoulli.moment"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#deeprob.spn.structure.leaf.Bernoulli.moment" title="Permalink to this definition"></a></dt>
+<dd><p>Compute the moment of a given order.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>k</strong> (<em>int</em>) – The order of the moment.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The moment of order k.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="deeprob.spn.structure.leaf.Bernoulli.params_count">
+<span class="sig-name descname"><span class="pre">params_count</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprob/spn/structure/leaf.html#Bernoulli.params_count"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#deeprob.spn.structure.leaf.Bernoulli.params_count" title="Permalink to this definition"></a></dt>
+<dd><p>Get the number of parameters of the distribution leaf.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The number of parameters.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="deeprob.spn.structure.leaf.Bernoulli.params_dict">
+<span class="sig-name descname"><span class="pre">params_dict</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprob/spn/structure/leaf.html#Bernoulli.params_dict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#deeprob.spn.structure.leaf.Bernoulli.params_dict" title="Permalink to this definition"></a></dt>
+<dd><p>Get a dictionary representation of the distribution parameters.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>A dictionary containing the distribution parameters.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="deeprob.spn.structure.leaf.Categorical">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">deeprob.spn.structure.leaf.</span></span><span class="sig-name descname"><span class="pre">Categorical</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scope</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">categories</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">probabilities</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprob/spn/structure/leaf.html#Categorical"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#deeprob.spn.structure.leaf.Categorical" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#deeprob.spn.structure.leaf.Leaf" title="deeprob.spn.structure.leaf.Leaf"><code class="xref py py-class docutils literal notranslate"><span class="pre">deeprob.spn.structure.leaf.Leaf</span></code></a></p>
+<p>Initialize a Categorical leaf node given its scope.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>scope</strong> (<em>int</em>) – The scope of the leaf.</p></li>
+<li><p><strong>categories</strong> (<em>Optional</em><em>[</em><em>Union</em><em>[</em><em>List</em><em>, </em><em>numpy.ndarray</em><em>]</em><em>]</em>) – The possible categories.</p></li>
+<li><p><strong>probabilities</strong> (<em>Optional</em><em>[</em><em>Union</em><em>[</em><em>List</em><em>, </em><em>numpy.ndarray</em><em>]</em><em>]</em>) – The probabilities associated to each category.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="deeprob.spn.structure.leaf.Categorical.LEAF_TYPE">
+<span class="sig-name descname"><span class="pre">LEAF_TYPE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1</span></em><a class="headerlink" href="#deeprob.spn.structure.leaf.Categorical.LEAF_TYPE" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="deeprob.spn.structure.leaf.Categorical.fit">
+<span class="sig-name descname"><span class="pre">fit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">domain</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.1</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprob/spn/structure/leaf.html#Categorical.fit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#deeprob.spn.structure.leaf.Categorical.fit" title="Permalink to this definition"></a></dt>
+<dd><p>Fit the distribution parameters given the domain and some training data.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> (<em>numpy.ndarray</em>) – The training data.</p></li>
+<li><p><strong>domain</strong> (<em>list</em>) – The domain of the distribution leaf.</p></li>
+<li><p><strong>alpha</strong> (<em>float</em>) – The Laplace smoothing factor.</p></li>
+<li><p><strong>kwargs</strong> – Optional parameters.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><strong>ValueError</strong> – If a parameter is out of domain.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="deeprob.spn.structure.leaf.Categorical.em_init">
+<span class="sig-name descname"><span class="pre">em_init</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">random_state</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprob/spn/structure/leaf.html#Categorical.em_init"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#deeprob.spn.structure.leaf.Categorical.em_init" title="Permalink to this definition"></a></dt>
+<dd><p>Random initialize the leaf’s parameters for Expectation-Maximization (EM).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>random_state</strong> (<em>numpy.random.mtrand.RandomState</em>) – The random state.</p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><strong>ValueError</strong> – If the categories are not initialized.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="deeprob.spn.structure.leaf.Categorical.em_step">
+<span class="sig-name descname"><span class="pre">em_step</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">stats</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">step_size</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprob/spn/structure/leaf.html#Categorical.em_step"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#deeprob.spn.structure.leaf.Categorical.em_step" title="Permalink to this definition"></a></dt>
+<dd><p>Compute a batch Expectation-Maximization (EM) step.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>stats</strong> (<em>numpy.ndarray</em>) – The sufficient statistics of each sample.</p></li>
+<li><p><strong>data</strong> (<em>numpy.ndarray</em>) – The data regarding random variables of the leaf.</p></li>
+<li><p><strong>step_size</strong> (<em>float</em>) – The step size of update.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="deeprob.spn.structure.leaf.Categorical.likelihood">
+<span class="sig-name descname"><span class="pre">likelihood</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprob/spn/structure/leaf.html#Categorical.likelihood"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#deeprob.spn.structure.leaf.Categorical.likelihood" title="Permalink to this definition"></a></dt>
+<dd><p>Compute the likelihood of the distribution leaf given some input.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>x</strong> (<em>numpy.ndarray</em>) – The inputs.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The resulting likelihoods.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>numpy.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="deeprob.spn.structure.leaf.Categorical.log_likelihood">
+<span class="sig-name descname"><span class="pre">log_likelihood</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprob/spn/structure/leaf.html#Categorical.log_likelihood"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#deeprob.spn.structure.leaf.Categorical.log_likelihood" title="Permalink to this definition"></a></dt>
+<dd><p>Compute the logarithmic likelihood of the distribution leaf given some input.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>x</strong> (<em>numpy.ndarray</em>) – The inputs.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The resulting log-likelihoods.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>numpy.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="deeprob.spn.structure.leaf.Categorical.mpe">
+<span class="sig-name descname"><span class="pre">mpe</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprob/spn/structure/leaf.html#Categorical.mpe"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#deeprob.spn.structure.leaf.Categorical.mpe" title="Permalink to this definition"></a></dt>
+<dd><p>Compute the maximum at posteriori values.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>x</strong> (<em>numpy.ndarray</em>) – The inputs.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The distribution’s maximum at posteriori values.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>numpy.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="deeprob.spn.structure.leaf.Categorical.sample">
+<span class="sig-name descname"><span class="pre">sample</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprob/spn/structure/leaf.html#Categorical.sample"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#deeprob.spn.structure.leaf.Categorical.sample" title="Permalink to this definition"></a></dt>
+<dd><p>Sample from the leaf distribution.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>x</strong> (<em>numpy.ndarray</em>) – The samples with possible NaN values.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The completed samples.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>numpy.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="deeprob.spn.structure.leaf.Categorical.moment">
+<span class="sig-name descname"><span class="pre">moment</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">k</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprob/spn/structure/leaf.html#Categorical.moment"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#deeprob.spn.structure.leaf.Categorical.moment" title="Permalink to this definition"></a></dt>
+<dd><p>Compute the moment of a given order.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>k</strong> (<em>int</em>) – The order of the moment.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The moment of order k.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="deeprob.spn.structure.leaf.Categorical.params_count">
+<span class="sig-name descname"><span class="pre">params_count</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprob/spn/structure/leaf.html#Categorical.params_count"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#deeprob.spn.structure.leaf.Categorical.params_count" title="Permalink to this definition"></a></dt>
+<dd><p>Get the number of parameters of the distribution leaf.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The number of parameters.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="deeprob.spn.structure.leaf.Categorical.params_dict">
+<span class="sig-name descname"><span class="pre">params_dict</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprob/spn/structure/leaf.html#Categorical.params_dict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#deeprob.spn.structure.leaf.Categorical.params_dict" title="Permalink to this definition"></a></dt>
+<dd><p>Get a dictionary representation of the distribution parameters.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>A dictionary containing the distribution parameters.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="deeprob.spn.structure.leaf.Isotonic">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">deeprob.spn.structure.leaf.</span></span><span class="sig-name descname"><span class="pre">Isotonic</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scope</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">densities</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">breaks</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprob/spn/structure/leaf.html#Isotonic"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#deeprob.spn.structure.leaf.Isotonic" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#deeprob.spn.structure.leaf.Leaf" title="deeprob.spn.structure.leaf.Leaf"><code class="xref py py-class docutils literal notranslate"><span class="pre">deeprob.spn.structure.leaf.Leaf</span></code></a></p>
+<p>Initialize a histogram-Isotonic leaf node given its scope.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>scope</strong> (<em>int</em>) – The scope of the leaf.</p></li>
+<li><p><strong>densities</strong> (<em>Optional</em><em>[</em><em>Union</em><em>[</em><em>List</em><em>[</em><em>float</em><em>]</em><em>, </em><em>numpy.ndarray</em><em>]</em><em>]</em>) – The densities. They must sum up to one.</p></li>
+<li><p><strong>breaks</strong> (<em>Optional</em><em>[</em><em>Union</em><em>[</em><em>List</em><em>[</em><em>float</em><em>]</em><em>, </em><em>numpy.ndarray</em><em>]</em><em>]</em>) – The breaks values, such that len(breaks) == len(densities) + 1.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><strong>ValueError</strong> – If a parameter is out of domain.</p>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="deeprob.spn.structure.leaf.Isotonic.LEAF_TYPE">
+<span class="sig-name descname"><span class="pre">LEAF_TYPE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">2</span></em><a class="headerlink" href="#deeprob.spn.structure.leaf.Isotonic.LEAF_TYPE" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="deeprob.spn.structure.leaf.Isotonic.fit">
+<span class="sig-name descname"><span class="pre">fit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">domain</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.1</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprob/spn/structure/leaf.html#Isotonic.fit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#deeprob.spn.structure.leaf.Isotonic.fit" title="Permalink to this definition"></a></dt>
+<dd><p>Fit the distribution parameters given the domain and some training data.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> (<em>numpy.ndarray</em>) – The training data.</p></li>
+<li><p><strong>domain</strong> (<em>tuple</em>) – The domain of the distribution leaf.</p></li>
+<li><p><strong>alpha</strong> (<em>float</em>) – The Laplace smoothing factor.</p></li>
+<li><p><strong>kwargs</strong> – Optional parameters.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><strong>ValueError</strong> – If a parameter is out of domain.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="deeprob.spn.structure.leaf.Isotonic.em_init">
+<span class="sig-name descname"><span class="pre">em_init</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">random_state</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprob/spn/structure/leaf.html#Isotonic.em_init"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#deeprob.spn.structure.leaf.Isotonic.em_init" title="Permalink to this definition"></a></dt>
+<dd><p>Random initialize the leaf’s parameters for Expectation-Maximization (EM).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>random_state</strong> (<em>numpy.random.mtrand.RandomState</em>) – The random state.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="deeprob.spn.structure.leaf.Isotonic.em_step">
+<span class="sig-name descname"><span class="pre">em_step</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">stats</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">step_size</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprob/spn/structure/leaf.html#Isotonic.em_step"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#deeprob.spn.structure.leaf.Isotonic.em_step" title="Permalink to this definition"></a></dt>
+<dd><p>Compute a batch Expectation-Maximization (EM) step.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>stats</strong> (<em>numpy.ndarray</em>) – The sufficient statistics of each sample.</p></li>
+<li><p><strong>data</strong> (<em>numpy.ndarray</em>) – The data regarding random variables of the leaf.</p></li>
+<li><p><strong>step_size</strong> (<em>float</em>) – The step size of update.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="deeprob.spn.structure.leaf.Isotonic.likelihood">
+<span class="sig-name descname"><span class="pre">likelihood</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprob/spn/structure/leaf.html#Isotonic.likelihood"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#deeprob.spn.structure.leaf.Isotonic.likelihood" title="Permalink to this definition"></a></dt>
+<dd><p>Compute the likelihood of the distribution leaf given some input.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>x</strong> (<em>numpy.ndarray</em>) – The inputs.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The resulting likelihoods.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>numpy.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="deeprob.spn.structure.leaf.Isotonic.log_likelihood">
+<span class="sig-name descname"><span class="pre">log_likelihood</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprob/spn/structure/leaf.html#Isotonic.log_likelihood"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#deeprob.spn.structure.leaf.Isotonic.log_likelihood" title="Permalink to this definition"></a></dt>
+<dd><p>Compute the logarithmic likelihood of the distribution leaf given some input.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>x</strong> (<em>numpy.ndarray</em>) – The inputs.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The resulting log-likelihoods.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>numpy.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="deeprob.spn.structure.leaf.Isotonic.mpe">
+<span class="sig-name descname"><span class="pre">mpe</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprob/spn/structure/leaf.html#Isotonic.mpe"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#deeprob.spn.structure.leaf.Isotonic.mpe" title="Permalink to this definition"></a></dt>
+<dd><p>Compute the maximum at posteriori values.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>x</strong> (<em>numpy.ndarray</em>) – The inputs.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The distribution’s maximum at posteriori values.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>numpy.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="deeprob.spn.structure.leaf.Isotonic.sample">
+<span class="sig-name descname"><span class="pre">sample</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprob/spn/structure/leaf.html#Isotonic.sample"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#deeprob.spn.structure.leaf.Isotonic.sample" title="Permalink to this definition"></a></dt>
+<dd><p>Sample from the leaf distribution.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>x</strong> (<em>numpy.ndarray</em>) – The samples with possible NaN values.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The completed samples.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>numpy.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="deeprob.spn.structure.leaf.Isotonic.moment">
+<span class="sig-name descname"><span class="pre">moment</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">k</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprob/spn/structure/leaf.html#Isotonic.moment"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#deeprob.spn.structure.leaf.Isotonic.moment" title="Permalink to this definition"></a></dt>
+<dd><p>Compute the moment of a given order.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>k</strong> (<em>int</em>) – The order of the moment.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The moment of order k.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>numpy.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="deeprob.spn.structure.leaf.Isotonic.params_count">
+<span class="sig-name descname"><span class="pre">params_count</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprob/spn/structure/leaf.html#Isotonic.params_count"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#deeprob.spn.structure.leaf.Isotonic.params_count" title="Permalink to this definition"></a></dt>
+<dd><p>Get the number of parameters of the distribution leaf.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The number of parameters.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="deeprob.spn.structure.leaf.Isotonic.params_dict">
+<span class="sig-name descname"><span class="pre">params_dict</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprob/spn/structure/leaf.html#Isotonic.params_dict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#deeprob.spn.structure.leaf.Isotonic.params_dict" title="Permalink to this definition"></a></dt>
+<dd><p>Get a dictionary representation of the distribution parameters.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>A dictionary containing the distribution parameters.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="deeprob.spn.structure.leaf.Uniform">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">deeprob.spn.structure.leaf.</span></span><span class="sig-name descname"><span class="pre">Uniform</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scope</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">width</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprob/spn/structure/leaf.html#Uniform"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#deeprob.spn.structure.leaf.Uniform" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#deeprob.spn.structure.leaf.Leaf" title="deeprob.spn.structure.leaf.Leaf"><code class="xref py py-class docutils literal notranslate"><span class="pre">deeprob.spn.structure.leaf.Leaf</span></code></a></p>
+<p>Initialize an Uniform leaf node given its scope.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>scope</strong> (<em>int</em>) – The scope of the leaf.</p></li>
+<li><p><strong>start</strong> (<em>float</em>) – The start of the uniform distribution.</p></li>
+<li><p><strong>width</strong> (<em>float</em>) – The width of the uniform distribution.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="deeprob.spn.structure.leaf.Uniform.LEAF_TYPE">
+<span class="sig-name descname"><span class="pre">LEAF_TYPE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">2</span></em><a class="headerlink" href="#deeprob.spn.structure.leaf.Uniform.LEAF_TYPE" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="deeprob.spn.structure.leaf.Uniform.fit">
+<span class="sig-name descname"><span class="pre">fit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">domain</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprob/spn/structure/leaf.html#Uniform.fit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#deeprob.spn.structure.leaf.Uniform.fit" title="Permalink to this definition"></a></dt>
+<dd><p>Fit the distribution parameters given the domain and some training data.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> (<em>numpy.ndarray</em>) – The training data.</p></li>
+<li><p><strong>domain</strong> (<em>tuple</em>) – The domain of the distribution leaf.</p></li>
+<li><p><strong>kwargs</strong> – Optional parameters.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><strong>ValueError</strong> – If a parameter is out of domain.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="deeprob.spn.structure.leaf.Uniform.em_init">
+<span class="sig-name descname"><span class="pre">em_init</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">random_state</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprob/spn/structure/leaf.html#Uniform.em_init"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#deeprob.spn.structure.leaf.Uniform.em_init" title="Permalink to this definition"></a></dt>
+<dd><p>Random initialize the leaf’s parameters for Expectation-Maximization (EM).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>random_state</strong> (<em>numpy.random.mtrand.RandomState</em>) – The random state.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="deeprob.spn.structure.leaf.Uniform.em_step">
+<span class="sig-name descname"><span class="pre">em_step</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">stats</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">step_size</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprob/spn/structure/leaf.html#Uniform.em_step"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#deeprob.spn.structure.leaf.Uniform.em_step" title="Permalink to this definition"></a></dt>
+<dd><p>Compute a batch Expectation-Maximization (EM) step.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>stats</strong> (<em>numpy.ndarray</em>) – The sufficient statistics of each sample.</p></li>
+<li><p><strong>data</strong> (<em>numpy.ndarray</em>) – The data regarding random variables of the leaf.</p></li>
+<li><p><strong>step_size</strong> (<em>float</em>) – The step size of update.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="deeprob.spn.structure.leaf.Uniform.likelihood">
+<span class="sig-name descname"><span class="pre">likelihood</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprob/spn/structure/leaf.html#Uniform.likelihood"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#deeprob.spn.structure.leaf.Uniform.likelihood" title="Permalink to this definition"></a></dt>
+<dd><p>Compute the likelihood of the distribution leaf given some input.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>x</strong> (<em>numpy.ndarray</em>) – The inputs.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The resulting likelihoods.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>numpy.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="deeprob.spn.structure.leaf.Uniform.log_likelihood">
+<span class="sig-name descname"><span class="pre">log_likelihood</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprob/spn/structure/leaf.html#Uniform.log_likelihood"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#deeprob.spn.structure.leaf.Uniform.log_likelihood" title="Permalink to this definition"></a></dt>
+<dd><p>Compute the logarithmic likelihood of the distribution leaf given some input.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>x</strong> (<em>numpy.ndarray</em>) – The inputs.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The resulting log-likelihoods.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>numpy.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="deeprob.spn.structure.leaf.Uniform.mpe">
+<span class="sig-name descname"><span class="pre">mpe</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprob/spn/structure/leaf.html#Uniform.mpe"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#deeprob.spn.structure.leaf.Uniform.mpe" title="Permalink to this definition"></a></dt>
+<dd><p>Compute the maximum at posteriori values.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>x</strong> (<em>numpy.ndarray</em>) – The inputs.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The distribution’s maximum at posteriori values.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>numpy.array</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="deeprob.spn.structure.leaf.Uniform.sample">
+<span class="sig-name descname"><span class="pre">sample</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprob/spn/structure/leaf.html#Uniform.sample"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#deeprob.spn.structure.leaf.Uniform.sample" title="Permalink to this definition"></a></dt>
+<dd><p>Sample from the leaf distribution.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>x</strong> (<em>numpy.ndarray</em>) – The samples with possible NaN values.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The completed samples.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>numpy.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="deeprob.spn.structure.leaf.Uniform.moment">
+<span class="sig-name descname"><span class="pre">moment</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">k</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprob/spn/structure/leaf.html#Uniform.moment"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#deeprob.spn.structure.leaf.Uniform.moment" title="Permalink to this definition"></a></dt>
+<dd><p>Compute the moment of a given order.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>k</strong> (<em>int</em>) – The order of the moment.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The moment of order k.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="deeprob.spn.structure.leaf.Uniform.params_count">
+<span class="sig-name descname"><span class="pre">params_count</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprob/spn/structure/leaf.html#Uniform.params_count"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#deeprob.spn.structure.leaf.Uniform.params_count" title="Permalink to this definition"></a></dt>
+<dd><p>Get the number of parameters of the distribution leaf.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The number of parameters.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="deeprob.spn.structure.leaf.Uniform.params_dict">
+<span class="sig-name descname"><span class="pre">params_dict</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprob/spn/structure/leaf.html#Uniform.params_dict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#deeprob.spn.structure.leaf.Uniform.params_dict" title="Permalink to this definition"></a></dt>
+<dd><p>Get a dictionary representation of the distribution parameters.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>A dictionary containing the distribution parameters.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="deeprob.spn.structure.leaf.Gaussian">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">deeprob.spn.structure.leaf.</span></span><span class="sig-name descname"><span class="pre">Gaussian</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scope</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mean</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stddev</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprob/spn/structure/leaf.html#Gaussian"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#deeprob.spn.structure.leaf.Gaussian" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#deeprob.spn.structure.leaf.Leaf" title="deeprob.spn.structure.leaf.Leaf"><code class="xref py py-class docutils literal notranslate"><span class="pre">deeprob.spn.structure.leaf.Leaf</span></code></a></p>
+<p>Initialize a Gaussian leaf node given its scope.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>scope</strong> (<em>int</em>) – The scope of the leaf.</p></li>
+<li><p><strong>mean</strong> (<em>float</em>) – The mean parameter.</p></li>
+<li><p><strong>stddev</strong> (<em>float</em>) – The standard deviation parameter.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><strong>ValueError</strong> – If a parameter is out of domain.</p>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="deeprob.spn.structure.leaf.Gaussian.LEAF_TYPE">
+<span class="sig-name descname"><span class="pre">LEAF_TYPE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">2</span></em><a class="headerlink" href="#deeprob.spn.structure.leaf.Gaussian.LEAF_TYPE" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="deeprob.spn.structure.leaf.Gaussian.fit">
+<span class="sig-name descname"><span class="pre">fit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">domain</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprob/spn/structure/leaf.html#Gaussian.fit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#deeprob.spn.structure.leaf.Gaussian.fit" title="Permalink to this definition"></a></dt>
+<dd><p>Fit the distribution parameters given the domain and some training data.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> (<em>numpy.ndarray</em>) – The training data.</p></li>
+<li><p><strong>domain</strong> (<em>tuple</em>) – The domain of the distribution leaf.</p></li>
+<li><p><strong>kwargs</strong> – Optional parameters.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><strong>ValueError</strong> – If a parameter is out of domain.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="deeprob.spn.structure.leaf.Gaussian.em_init">
+<span class="sig-name descname"><span class="pre">em_init</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">random_state</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprob/spn/structure/leaf.html#Gaussian.em_init"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#deeprob.spn.structure.leaf.Gaussian.em_init" title="Permalink to this definition"></a></dt>
+<dd><p>Random initialize the leaf’s parameters for Expectation-Maximization (EM).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>random_state</strong> (<em>numpy.random.mtrand.RandomState</em>) – The random state.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="deeprob.spn.structure.leaf.Gaussian.em_step">
+<span class="sig-name descname"><span class="pre">em_step</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">stats</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">step_size</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprob/spn/structure/leaf.html#Gaussian.em_step"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#deeprob.spn.structure.leaf.Gaussian.em_step" title="Permalink to this definition"></a></dt>
+<dd><p>Compute a batch Expectation-Maximization (EM) step.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>stats</strong> (<em>numpy.ndarray</em>) – The sufficient statistics of each sample.</p></li>
+<li><p><strong>data</strong> (<em>numpy.ndarray</em>) – The data regarding random variables of the leaf.</p></li>
+<li><p><strong>step_size</strong> (<em>float</em>) – The step size of update.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="deeprob.spn.structure.leaf.Gaussian.likelihood">
+<span class="sig-name descname"><span class="pre">likelihood</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprob/spn/structure/leaf.html#Gaussian.likelihood"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#deeprob.spn.structure.leaf.Gaussian.likelihood" title="Permalink to this definition"></a></dt>
+<dd><p>Compute the likelihood of the distribution leaf given some input.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>x</strong> (<em>numpy.ndarray</em>) – The inputs.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The resulting likelihoods.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>numpy.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="deeprob.spn.structure.leaf.Gaussian.log_likelihood">
+<span class="sig-name descname"><span class="pre">log_likelihood</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprob/spn/structure/leaf.html#Gaussian.log_likelihood"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#deeprob.spn.structure.leaf.Gaussian.log_likelihood" title="Permalink to this definition"></a></dt>
+<dd><p>Compute the logarithmic likelihood of the distribution leaf given some input.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>x</strong> (<em>numpy.ndarray</em>) – The inputs.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The resulting log-likelihoods.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>numpy.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="deeprob.spn.structure.leaf.Gaussian.mpe">
+<span class="sig-name descname"><span class="pre">mpe</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprob/spn/structure/leaf.html#Gaussian.mpe"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#deeprob.spn.structure.leaf.Gaussian.mpe" title="Permalink to this definition"></a></dt>
+<dd><p>Compute the maximum at posteriori values.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>x</strong> (<em>numpy.ndarray</em>) – The inputs.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The distribution’s maximum at posteriori values.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>numpy.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="deeprob.spn.structure.leaf.Gaussian.sample">
+<span class="sig-name descname"><span class="pre">sample</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprob/spn/structure/leaf.html#Gaussian.sample"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#deeprob.spn.structure.leaf.Gaussian.sample" title="Permalink to this definition"></a></dt>
+<dd><p>Sample from the leaf distribution.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>x</strong> (<em>numpy.ndarray</em>) – The samples with possible NaN values.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The completed samples.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>numpy.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="deeprob.spn.structure.leaf.Gaussian.moment">
+<span class="sig-name descname"><span class="pre">moment</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">k</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprob/spn/structure/leaf.html#Gaussian.moment"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#deeprob.spn.structure.leaf.Gaussian.moment" title="Permalink to this definition"></a></dt>
+<dd><p>Compute the moment of a given order.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>k</strong> (<em>int</em>) – The order of the moment.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The moment of order k.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="deeprob.spn.structure.leaf.Gaussian.params_count">
+<span class="sig-name descname"><span class="pre">params_count</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprob/spn/structure/leaf.html#Gaussian.params_count"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#deeprob.spn.structure.leaf.Gaussian.params_count" title="Permalink to this definition"></a></dt>
+<dd><p>Get the number of parameters of the distribution leaf.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The number of parameters.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="deeprob.spn.structure.leaf.Gaussian.params_dict">
+<span class="sig-name descname"><span class="pre">params_dict</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprob/spn/structure/leaf.html#Gaussian.params_dict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#deeprob.spn.structure.leaf.Gaussian.params_dict" title="Permalink to this definition"></a></dt>
+<dd><p>Get a dictionary representation of the distribution parameters.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>A dictionary containing the distribution parameters.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-deeprob.spn.structure.node">
+<span id="deeprob-spn-structure-node-module"></span><h2>deeprob.spn.structure.node module<a class="headerlink" href="#module-deeprob.spn.structure.node" title="Permalink to this headline"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="deeprob.spn.structure.node.Node">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">deeprob.spn.structure.node.</span></span><span class="sig-name descname"><span class="pre">Node</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scope</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">children</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprob/spn/structure/node.html#Node"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#deeprob.spn.structure.node.Node" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">abc.ABC</span></code></p>
+<p>Initialize a SPN node given the children list and its scope.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>scope</strong> (<em>List</em><em>[</em><em>int</em><em>]</em>) – The scope.</p></li>
+<li><p><strong>children</strong> (<em>Optional</em><em>[</em><em>List</em><em>[</em><a class="reference internal" href="#deeprob.spn.structure.node.Node" title="deeprob.spn.structure.node.Node"><em>Node</em></a><em>]</em><em>]</em>) – A list of nodes. If None, children are initialized as an empty list.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>ValueError</strong> – If the scope is empty.</p></li>
+<li><p><strong>ValueError</strong> – If the scope contains duplicates.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="deeprob.spn.structure.node.Node.likelihood">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">likelihood</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprob/spn/structure/node.html#Node.likelihood"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#deeprob.spn.structure.node.Node.likelihood" title="Permalink to this definition"></a></dt>
+<dd><p>Compute the likelihood of the node given some input.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>x</strong> (<em>numpy.ndarray</em>) – The inputs.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The resulting likelihoods.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>numpy.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="deeprob.spn.structure.node.Node.log_likelihood">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">log_likelihood</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprob/spn/structure/node.html#Node.log_likelihood"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#deeprob.spn.structure.node.Node.log_likelihood" title="Permalink to this definition"></a></dt>
+<dd><p>Compute the logarithmic likelihood of the node given some input.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>x</strong> (<em>numpy.ndarray</em>) – The inputs.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The resulting log-likelihoods.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>numpy.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="deeprob.spn.structure.node.Sum">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">deeprob.spn.structure.node.</span></span><span class="sig-name descname"><span class="pre">Sum</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scope</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">children</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">weights</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprob/spn/structure/node.html#Sum"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#deeprob.spn.structure.node.Sum" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#deeprob.spn.structure.node.Node" title="deeprob.spn.structure.node.Node"><code class="xref py py-class docutils literal notranslate"><span class="pre">deeprob.spn.structure.node.Node</span></code></a></p>
+<p>Initialize a SPN sum node given a list of children and their weights and a scope.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>scope</strong> (<em>Optional</em><em>[</em><em>List</em><em>[</em><em>int</em><em>]</em><em>]</em>) – The scope. If None, the scope is initialized based on children scopes.</p></li>
+<li><p><strong>children</strong> (<em>Optional</em><em>[</em><em>List</em><em>[</em><a class="reference internal" href="#deeprob.spn.structure.node.Node" title="deeprob.spn.structure.node.Node"><em>Node</em></a><em>]</em><em>]</em>) – A list of nodes. If None, children are initialized as an empty list.</p></li>
+<li><p><strong>weights</strong> (<em>Optional</em><em>[</em><em>Union</em><em>[</em><em>List</em><em>[</em><em>float</em><em>]</em><em>, </em><em>np.ndarray</em><em>]</em><em>]</em>) – The weights associated to each children node. It can be None.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>ValueError</strong> – If both scope and children are None.</p></li>
+<li><p><strong>ValueError</strong> – If children nodes have different scopes.</p></li>
+<li><p><strong>ValueError</strong> – If the length of weights and children are different.</p></li>
+<li><p><strong>ValueError</strong> – If weights don’t sum up to 1.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="deeprob.spn.structure.node.Sum.em_init">
+<span class="sig-name descname"><span class="pre">em_init</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">random_state</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprob/spn/structure/node.html#Sum.em_init"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#deeprob.spn.structure.node.Sum.em_init" title="Permalink to this definition"></a></dt>
+<dd><p>Random initialize the node’s parameters for Expectation-Maximization (EM).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>random_state</strong> (<em>numpy.random.mtrand.RandomState</em>) – The random state.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="deeprob.spn.structure.node.Sum.em_step">
+<span class="sig-name descname"><span class="pre">em_step</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">stats</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">step_size</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprob/spn/structure/node.html#Sum.em_step"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#deeprob.spn.structure.node.Sum.em_step" title="Permalink to this definition"></a></dt>
+<dd><p>Compute a batch Expectation-Maximization (EM) step.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>stats</strong> (<em>numpy.ndarray</em>) – The sufficient statistics of each sample.</p></li>
+<li><p><strong>step_size</strong> (<em>float</em>) – The step size of update.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="deeprob.spn.structure.node.Sum.likelihood">
+<span class="sig-name descname"><span class="pre">likelihood</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprob/spn/structure/node.html#Sum.likelihood"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#deeprob.spn.structure.node.Sum.likelihood" title="Permalink to this definition"></a></dt>
+<dd><p>Compute the likelihood of the node given some input.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>x</strong> (<em>numpy.ndarray</em>) – The inputs.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The resulting likelihoods.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>numpy.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="deeprob.spn.structure.node.Sum.log_likelihood">
+<span class="sig-name descname"><span class="pre">log_likelihood</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprob/spn/structure/node.html#Sum.log_likelihood"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#deeprob.spn.structure.node.Sum.log_likelihood" title="Permalink to this definition"></a></dt>
+<dd><p>Compute the logarithmic likelihood of the node given some input.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>x</strong> (<em>numpy.ndarray</em>) – The inputs.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The resulting log-likelihoods.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>numpy.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="deeprob.spn.structure.node.Product">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">deeprob.spn.structure.node.</span></span><span class="sig-name descname"><span class="pre">Product</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scope</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">children</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprob/spn/structure/node.html#Product"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#deeprob.spn.structure.node.Product" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#deeprob.spn.structure.node.Node" title="deeprob.spn.structure.node.Node"><code class="xref py py-class docutils literal notranslate"><span class="pre">deeprob.spn.structure.node.Node</span></code></a></p>
+<p>Initialize a product node given a list of children and its scope.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>scope</strong> (<em>Optional</em><em>[</em><em>List</em><em>[</em><em>int</em><em>]</em><em>]</em>) – The scope. If None, the scope is initialized based on children scopes.</p></li>
+<li><p><strong>children</strong> (<em>Optional</em><em>[</em><em>List</em><em>[</em><a class="reference internal" href="#deeprob.spn.structure.node.Node" title="deeprob.spn.structure.node.Node"><em>Node</em></a><em>]</em><em>]</em>) – A list of nodes. If None, children are initialized as an empty list.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>ValueError</strong> – If both scope and children are None.</p></li>
+<li><p><strong>ValueError</strong> – If children nodes don’t have disjointed scopes.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="deeprob.spn.structure.node.Product.likelihood">
+<span class="sig-name descname"><span class="pre">likelihood</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprob/spn/structure/node.html#Product.likelihood"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#deeprob.spn.structure.node.Product.likelihood" title="Permalink to this definition"></a></dt>
+<dd><p>Compute the likelihood of the node given some input.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>x</strong> (<em>numpy.ndarray</em>) – The inputs.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The resulting likelihoods.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>numpy.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="deeprob.spn.structure.node.Product.log_likelihood">
+<span class="sig-name descname"><span class="pre">log_likelihood</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprob/spn/structure/node.html#Product.log_likelihood"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#deeprob.spn.structure.node.Product.log_likelihood" title="Permalink to this definition"></a></dt>
+<dd><p>Compute the logarithmic likelihood of the node given some input.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>x</strong> (<em>numpy.append</em>) – The inputs.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The resulting log-likelihoods.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>numpy.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="deeprob.spn.structure.node.assign_ids">
+<span class="sig-prename descclassname"><span class="pre">deeprob.spn.structure.node.</span></span><span class="sig-name descname"><span class="pre">assign_ids</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">root</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprob/spn/structure/node.html#assign_ids"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#deeprob.spn.structure.node.assign_ids" title="Permalink to this definition"></a></dt>
+<dd><p>Assign the ids to the nodes of a SPN.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>root</strong> (<a class="reference internal" href="#deeprob.spn.structure.node.Node" title="deeprob.spn.structure.node.Node"><em>deeprob.spn.structure.node.Node</em></a>) – The root of the SPN.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The same SPN with each node having modified ids.</p>
+</dd>
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><p><strong>ValueError</strong> – If the SPN structure is not a DAG.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference internal" href="#deeprob.spn.structure.node.Node" title="deeprob.spn.structure.node.Node">deeprob.spn.structure.node.Node</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="deeprob.spn.structure.node.bfs">
+<span class="sig-prename descclassname"><span class="pre">deeprob.spn.structure.node.</span></span><span class="sig-name descname"><span class="pre">bfs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">root</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprob/spn/structure/node.html#bfs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#deeprob.spn.structure.node.bfs" title="Permalink to this definition"></a></dt>
+<dd><p>Compute the Breadth First Search (BFS) ordering for a SPN.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>root</strong> (<a class="reference internal" href="#deeprob.spn.structure.node.Node" title="deeprob.spn.structure.node.Node"><em>deeprob.spn.structure.node.Node</em></a>) – The root of the SPN.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The BFS nodes iterator.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>Iterator[<a class="reference internal" href="#deeprob.spn.structure.node.Node" title="deeprob.spn.structure.node.Node">deeprob.spn.structure.node.Node</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="deeprob.spn.structure.node.dfs_post_order">
+<span class="sig-prename descclassname"><span class="pre">deeprob.spn.structure.node.</span></span><span class="sig-name descname"><span class="pre">dfs_post_order</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">root</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprob/spn/structure/node.html#dfs_post_order"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#deeprob.spn.structure.node.dfs_post_order" title="Permalink to this definition"></a></dt>
+<dd><p>Compute Depth First Search (DFS) Post-Order ordering for a SPN.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>root</strong> (<a class="reference internal" href="#deeprob.spn.structure.node.Node" title="deeprob.spn.structure.node.Node"><em>deeprob.spn.structure.node.Node</em></a>) – The root of the SPN.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The DFS Post-Order nodes iterator.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>Iterator[<a class="reference internal" href="#deeprob.spn.structure.node.Node" title="deeprob.spn.structure.node.Node">deeprob.spn.structure.node.Node</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="deeprob.spn.structure.node.topological_order">
+<span class="sig-prename descclassname"><span class="pre">deeprob.spn.structure.node.</span></span><span class="sig-name descname"><span class="pre">topological_order</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">root</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprob/spn/structure/node.html#topological_order"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#deeprob.spn.structure.node.topological_order" title="Permalink to this definition"></a></dt>
+<dd><p>Compute the Topological Ordering for a SPN, using the Kahn’s Algorithm.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>root</strong> (<a class="reference internal" href="#deeprob.spn.structure.node.Node" title="deeprob.spn.structure.node.Node"><em>deeprob.spn.structure.node.Node</em></a>) – The root of the SPN.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A list of nodes that form a topological ordering.
+If the SPN graph is not acyclic, it returns None.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>Optional[List[<a class="reference internal" href="#deeprob.spn.structure.node.Node" title="deeprob.spn.structure.node.Node">deeprob.spn.structure.node.Node</a>]]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="deeprob.spn.structure.node.topological_order_layered">
+<span class="sig-prename descclassname"><span class="pre">deeprob.spn.structure.node.</span></span><span class="sig-name descname"><span class="pre">topological_order_layered</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">root</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprob/spn/structure/node.html#topological_order_layered"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#deeprob.spn.structure.node.topological_order_layered" title="Permalink to this definition"></a></dt>
+<dd><p>Compute the Topological Ordering Layered for a SPN, using the Kahn’s Algorithm.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>root</strong> (<a class="reference internal" href="#deeprob.spn.structure.node.Node" title="deeprob.spn.structure.node.Node"><em>deeprob.spn.structure.node.Node</em></a>) – The root of the SPN.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A list of layers that form a topological ordering.
+If the SPN graph is not acyclic, it returns None.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>Optional[List[List[<a class="reference internal" href="#deeprob.spn.structure.node.Node" title="deeprob.spn.structure.node.Node">deeprob.spn.structure.node.Node</a>]]]</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-deeprob.spn.structure">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-deeprob.spn.structure" title="Permalink to this headline"></a></h2>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="deeprob.spn.models.html" class="btn btn-neutral float-left" title="deeprob.spn.models package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="deeprob.spn.utils.html" class="btn btn-neutral float-right" title="deeprob.spn.utils package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, Lorenzo Loconte, Gennaro Gala.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    <span class="fa fa-book"> Other Versions</span>
+    v: main
+    <span class="fa fa-caret-down"></span>
+  </span>
+  <div class="rst-other-versions">
+    <dl>
+      <dt>Tags</dt>
+      <dd><a href="../../v1.0.0/index.html">v1.0.0</a></dd>
+      <dd><a href="../../v1.1.0/index.html">v1.1.0</a></dd>
+    </dl>
+    <dl>
+      <dt>Branches</dt>
+      <dd><a href="deeprob.spn.structure.html">main</a></dd>
+    </dl>
+  </div>
+</div><script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

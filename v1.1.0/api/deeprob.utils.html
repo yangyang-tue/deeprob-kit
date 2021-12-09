@@ -1,0 +1,914 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>deeprob.utils package &mdash; DeeProb-kit 1.0.0 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/custom.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="prev" title="deeprob.torch package" href="deeprob.torch.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> DeeProb-kit
+            <img src="../_static/deeprob-logo-minimal.svg" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Read Me</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../markdown/home.html">Abstract</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../markdown/home.html#features">Features</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../markdown/home.html#installation">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../markdown/home.html#project-directories">Project Directories</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../markdown/home.html#related-repositories">Related Repositories</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../markdown/home.html#references">References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../markdown/docs.html">Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../markdown/examples.html">Code Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../markdown/experiments.html">Experiments</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../markdown/benchmark.html">Benchmark</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Modules</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="deeprob.html">deeprob package</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="deeprob.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="deeprob.flows.html">deeprob.flows package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="deeprob.spn.html">deeprob.spn package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="deeprob.torch.html">deeprob.torch package</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">deeprob.utils package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#submodules">Submodules</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#module-deeprob.utils.data">deeprob.utils.data module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#module-deeprob.utils.graph">deeprob.utils.graph module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#module-deeprob.utils.random">deeprob.utils.random module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#module-deeprob.utils.region">deeprob.utils.region module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#module-deeprob.utils.statistics">deeprob.utils.statistics module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#module-deeprob.utils">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="deeprob.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="deeprob.html#module-deeprob.context">deeprob.context module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="deeprob.html#module-deeprob">Module contents</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">DeeProb-kit</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="deeprob.html">deeprob package</a> &raquo;</li>
+      <li>deeprob.utils package</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/api/deeprob.utils.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="deeprob-utils-package">
+<h1>deeprob.utils package<a class="headerlink" href="#deeprob-utils-package" title="Permalink to this headline"></a></h1>
+<section id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline"></a></h2>
+</section>
+<section id="module-deeprob.utils.data">
+<span id="deeprob-utils-data-module"></span><h2>deeprob.utils.data module<a class="headerlink" href="#module-deeprob.utils.data" title="Permalink to this headline"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="deeprob.utils.data.DataTransform">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">deeprob.utils.data.</span></span><span class="sig-name descname"><span class="pre">DataTransform</span></span><a class="reference internal" href="../_modules/deeprob/utils/data.html#DataTransform"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#deeprob.utils.data.DataTransform" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">abc.ABC</span></code></p>
+<p>Abstract data transformation.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="deeprob.utils.data.DataTransform.fit">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">fit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprob/utils/data.html#DataTransform.fit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#deeprob.utils.data.DataTransform.fit" title="Permalink to this definition"></a></dt>
+<dd><p>Fit the data transform with some data.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>data</strong> (<em>numpy.ndarray</em>) – The data for fitting.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="deeprob.utils.data.DataTransform.forward">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprob/utils/data.html#DataTransform.forward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#deeprob.utils.data.DataTransform.forward" title="Permalink to this definition"></a></dt>
+<dd><p>Apply the data transform to some data.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>data</strong> (<em>numpy.ndarray</em>) – The data to transform.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The transformed data.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>numpy.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="deeprob.utils.data.DataTransform.backward">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">backward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprob/utils/data.html#DataTransform.backward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#deeprob.utils.data.DataTransform.backward" title="Permalink to this definition"></a></dt>
+<dd><p>Apply the backward data transform to some data.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>data</strong> (<em>numpy.ndarray</em>) – The data to transform.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The transformed data.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>numpy.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="deeprob.utils.data.DataFlatten">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">deeprob.utils.data.</span></span><span class="sig-name descname"><span class="pre">DataFlatten</span></span><a class="reference internal" href="../_modules/deeprob/utils/data.html#DataFlatten"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#deeprob.utils.data.DataFlatten" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#deeprob.utils.data.DataTransform" title="deeprob.utils.data.DataTransform"><code class="xref py py-class docutils literal notranslate"><span class="pre">deeprob.utils.data.DataTransform</span></code></a></p>
+<p>Build the data flatten transformation.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="deeprob.utils.data.DataFlatten.fit">
+<span class="sig-name descname"><span class="pre">fit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprob/utils/data.html#DataFlatten.fit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#deeprob.utils.data.DataFlatten.fit" title="Permalink to this definition"></a></dt>
+<dd><p>Fit the data transform with some data.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>data</strong> (<em>numpy.ndarray</em>) – The data for fitting.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="deeprob.utils.data.DataFlatten.forward">
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprob/utils/data.html#DataFlatten.forward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#deeprob.utils.data.DataFlatten.forward" title="Permalink to this definition"></a></dt>
+<dd><p>Apply the data transform to some data.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>data</strong> (<em>numpy.ndarray</em>) – The data to transform.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The transformed data.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>numpy.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="deeprob.utils.data.DataFlatten.backward">
+<span class="sig-name descname"><span class="pre">backward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprob/utils/data.html#DataFlatten.backward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#deeprob.utils.data.DataFlatten.backward" title="Permalink to this definition"></a></dt>
+<dd><p>Apply the backward data transform to some data.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>data</strong> (<em>numpy.ndarray</em>) – The data to transform.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The transformed data.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>numpy.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="deeprob.utils.data.DataNormalizer">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">deeprob.utils.data.</span></span><span class="sig-name descname"><span class="pre">DataNormalizer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">interval=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">clip=False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype=&lt;class</span> <span class="pre">'numpy.float32'&gt;</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprob/utils/data.html#DataNormalizer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#deeprob.utils.data.DataNormalizer" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#deeprob.utils.data.DataTransform" title="deeprob.utils.data.DataTransform"><code class="xref py py-class docutils literal notranslate"><span class="pre">deeprob.utils.data.DataTransform</span></code></a></p>
+<p>Build the data normalizer transformation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>interval</strong> (<em>Optional</em><em>[</em><em>Tuple</em><em>[</em><em>float</em><em>, </em><em>float</em><em>]</em><em>]</em>) – The normalizing interval. If None data will be normalized in [0, 1].</p></li>
+<li><p><strong>clip</strong> (<em>bool</em>) – Whether to clip data if out of interval.</p></li>
+<li><p><strong>dtype</strong> – The type for type conversion.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><strong>ValueError</strong> – If the normalizing interval is out of domain.</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="deeprob.utils.data.DataNormalizer.fit">
+<span class="sig-name descname"><span class="pre">fit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprob/utils/data.html#DataNormalizer.fit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#deeprob.utils.data.DataNormalizer.fit" title="Permalink to this definition"></a></dt>
+<dd><p>Fit the data transform with some data.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>data</strong> (<em>numpy.ndarray</em>) – The data for fitting.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="deeprob.utils.data.DataNormalizer.forward">
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprob/utils/data.html#DataNormalizer.forward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#deeprob.utils.data.DataNormalizer.forward" title="Permalink to this definition"></a></dt>
+<dd><p>Apply the data transform to some data.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>data</strong> (<em>numpy.ndarray</em>) – The data to transform.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The transformed data.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>numpy.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="deeprob.utils.data.DataNormalizer.backward">
+<span class="sig-name descname"><span class="pre">backward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprob/utils/data.html#DataNormalizer.backward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#deeprob.utils.data.DataNormalizer.backward" title="Permalink to this definition"></a></dt>
+<dd><p>Apply the backward data transform to some data.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>data</strong> (<em>numpy.ndarray</em>) – The data to transform.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The transformed data.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>numpy.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="deeprob.utils.data.DataStandardizer">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">deeprob.utils.data.</span></span><span class="sig-name descname"><span class="pre">DataStandardizer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sample_wise=True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eps=1e-07</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype=&lt;class</span> <span class="pre">'numpy.float32'&gt;</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprob/utils/data.html#DataStandardizer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#deeprob.utils.data.DataStandardizer" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#deeprob.utils.data.DataTransform" title="deeprob.utils.data.DataTransform"><code class="xref py py-class docutils literal notranslate"><span class="pre">deeprob.utils.data.DataTransform</span></code></a></p>
+<p>Build the data standardizer transformation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>sample_wise</strong> (<em>bool</em>) – Whether to apply sample wise standardization.</p></li>
+<li><p><strong>eps</strong> (<em>float</em>) – The epsilon value for standardization.</p></li>
+<li><p><strong>dtype</strong> – The type for type conversion.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><strong>ValueError</strong> – If the epsilon value is out of domain.</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="deeprob.utils.data.DataStandardizer.fit">
+<span class="sig-name descname"><span class="pre">fit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprob/utils/data.html#DataStandardizer.fit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#deeprob.utils.data.DataStandardizer.fit" title="Permalink to this definition"></a></dt>
+<dd><p>Fit the data transform with some data.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>data</strong> (<em>numpy.ndarray</em>) – The data for fitting.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="deeprob.utils.data.DataStandardizer.forward">
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprob/utils/data.html#DataStandardizer.forward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#deeprob.utils.data.DataStandardizer.forward" title="Permalink to this definition"></a></dt>
+<dd><p>Apply the data transform to some data.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>data</strong> (<em>numpy.ndarray</em>) – The data to transform.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The transformed data.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>numpy.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="deeprob.utils.data.DataStandardizer.backward">
+<span class="sig-name descname"><span class="pre">backward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprob/utils/data.html#DataStandardizer.backward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#deeprob.utils.data.DataStandardizer.backward" title="Permalink to this definition"></a></dt>
+<dd><p>Apply the backward data transform to some data.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>data</strong> (<em>numpy.ndarray</em>) – The data to transform.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The transformed data.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>numpy.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="deeprob.utils.data.ohe_data">
+<span class="sig-prename descclassname"><span class="pre">deeprob.utils.data.</span></span><span class="sig-name descname"><span class="pre">ohe_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">domain</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprob/utils/data.html#ohe_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#deeprob.utils.data.ohe_data" title="Permalink to this definition"></a></dt>
+<dd><p>One-Hot-Encoding function.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> (<em>numpy.ndarray</em>) – The 1D data to encode.</p></li>
+<li><p><strong>domain</strong> (<em>Union</em><em>[</em><em>List</em><em>[</em><em>int</em><em>]</em><em>, </em><em>numpy.ndarray</em><em>]</em>) – The domain to use.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The One Hot encoded data.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>numpy.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="deeprob.utils.data.mixed_ohe_data">
+<span class="sig-prename descclassname"><span class="pre">deeprob.utils.data.</span></span><span class="sig-name descname"><span class="pre">mixed_ohe_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">domains</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprob/utils/data.html#mixed_ohe_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#deeprob.utils.data.mixed_ohe_data" title="Permalink to this definition"></a></dt>
+<dd><p>One-Hot-Encoding function, applied on mixed data (both continuous and non-binary discrete).
+Note that One-Hot-Encoding is applied only on categorical random variables having more than two values.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> (<em>numpy.ndarray</em>) – The data matrix to encode.</p></li>
+<li><p><strong>domains</strong> (<em>List</em><em>[</em><em>Union</em><em>[</em><em>list</em><em>, </em><em>tuple</em><em>]</em><em>]</em>) – The domains to use.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The One Hot encoded data.</p>
+</dd>
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><p><strong>ValueError</strong> – If there are inconsistencies between the data and domains.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>numpy.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="deeprob.utils.data.ecdf_data">
+<span class="sig-prename descclassname"><span class="pre">deeprob.utils.data.</span></span><span class="sig-name descname"><span class="pre">ecdf_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprob/utils/data.html#ecdf_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#deeprob.utils.data.ecdf_data" title="Permalink to this definition"></a></dt>
+<dd><p>Empirical Cumulative Distribution Function (ECDF).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>data</strong> (<em>numpy.ndarray</em>) – The data.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The result of the ECDF on data.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>numpy.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="deeprob.utils.data.check_data_dtype">
+<span class="sig-prename descclassname"><span class="pre">deeprob.utils.data.</span></span><span class="sig-name descname"><span class="pre">check_data_dtype</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype=&lt;class</span> <span class="pre">'numpy.float32'&gt;</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprob/utils/data.html#check_data_dtype"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#deeprob.utils.data.check_data_dtype" title="Permalink to this definition"></a></dt>
+<dd><p>Check whether the data is compatible with a given dtype (defaults to np.float32).
+If the data dtype is not compatible, then cast it.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> (<em>numpy.ndarray</em>) – The data.</p></li>
+<li><p><strong>dtype</strong> (<em>Type</em><em>[</em><em>numpy.dtype</em><em>]</em>) – The desidered dtype compatibility (defaults to np.float32).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The casted data if necessary, otherwise returns data itself.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-deeprob.utils.graph">
+<span id="deeprob-utils-graph-module"></span><h2>deeprob.utils.graph module<a class="headerlink" href="#module-deeprob.utils.graph" title="Permalink to this headline"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="deeprob.utils.graph.TreeNode">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">deeprob.utils.graph.</span></span><span class="sig-name descname"><span class="pre">TreeNode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parent</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprob/utils/graph.html#TreeNode"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#deeprob.utils.graph.TreeNode" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Initialize a binary CLT.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>node_id</strong> (<em>int</em>) – The ID of the node.</p></li>
+<li><p><strong>parent</strong> (<a class="reference internal" href="#deeprob.utils.graph.TreeNode" title="deeprob.utils.graph.TreeNode"><em>TreeNode</em></a>) – The parent node.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="deeprob.utils.graph.TreeNode.get_id">
+<span class="sig-name descname"><span class="pre">get_id</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprob/utils/graph.html#TreeNode.get_id"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#deeprob.utils.graph.TreeNode.get_id" title="Permalink to this definition"></a></dt>
+<dd><p>Get the ID of the node.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The ID of the node.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="deeprob.utils.graph.TreeNode.get_parent">
+<span class="sig-name descname"><span class="pre">get_parent</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprob/utils/graph.html#TreeNode.get_parent"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#deeprob.utils.graph.TreeNode.get_parent" title="Permalink to this definition"></a></dt>
+<dd><p>Get the parent node.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The parent node, None if the node has no parent.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference internal" href="#deeprob.utils.graph.TreeNode" title="deeprob.utils.graph.TreeNode">deeprob.utils.graph.TreeNode</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="deeprob.utils.graph.TreeNode.get_children">
+<span class="sig-name descname"><span class="pre">get_children</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprob/utils/graph.html#TreeNode.get_children"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#deeprob.utils.graph.TreeNode.get_children" title="Permalink to this definition"></a></dt>
+<dd><p>Get the children list of the node.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The children list of the node.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>List[<a class="reference internal" href="#deeprob.utils.graph.TreeNode" title="deeprob.utils.graph.TreeNode">deeprob.utils.graph.TreeNode</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="deeprob.utils.graph.TreeNode.set_parent">
+<span class="sig-name descname"><span class="pre">set_parent</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parent</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprob/utils/graph.html#TreeNode.set_parent"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#deeprob.utils.graph.TreeNode.set_parent" title="Permalink to this definition"></a></dt>
+<dd><p>Set the parent node and update its children list.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>parent</strong> (<a class="reference internal" href="#deeprob.utils.graph.TreeNode" title="deeprob.utils.graph.TreeNode"><em>deeprob.utils.graph.TreeNode</em></a>) – The parent node.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="deeprob.utils.graph.TreeNode.is_leaf">
+<span class="sig-name descname"><span class="pre">is_leaf</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprob/utils/graph.html#TreeNode.is_leaf"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#deeprob.utils.graph.TreeNode.is_leaf" title="Permalink to this definition"></a></dt>
+<dd><p>Check whether the node is leaf.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>True if the node is leaf, False otherwise.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="deeprob.utils.graph.TreeNode.get_n_nodes">
+<span class="sig-name descname"><span class="pre">get_n_nodes</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprob/utils/graph.html#TreeNode.get_n_nodes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#deeprob.utils.graph.TreeNode.get_n_nodes" title="Permalink to this definition"></a></dt>
+<dd><p>Get the number of the nodes of the tree rooted at self.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The number of nodes of the tree rooted at self.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="deeprob.utils.graph.TreeNode.get_tree_scope">
+<span class="sig-name descname"><span class="pre">get_tree_scope</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprob/utils/graph.html#TreeNode.get_tree_scope"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#deeprob.utils.graph.TreeNode.get_tree_scope" title="Permalink to this definition"></a></dt>
+<dd><p>Return the list of predecessors and the related scope of the tree rooted at self.
+Note that tree[root] must be -1, as it doesn’t have a predecessor.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return tree</dt>
+<dd class="field-odd"><p>List of predecessors.</p>
+</dd>
+<dt class="field-even">Return scope</dt>
+<dd class="field-even"><p>The related scope list.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>Tuple[list, list]</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="deeprob.utils.graph.build_tree_structure">
+<span class="sig-prename descclassname"><span class="pre">deeprob.utils.graph.</span></span><span class="sig-name descname"><span class="pre">build_tree_structure</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tree</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scope</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprob/utils/graph.html#build_tree_structure"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#deeprob.utils.graph.build_tree_structure" title="Permalink to this definition"></a></dt>
+<dd><p>Build a Tree node recursive data structure given a tree structure encoded as a list of predecessors.
+Note that tree[root] must be -1, as it doesn’t have a predecessor.
+Optionally, a scope can be used to specify the tree node ids.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>tree</strong> (<em>Union</em><em>[</em><em>List</em><em>[</em><em>int</em><em>]</em><em>, </em><em>numpy.ndarray</em><em>]</em>) – The tree structure, as a sequence of predecessors.</p></li>
+<li><p><strong>scope</strong> (<em>Optional</em><em>[</em><em>List</em><em>[</em><em>int</em><em>]</em><em>]</em>) – An optional scope, as a list of ids.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The Tree node structure’s root.</p>
+</dd>
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ValueError</strong> – If the tree structure is not compatible with the root node.</p></li>
+<li><p><strong>ValueError</strong> – If the scope contains duplicates.</p></li>
+<li><p><strong>ValueError</strong> – If the scope is incompatible with the tree structure.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference internal" href="#deeprob.utils.graph.TreeNode" title="deeprob.utils.graph.TreeNode">deeprob.utils.graph.TreeNode</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="deeprob.utils.graph.compute_bfs_ordering">
+<span class="sig-prename descclassname"><span class="pre">deeprob.utils.graph.</span></span><span class="sig-name descname"><span class="pre">compute_bfs_ordering</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tree</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprob/utils/graph.html#compute_bfs_ordering"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#deeprob.utils.graph.compute_bfs_ordering" title="Permalink to this definition"></a></dt>
+<dd><p>Compute the breadth-first-search variable ordering given a tree structure.
+Note that tree[root] must be -1, as it doesn’t have a predecessor.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>tree</strong> (<em>Union</em><em>[</em><em>List</em><em>[</em><em>int</em><em>]</em><em>, </em><em>numpy.ndarray</em><em>]</em>) – The tree structure, as a sequence of predecessors.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The BFS variable ordering as a Numpy array.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>Union[List[int], numpy.ndarray]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="deeprob.utils.graph.maximum_spanning_tree">
+<span class="sig-prename descclassname"><span class="pre">deeprob.utils.graph.</span></span><span class="sig-name descname"><span class="pre">maximum_spanning_tree</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">root</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">adj_matrix</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprob/utils/graph.html#maximum_spanning_tree"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#deeprob.utils.graph.maximum_spanning_tree" title="Permalink to this definition"></a></dt>
+<dd><p>Compute the maximum spanning tree of a graph starting from a given root node.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>root</strong> (<em>int</em>) – The root node index.</p></li>
+<li><p><strong>adj_matrix</strong> (<em>numpy.ndarray</em>) – The graph’s adjacency matrix.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The breadth first traversal ordering and the maximum spanning tree.
+The maximum spanning tree is given as a list of predecessors.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>Tuple[numpy.ndarray, numpy.ndarray]</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-deeprob.utils.random">
+<span id="deeprob-utils-random-module"></span><h2>deeprob.utils.random module<a class="headerlink" href="#module-deeprob.utils.random" title="Permalink to this headline"></a></h2>
+<dl class="py data">
+<dt class="sig sig-object py" id="deeprob.utils.random.RandomState">
+<span class="sig-prename descclassname"><span class="pre">deeprob.utils.random.</span></span><span class="sig-name descname"><span class="pre">RandomState</span></span><a class="headerlink" href="#deeprob.utils.random.RandomState" title="Permalink to this definition"></a></dt>
+<dd><p>A random state type is either an integer seed value or a Numpy RandomState instance.</p>
+<p>alias of <code class="xref py py-obj docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.random.mtrand.RandomState</span></code>]</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="deeprob.utils.random.check_random_state">
+<span class="sig-prename descclassname"><span class="pre">deeprob.utils.random.</span></span><span class="sig-name descname"><span class="pre">check_random_state</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">random_state</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprob/utils/random.html#check_random_state"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#deeprob.utils.random.check_random_state" title="Permalink to this definition"></a></dt>
+<dd><p>Check a possible input random state and return it as a Numpy’s RandomState object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>random_state</strong> (<em>Optional</em><em>[</em><em>Union</em><em>[</em><em>int</em><em>, </em><em>numpy.random.mtrand.RandomState</em><em>]</em><em>]</em>) – The random state to check. If None a new Numpy RandomState will be returned.
+If not None, it can be either a seed integer or a np.random.RandomState instance.
+In the latter case, itself will be returned.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A Numpy’s RandomState object.</p>
+</dd>
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><p><strong>ValueError</strong> – If the random state is not None or a seed integer or a Numpy RandomState object.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>numpy.random.mtrand.RandomState</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-deeprob.utils.region">
+<span id="deeprob-utils-region-module"></span><h2>deeprob.utils.region module<a class="headerlink" href="#module-deeprob.utils.region" title="Permalink to this headline"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="deeprob.utils.region.RegionGraph">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">deeprob.utils.region.</span></span><span class="sig-name descname"><span class="pre">RegionGraph</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_features</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">depth</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">random_state</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprob/utils/region.html#RegionGraph"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#deeprob.utils.region.RegionGraph" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Initialize a region graph.</p>
+<p>A region graph is defined w.r.t. a set of indices of random variable in a SPN.
+A <em>region</em> R is defined as a non-empty subset of the indices,
+and represented as sorted tuples with unique entries.
+A <em>partition</em> P of a region R is defined as a collection of non-empty sets,
+which are non-overlapping, and whose
+union is R. R is also called <em>parent</em> region of P.
+Any region C such that C is in partition P is called <em>child region</em> of P.
+So, a region is represented as a sorted tuple of integers (unique elements)
+and a partition is represented as a sorted tuple of regions (non-overlapping, not-empty, at least 2).
+A <em>region graph</em> is an acyclic, directed, bi-partite graph over regions and partitions.
+So, any child of a region R is a partition of R, and any child of a partition is
+a child region of the partition. The root of the region graph
+is a sorted tuple composed of all the elements. The leaves of the region graph must also be regions.
+They are called input regions, or leaf regions.
+Given a region graph, we can easily construct a corresponding SPN:
+1) Associate I distributions to each input region.
+2) Associate K sum nodes to each other (non-input) region.
+3) For each partition P in the region graph,
+take all cross-products (as product nodes) of distributions/sum nodes associated with the child regions.
+Connect these products as children of all sum nodes in the parent region of P.
+In the end, this procedure will always deliver a complete and decomposable SPN.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>n_features</strong> (<em>int</em>) – The number of features.</p></li>
+<li><p><strong>depth</strong> (<em>int</em>) – The maximum depth.</p></li>
+<li><p><strong>random_state</strong> (<em>Optional</em><em>[</em><em>Union</em><em>[</em><em>int</em><em>, </em><em>numpy.random.mtrand.RandomState</em><em>]</em><em>]</em>) – The random state. It can be either None, a seed integer or a Numpy RandomState.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><strong>ValueError</strong> – If a parameter is out of domain.</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="deeprob.utils.region.RegionGraph.random_layers">
+<span class="sig-name descname"><span class="pre">random_layers</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprob/utils/region.html#RegionGraph.random_layers"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#deeprob.utils.region.RegionGraph.random_layers" title="Permalink to this definition"></a></dt>
+<dd><p>Generate a list of layers randomly over a single repetition of features.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>A list of layers, alternating between regions and partitions.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>List[List[tuple]]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="deeprob.utils.region.RegionGraph.make_layers">
+<span class="sig-name descname"><span class="pre">make_layers</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_repetitions</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprob/utils/region.html#RegionGraph.make_layers"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#deeprob.utils.region.RegionGraph.make_layers" title="Permalink to this definition"></a></dt>
+<dd><p>Generate a random graph’s layers over multiple repetitions of features.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>n_repetitions</strong> (<em>int</em>) – The number of repetitions.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A list of layers, alternating between regions and partitions.</p>
+</dd>
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><p><strong>ValueError</strong> – If a parameter is out of domain.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>List[List[tuple]]</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-deeprob.utils.statistics">
+<span id="deeprob-utils-statistics-module"></span><h2>deeprob.utils.statistics module<a class="headerlink" href="#module-deeprob.utils.statistics" title="Permalink to this headline"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="deeprob.utils.statistics.compute_mean_quantiles">
+<span class="sig-prename descclassname"><span class="pre">deeprob.utils.statistics.</span></span><span class="sig-name descname"><span class="pre">compute_mean_quantiles</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_quantiles</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprob/utils/statistics.html#compute_mean_quantiles"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#deeprob.utils.statistics.compute_mean_quantiles" title="Permalink to this definition"></a></dt>
+<dd><p>Compute the mean quantiles of a dataset (Poon-Domingos).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> (<em>numpy.ndarray</em>) – The data.</p></li>
+<li><p><strong>n_quantiles</strong> (<em>int</em>) – The number of quantiles.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The mean quantiles.</p>
+</dd>
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><p><strong>ValueError</strong> – If the number of quantiles is not valid.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>numpy.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="deeprob.utils.statistics.compute_mutual_information">
+<span class="sig-prename descclassname"><span class="pre">deeprob.utils.statistics.</span></span><span class="sig-name descname"><span class="pre">compute_mutual_information</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">priors</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">joints</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprob/utils/statistics.html#compute_mutual_information"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#deeprob.utils.statistics.compute_mutual_information" title="Permalink to this definition"></a></dt>
+<dd><p>Compute the mutual information between each features, given priors and joints distributions.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>priors</strong> (<em>numpy.ndarray</em>) – The priors probability distributions, as a (N, D) Numpy array
+having priors[i, k] = P(X_i=k).</p></li>
+<li><p><strong>joints</strong> (<em>numpy.ndarray</em>) – The joints probability distributions, as a (N, N, D, D) Numpy array
+having joints[i, j, k, l] = P(X_i=k, X_j=l).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The mutual information between each pair of features, as a (N, N) Numpy symmetric matrix.</p>
+</dd>
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ValueError</strong> – If there are inconsistencies between priors and joints arrays.</p></li>
+<li><p><strong>ValueError</strong> – If joints array is not symmetric.</p></li>
+<li><p><strong>ValueError</strong> – If priors or joints arrays don’t encode valid probability distributions.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>numpy.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="deeprob.utils.statistics.estimate_priors_joints">
+<span class="sig-prename descclassname"><span class="pre">deeprob.utils.statistics.</span></span><span class="sig-name descname"><span class="pre">estimate_priors_joints</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprob/utils/statistics.html#estimate_priors_joints"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#deeprob.utils.statistics.estimate_priors_joints" title="Permalink to this definition"></a></dt>
+<dd><p>Estimate both priors and joints probability distributions from binary data.</p>
+<p>This function returns both the prior distributions and the joint distributions.
+Note that priors[i, k] = P(X_i=k) and joints[i, j, k, l] = P(X_i=k, X_j=l).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> (<em>numpy.ndarray</em>) – The binary data matrix.</p></li>
+<li><p><strong>alpha</strong> (<em>float</em>) – The Laplace smoothing factor.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A pair of priors and joints distributions.</p>
+</dd>
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><p><strong>ValueError</strong> – If the Laplace smoothing factor is out of domain.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>Tuple[numpy.ndarray, numpy.ndarray]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="deeprob.utils.statistics.compute_gini">
+<span class="sig-prename descclassname"><span class="pre">deeprob.utils.statistics.</span></span><span class="sig-name descname"><span class="pre">compute_gini</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">probs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprob/utils/statistics.html#compute_gini"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#deeprob.utils.statistics.compute_gini" title="Permalink to this definition"></a></dt>
+<dd><p>Computes the Gini index given some probabilities.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>probs</strong> (<em>numpy.ndarray</em>) – The probabilities.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The Gini index.</p>
+</dd>
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><p><strong>ValueError</strong> – If the probabilities doesn’t sum up to one.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="deeprob.utils.statistics.compute_bpp">
+<span class="sig-prename descclassname"><span class="pre">deeprob.utils.statistics.</span></span><span class="sig-name descname"><span class="pre">compute_bpp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">avg_ll</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shape</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprob/utils/statistics.html#compute_bpp"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#deeprob.utils.statistics.compute_bpp" title="Permalink to this definition"></a></dt>
+<dd><p>Compute the average number of bits per pixel (BPP).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>avg_ll</strong> (<em>float</em>) – The average log-likelihood, expressed in nats.</p></li>
+<li><p><strong>shape</strong> (<em>Union</em><em>[</em><em>int</em><em>, </em><em>tuple</em><em>, </em><em>list</em><em>]</em>) – The number of dimensions or, alternatively, a sequence of dimensions.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The average number of bits per pixel.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="deeprob.utils.statistics.compute_fid">
+<span class="sig-prename descclassname"><span class="pre">deeprob.utils.statistics.</span></span><span class="sig-name descname"><span class="pre">compute_fid</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mean1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cov1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mean2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cov2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">blocksize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">64</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eps</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1e-06</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprob/utils/statistics.html#compute_fid"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#deeprob.utils.statistics.compute_fid" title="Permalink to this definition"></a></dt>
+<dd><p>Computes the Frechet Inception Distance (FID) between two multivariate Gaussian distributions.
+This implementation has been readapted from <a class="reference external" href="https://github.com/mseitzer/pytorch-fid">https://github.com/mseitzer/pytorch-fid</a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>mean1</strong> (<em>numpy.ndarray</em>) – The mean of the first multivariate Gaussian.</p></li>
+<li><p><strong>cov1</strong> (<em>numpy.ndarray</em>) – The covariance of the first multivariate Gaussian.</p></li>
+<li><p><strong>mean2</strong> (<em>numpy.ndarray</em>) – The mean of the second multivariate Gaussian.</p></li>
+<li><p><strong>cov2</strong> (<em>numpy.ndarray</em>) – The covariance of the second multivariate Gaussian.</p></li>
+<li><p><strong>blocksize</strong> (<em>int</em>) – The block size used by the matrix square root algorithm.</p></li>
+<li><p><strong>eps</strong> (<em>float</em>) – Epsilon value used to avoid singular matrices.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The FID score.</p>
+</dd>
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><p><strong>ValueError</strong> – If there is a shape mismatch between input arrays.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-deeprob.utils">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-deeprob.utils" title="Permalink to this headline"></a></h2>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="deeprob.torch.html" class="btn btn-neutral float-left" title="deeprob.torch package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, Lorenzo Loconte, Gennaro Gala.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    <span class="fa fa-book"> Other Versions</span>
+    v: v1.1.0
+    <span class="fa fa-caret-down"></span>
+  </span>
+  <div class="rst-other-versions">
+    <dl>
+      <dt>Tags</dt>
+      <dd><a href="../../v1.0.0/index.html">v1.0.0</a></dd>
+      <dd><a href="deeprob.utils.html">v1.1.0</a></dd>
+    </dl>
+    <dl>
+      <dt>Branches</dt>
+      <dd><a href="../../main/index.html">main</a></dd>
+    </dl>
+  </div>
+</div><script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

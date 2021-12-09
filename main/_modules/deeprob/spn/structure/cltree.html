@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>deeprob.spn.structure.cltree &mdash; DeeProb-kit 1.0.0 documentation</title>
+      <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../../_static/css/custom.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js"></script>
+        <script src="../../../../_static/jquery.js"></script>
+        <script src="../../../../_static/underscore.js"></script>
+        <script src="../../../../_static/doctools.js"></script>
+    <script src="../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../../../index.html" class="icon icon-home"> DeeProb-kit
+            <img src="../../../../_static/deeprob-logo-minimal.svg" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Read Me</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../markdown/home.html">Abstract</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../markdown/home.html#features">Features</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../markdown/home.html#installation">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../markdown/home.html#project-directories">Project Directories</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../markdown/home.html#related-repositories">Related Repositories</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../markdown/home.html#references">References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../markdown/docs.html">Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../markdown/examples.html">Code Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../markdown/experiments.html">Experiments</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../markdown/benchmark.html">Benchmark</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Modules</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../api/deeprob.html">deeprob package</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">DeeProb-kit</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="../../../index.html">Module code</a> &raquo;</li>
+      <li>deeprob.spn.structure.cltree</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for deeprob.spn.structure.cltree</h1><div class="highlight"><pre>
+<span></span><span class="c1"># MIT License: Copyright (c) 2021 Lorenzo Loconte, Gennaro Gala</span>
+
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">List</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">scipy.stats</span> <span class="k">as</span> <span class="nn">ss</span>
+<span class="kn">from</span> <span class="nn">scipy.special</span> <span class="kn">import</span> <span class="n">logsumexp</span>
+
+<span class="kn">from</span> <span class="nn">deeprob.utils.random</span> <span class="kn">import</span> <span class="n">RandomState</span><span class="p">,</span> <span class="n">check_random_state</span>
+<span class="kn">from</span> <span class="nn">deeprob.utils.graph</span> <span class="kn">import</span> <span class="n">build_tree_structure</span><span class="p">,</span> <span class="n">compute_bfs_ordering</span><span class="p">,</span> <span class="n">maximum_spanning_tree</span>
+<span class="kn">from</span> <span class="nn">deeprob.utils.statistics</span> <span class="kn">import</span> <span class="n">compute_mutual_information</span><span class="p">,</span> <span class="n">estimate_priors_joints</span>
+<span class="kn">from</span> <span class="nn">deeprob.spn.structure.leaf</span> <span class="kn">import</span> <span class="n">Leaf</span><span class="p">,</span> <span class="n">LeafType</span><span class="p">,</span> <span class="n">Bernoulli</span>
+<span class="kn">from</span> <span class="nn">deeprob.spn.structure.node</span> <span class="kn">import</span> <span class="n">Node</span><span class="p">,</span> <span class="n">Sum</span><span class="p">,</span> <span class="n">Product</span><span class="p">,</span> <span class="n">assign_ids</span>
+
+
+<div class="viewcode-block" id="BinaryCLT"><a class="viewcode-back" href="../../../../api/deeprob.spn.structure.html#deeprob.spn.structure.cltree.BinaryCLT">[docs]</a><span class="k">class</span> <span class="nc">BinaryCLT</span><span class="p">(</span><span class="n">Leaf</span><span class="p">):</span>
+    <span class="n">LEAF_TYPE</span> <span class="o">=</span> <span class="n">LeafType</span><span class="o">.</span><span class="n">DISCRETE</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">scope</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span>
+        <span class="n">root</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">tree</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">params</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]]],</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialize Binary Chow-Liu Tree (CLT) multi-variate leaf node.</span>
+
+<span class="sd">        :param scope: The scope of the leaf.</span>
+<span class="sd">        :param root: The root node of the CLT. If None it will be chosen randomly.</span>
+<span class="sd">        :param tree: A sequence of variable ids predecessors (encoding the tree structure).</span>
+<span class="sd">        :param params: The CLT conditional probability tables (CPTs), as a (N, 2, 2) Numpy array in logarithmic scale.</span>
+<span class="sd">                       Note that params[i, l, k] = log P(X_i=k | Pa(X_i)=l).</span>
+<span class="sd">        :raises ValueError: If the root variable is not in scope.</span>
+<span class="sd">        :raises ValueError: If the tree structure is not compatible with the number of variables and root node.</span>
+<span class="sd">        :raises ValueError: If the CPTs parameters are invalid.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">scope</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">tree</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">tree</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+                <span class="n">tree</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">tree</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int32</span><span class="p">)</span>
+
+            <span class="c1"># Check tree structure with respect to the scope</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">tree</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">scope</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Invalid tree structure&#39;s number of variables&quot;</span><span class="p">)</span>
+
+            <span class="c1"># Check root node with respect to the tree structure</span>
+            <span class="k">if</span> <span class="n">root</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">root</span><span class="p">,</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argwhere</span><span class="p">(</span><span class="n">tree</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">root</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Invalid tree structure&#39;s root node&quot;</span><span class="p">)</span>
+                <span class="n">root</span> <span class="o">=</span> <span class="n">root</span><span class="o">.</span><span class="n">item</span><span class="p">()</span>
+            <span class="k">elif</span> <span class="n">root</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">scope</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;The root variable must be in scope&quot;</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">root</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">scope</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">root</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">tree</span><span class="p">[</span><span class="n">root</span><span class="p">]</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Invalid tree structure&#39;s root node&quot;</span><span class="p">)</span>
+
+            <span class="c1"># Compute BFS variable ordering</span>
+            <span class="n">bfs</span> <span class="o">=</span> <span class="n">compute_bfs_ordering</span><span class="p">(</span><span class="n">tree</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">bfs</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="c1"># Check root node with respect to the scope</span>
+            <span class="k">if</span> <span class="n">root</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">root</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">scope</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;The root variable must be in scope&quot;</span><span class="p">)</span>
+                <span class="n">root</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">scope</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">root</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">root</span> <span class="o">=</span> <span class="n">root</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tree</span> <span class="o">=</span> <span class="n">tree</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bfs</span> <span class="o">=</span> <span class="n">bfs</span>
+
+        <span class="c1"># Initialize the parameters</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">params</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+            <span class="n">params</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">params</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">params</span><span class="o">.</span><span class="n">shape</span> <span class="o">!=</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">scope</span><span class="p">),</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Invalid conditional probability table (CPT) shape&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">allclose</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">params</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">2</span><span class="p">),</span> <span class="mf">1.0</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Invalid conditional probability table (CPT) values&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">params</span> <span class="o">=</span> <span class="n">params</span>
+
+<div class="viewcode-block" id="BinaryCLT.compute_clt_parameters"><a class="viewcode-back" href="../../../../api/deeprob.spn.structure.html#deeprob.spn.structure.cltree.BinaryCLT.compute_clt_parameters">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">compute_clt_parameters</span><span class="p">(</span>
+        <span class="n">bfs</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+        <span class="n">tree</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+        <span class="n">priors</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+        <span class="n">joints</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Compute the parameters of the CLTree given the tree structure and the priors and joints distributions.</span>
+
+<span class="sd">        This function returns the conditional probability tables (CPTs) in a tensorized form.</span>
+<span class="sd">        Note that params[i, l, k] = P(X_i=k | Pa(X_i)=l).</span>
+<span class="sd">        A special case is made for the root distribution which is not conditioned.</span>
+<span class="sd">        Note that params[root, :, k] = P(X_root=k).</span>
+
+<span class="sd">        :param bfs: The bfs structure, i.e. a sequence of successors in a breadth-first traversal.</span>
+<span class="sd">        :param tree: The tree structure, i.e. a sequence of predecessors in a tree structure.</span>
+<span class="sd">        :param priors: The priors distributions.</span>
+<span class="sd">        :param joints: The joints distributions.</span>
+<span class="sd">        :return: The conditional probability tables (CPTs) in a tensorized form.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">root_id</span> <span class="o">=</span> <span class="n">bfs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">n_features</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">bfs</span><span class="p">)</span>
+        <span class="n">vs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">n_features</span><span class="p">)</span>
+
+        <span class="c1"># Compute the conditional probabilities (by einsum operation)</span>
+        <span class="n">params</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">einsum</span><span class="p">(</span><span class="s1">&#39;ikl,il-&gt;ilk&#39;</span><span class="p">,</span> <span class="n">joints</span><span class="p">[</span><span class="n">vs</span><span class="p">,</span> <span class="n">tree</span><span class="p">],</span> <span class="n">np</span><span class="o">.</span><span class="n">reciprocal</span><span class="p">(</span><span class="n">priors</span><span class="p">[</span><span class="n">tree</span><span class="p">]))</span>
+        <span class="n">params</span><span class="p">[</span><span class="n">root_id</span><span class="p">]</span> <span class="o">=</span> <span class="n">priors</span><span class="p">[</span><span class="n">root_id</span><span class="p">]</span>
+
+        <span class="c1"># Re-normalize the factors, because there can be FP32 approximation errors</span>
+        <span class="n">params</span> <span class="o">/=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">params</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">params</span></div>
+
+<div class="viewcode-block" id="BinaryCLT.em_init"><a class="viewcode-back" href="../../../../api/deeprob.spn.structure.html#deeprob.spn.structure.cltree.BinaryCLT.em_init">[docs]</a>    <span class="k">def</span> <span class="nf">em_init</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">random_state</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">RandomState</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">tree</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;The CLT&#39;s structure must be already initialized&quot;</span><span class="p">)</span>
+
+        <span class="n">probs</span> <span class="o">=</span> <span class="n">random_state</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">scope</span><span class="p">),</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="n">probs</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">probs</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">[:,</span> <span class="p">:,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">probs</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">[:,</span> <span class="p">:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">-</span> <span class="n">probs</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">params</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="BinaryCLT.em_step"><a class="viewcode-back" href="../../../../api/deeprob.spn.structure.html#deeprob.spn.structure.cltree.BinaryCLT.em_step">[docs]</a>    <span class="k">def</span> <span class="nf">em_step</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">stats</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">step_size</span><span class="p">:</span> <span class="nb">float</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">tree</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;The CLT&#39;s structure must be already initialized&quot;</span><span class="p">)</span>
+
+        <span class="n">alpha</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">finfo</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float16</span><span class="p">)</span><span class="o">.</span><span class="n">eps</span>  <span class="c1"># Use a very small Laplace smoothing factor</span>
+        <span class="n">total_stats</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">stats</span><span class="p">)</span>
+        <span class="n">weighted_features</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">expand_dims</span><span class="p">(</span><span class="n">stats</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">data</span>
+
+        <span class="c1"># Compute prior distributions</span>
+        <span class="n">priors_stats</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">weighted_features</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="n">priors</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">scope</span><span class="p">),</span> <span class="mi">2</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
+        <span class="n">priors</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">priors_stats</span> <span class="o">+</span> <span class="mf">2.0</span> <span class="o">*</span> <span class="n">alpha</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">total_stats</span> <span class="o">+</span> <span class="mf">4.0</span> <span class="o">*</span> <span class="n">alpha</span><span class="p">)</span>
+        <span class="n">priors</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">-</span> <span class="n">priors</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span>
+
+        <span class="c1"># Compute conditional sufficient statistics</span>
+        <span class="n">conditional_stats</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">scope</span><span class="p">),</span> <span class="mi">2</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
+        <span class="n">conditional_stats</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">weighted_features</span> <span class="o">*</span> <span class="n">data</span><span class="p">[:,</span> <span class="bp">self</span><span class="o">.</span><span class="n">tree</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="n">conditional_stats</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">priors_stats</span> <span class="o">-</span> <span class="n">conditional_stats</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span>
+
+        <span class="c1"># Update the parameters</span>
+        <span class="n">params</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty_like</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">)</span>
+        <span class="n">params</span><span class="p">[:,</span> <span class="p">:,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">conditional_stats</span> <span class="o">+</span> <span class="n">alpha</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">total_stats</span> <span class="o">*</span> <span class="n">priors</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">tree</span><span class="p">]</span> <span class="o">+</span> <span class="mf">4.0</span> <span class="o">*</span> <span class="n">alpha</span><span class="p">)</span>
+        <span class="n">params</span><span class="p">[:,</span> <span class="p">:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">-</span> <span class="n">params</span><span class="p">[:,</span> <span class="p">:,</span> <span class="mi">1</span><span class="p">]</span>
+        <span class="n">params</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">params</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">priors</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="p">]</span>
+        <span class="n">params</span> <span class="o">=</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">-</span> <span class="n">step_size</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">)</span> <span class="o">+</span> <span class="n">step_size</span> <span class="o">*</span> <span class="n">params</span>
+
+        <span class="c1"># Re-normalize the factors, because there can be FP32 approximation errors</span>
+        <span class="n">params</span> <span class="o">/=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">params</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">params</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">params</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="BinaryCLT.fit"><a class="viewcode-back" href="../../../../api/deeprob.spn.structure.html#deeprob.spn.structure.cltree.BinaryCLT.fit">[docs]</a>    <span class="k">def</span> <span class="nf">fit</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">data</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+        <span class="n">domain</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">list</span><span class="p">],</span>
+        <span class="n">alpha</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.1</span><span class="p">,</span>
+        <span class="n">random_state</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">RandomState</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span>
+    <span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Fit the distribution parameters (and structure if necessary) given the domain and some training data.</span>
+
+<span class="sd">        :param data: The training data.</span>
+<span class="sd">        :param domain: The domain of the distribution leaf.</span>
+<span class="sd">        :param alpha: The Laplace smoothing factor.</span>
+<span class="sd">        :param random_state: The random state. It can be either None, a seed integer or a Numpy RandomState.</span>
+<span class="sd">        :param kwargs: Optional parameters.</span>
+<span class="sd">        :raises ValueError: If the random state is not valid.</span>
+<span class="sd">        :raises ValueError: If a parameter is out of domain.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">_</span><span class="p">,</span> <span class="n">n_features</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">shape</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">domain</span><span class="p">)</span> <span class="o">!=</span> <span class="n">n_features</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Each data column should correspond to a random variable having a domain&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">all</span><span class="p">(</span><span class="n">d</span> <span class="o">==</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">domain</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;The domains must be binary for a Binary CLT distribution&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">alpha</span> <span class="o">&lt;</span> <span class="mf">0.0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;The Laplace smoothing factor must be non-negative&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Check the random state</span>
+        <span class="n">random_state</span> <span class="o">=</span> <span class="n">check_random_state</span><span class="p">(</span><span class="n">random_state</span><span class="p">)</span>
+
+        <span class="c1"># Choose a root variable randomly, if not specified</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">root</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">root</span> <span class="o">=</span> <span class="n">random_state</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">scope</span><span class="p">))</span>
+
+        <span class="c1"># Estimate the priors and joints probabilities</span>
+        <span class="n">priors</span><span class="p">,</span> <span class="n">joints</span> <span class="o">=</span> <span class="n">estimate_priors_joints</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="n">alpha</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">tree</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="c1"># Compute the mutual information</span>
+            <span class="n">mutual_info</span> <span class="o">=</span> <span class="n">compute_mutual_information</span><span class="p">(</span><span class="n">priors</span><span class="p">,</span> <span class="n">joints</span><span class="p">)</span>
+
+            <span class="c1"># Compute the CLT structure</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">bfs</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">tree</span> <span class="o">=</span> <span class="n">maximum_spanning_tree</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="p">,</span> <span class="n">mutual_info</span><span class="p">)</span>
+
+        <span class="c1"># Compute the CLT parameters (in log-space), using the joints and priors probabilities</span>
+        <span class="n">params</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">compute_clt_parameters</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bfs</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">tree</span><span class="p">,</span> <span class="n">priors</span><span class="p">,</span> <span class="n">joints</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">params</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">params</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="BinaryCLT.message_passing"><a class="viewcode-back" href="../../../../api/deeprob.spn.structure.html#deeprob.spn.structure.cltree.BinaryCLT.message_passing">[docs]</a>    <span class="k">def</span> <span class="nf">message_passing</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+        <span class="n">obs_mask</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+        <span class="n">return_lls</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="n">reduce</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;mar&#39;</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Compute the messages passed from the leaves to the root node.</span>
+
+<span class="sd">        :param x: The input data.</span>
+<span class="sd">        :param obs_mask: The mask of observed values.</span>
+<span class="sd">        :param return_lls: Whether to compute and return the log-likelihoods.</span>
+<span class="sd">        :param reduce: The method used to reduce the messages of missing values.</span>
+<span class="sd">                       It can be either &#39;mar&#39; (marginalize the message) or &#39;mpe&#39; (maximum probable explanation).</span>
+<span class="sd">        :return: The messages array if return_lls is False.</span>
+<span class="sd">                 The log-likelihoods if return_lls is True.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">n_samples</span><span class="p">,</span> <span class="n">n_features</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">shape</span>
+        <span class="n">messages</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="n">n_features</span><span class="p">,</span> <span class="n">n_samples</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
+
+        <span class="c1"># Let&#39;s proceed bottom-up</span>
+        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">reversed</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bfs</span><span class="p">[</span><span class="mi">1</span><span class="p">:]):</span>
+            <span class="n">mask</span> <span class="o">=</span> <span class="n">obs_mask</span><span class="p">[:,</span> <span class="n">j</span><span class="p">]</span>
+            <span class="n">mis_mask</span> <span class="o">=</span> <span class="o">~</span><span class="n">mask</span>
+            <span class="n">obs_values</span> <span class="o">=</span> <span class="n">x</span><span class="p">[</span><span class="n">mask</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">)</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">expand_dims</span><span class="p">(</span><span class="n">messages</span><span class="p">[</span><span class="n">j</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+            <span class="c1"># Compute the messages for observed data</span>
+            <span class="n">messages</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">tree</span><span class="p">[</span><span class="n">j</span><span class="p">],</span> <span class="n">mask</span><span class="p">]</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="n">j</span><span class="p">,</span> <span class="p">:,</span> <span class="n">obs_values</span><span class="p">]</span> <span class="o">+</span> <span class="n">msg</span><span class="p">[</span><span class="n">mask</span><span class="p">,</span> <span class="p">:,</span> <span class="n">obs_values</span><span class="p">]</span>
+
+            <span class="c1"># Compute the messages for unobserved data</span>
+            <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">mis_mask</span><span class="p">):</span>
+                <span class="n">parent_msg</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">+</span> <span class="n">msg</span><span class="p">[</span><span class="n">mis_mask</span><span class="p">]</span>
+                <span class="k">if</span> <span class="n">reduce</span> <span class="o">==</span> <span class="s1">&#39;mar&#39;</span><span class="p">:</span>
+                    <span class="n">messages</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">tree</span><span class="p">[</span><span class="n">j</span><span class="p">],</span> <span class="n">mis_mask</span><span class="p">]</span> <span class="o">+=</span> <span class="n">logsumexp</span><span class="p">(</span><span class="n">parent_msg</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+                <span class="k">elif</span> <span class="n">reduce</span> <span class="o">==</span> <span class="s1">&#39;mpe&#39;</span><span class="p">:</span>
+                    <span class="n">messages</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">tree</span><span class="p">[</span><span class="n">j</span><span class="p">],</span> <span class="n">mis_mask</span><span class="p">]</span> <span class="o">+=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">parent_msg</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Unknown reduce method called </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">reduce</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">return_lls</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">messages</span>
+
+        <span class="n">lls</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">n_samples</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
+        <span class="n">mask</span> <span class="o">=</span> <span class="n">obs_mask</span><span class="p">[:,</span> <span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="p">]</span>
+        <span class="n">mis_mask</span> <span class="o">=</span> <span class="o">~</span><span class="n">mask</span>
+        <span class="n">obs_values</span> <span class="o">=</span> <span class="n">x</span><span class="p">[</span><span class="n">mask</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">)</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="n">messages</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="p">]</span>
+
+        <span class="c1"># Compute the messages for observed data at root node</span>
+        <span class="n">lls</span><span class="p">[</span><span class="n">mask</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">obs_values</span><span class="p">]</span> <span class="o">+</span> <span class="n">msg</span><span class="p">[</span><span class="n">mask</span><span class="p">,</span> <span class="n">obs_values</span><span class="p">]</span>
+
+        <span class="c1"># Compute the messages for unobserved data at root node</span>
+        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">mis_mask</span><span class="p">):</span>
+            <span class="n">lls</span><span class="p">[</span><span class="n">mis_mask</span><span class="p">]</span> <span class="o">=</span> <span class="n">logsumexp</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">msg</span><span class="p">[</span><span class="n">mis_mask</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">lls</span></div>
+
+<div class="viewcode-block" id="BinaryCLT.likelihood"><a class="viewcode-back" href="../../../../api/deeprob.spn.structure.html#deeprob.spn.structure.cltree.BinaryCLT.likelihood">[docs]</a>    <span class="k">def</span> <span class="nf">likelihood</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">log_likelihood</span><span class="p">(</span><span class="n">x</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="BinaryCLT.log_likelihood"><a class="viewcode-back" href="../../../../api/deeprob.spn.structure.html#deeprob.spn.structure.cltree.BinaryCLT.log_likelihood">[docs]</a>    <span class="k">def</span> <span class="nf">log_likelihood</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+        <span class="n">n_samples</span><span class="p">,</span> <span class="n">n_features</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">shape</span>
+
+        <span class="c1"># Build the mask of samples with missing values (used for marginalization)</span>
+        <span class="n">mis_mask</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+        <span class="n">mar_mask</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">mis_mask</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">mar_mask</span><span class="p">):</span>
+            <span class="n">evi_mask</span> <span class="o">=</span> <span class="o">~</span><span class="n">mar_mask</span>
+            <span class="n">obs_mask</span> <span class="o">=</span> <span class="o">~</span><span class="n">mis_mask</span>
+            <span class="n">lls</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">n_samples</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
+
+            <span class="c1"># Vectorized implementation of full-evidence inference</span>
+            <span class="n">vs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">n_features</span><span class="p">)</span>
+            <span class="n">z</span> <span class="o">=</span> <span class="n">x</span><span class="p">[</span><span class="n">evi_mask</span><span class="p">]</span>
+            <span class="n">z_cond</span> <span class="o">=</span> <span class="n">z</span><span class="p">[:,</span> <span class="bp">self</span><span class="o">.</span><span class="n">tree</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+            <span class="n">z_vals</span> <span class="o">=</span> <span class="n">z</span><span class="p">[:,</span> <span class="n">vs</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+            <span class="n">lls</span><span class="p">[</span><span class="n">evi_mask</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="n">vs</span><span class="p">,</span> <span class="n">z_cond</span><span class="p">,</span> <span class="n">z_vals</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+            <span class="c1"># Semi-vectorized implementation of marginal inference</span>
+            <span class="n">z</span> <span class="o">=</span> <span class="n">x</span><span class="p">[</span><span class="n">mar_mask</span><span class="p">]</span>
+            <span class="n">lls</span><span class="p">[</span><span class="n">mar_mask</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">message_passing</span><span class="p">(</span><span class="n">z</span><span class="p">,</span> <span class="n">obs_mask</span><span class="p">[</span><span class="n">mar_mask</span><span class="p">],</span> <span class="n">return_lls</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">reduce</span><span class="o">=</span><span class="s1">&#39;mar&#39;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">expand_dims</span><span class="p">(</span><span class="n">lls</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+        <span class="c1"># Vectorized implementation (without masking) of full-evidence inference</span>
+        <span class="n">vs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">n_features</span><span class="p">)</span>
+        <span class="n">x_cond</span> <span class="o">=</span> <span class="n">x</span><span class="p">[:,</span> <span class="bp">self</span><span class="o">.</span><span class="n">tree</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="n">x_vals</span> <span class="o">=</span> <span class="n">x</span><span class="p">[:,</span> <span class="n">vs</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="n">lls</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="n">vs</span><span class="p">,</span> <span class="n">x_cond</span><span class="p">,</span> <span class="n">x_vals</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">lls</span></div>
+
+<div class="viewcode-block" id="BinaryCLT.mpe"><a class="viewcode-back" href="../../../../api/deeprob.spn.structure.html#deeprob.spn.structure.cltree.BinaryCLT.mpe">[docs]</a>    <span class="k">def</span> <span class="nf">mpe</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+        <span class="n">mis_mask</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+        <span class="n">obs_mask</span> <span class="o">=</span> <span class="o">~</span><span class="n">mis_mask</span>
+
+        <span class="c1"># Semi-vectorized implementation of MPE inference</span>
+        <span class="n">messages</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">message_passing</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">obs_mask</span><span class="p">,</span> <span class="n">return_lls</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">reduce</span><span class="o">=</span><span class="s1">&#39;mpe&#39;</span><span class="p">)</span>
+
+        <span class="c1"># Compute MPE at the root feature</span>
+        <span class="n">mask</span> <span class="o">=</span> <span class="n">mis_mask</span><span class="p">[:,</span> <span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="p">]</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">messages</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="p">,</span> <span class="n">mask</span><span class="p">]</span>
+        <span class="n">x</span><span class="p">[</span><span class="n">mask</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+        <span class="c1"># Compute MPE at the other features, by using the accumulated messages</span>
+        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">bfs</span><span class="p">[</span><span class="mi">1</span><span class="p">:]:</span>
+            <span class="n">mask</span> <span class="o">=</span> <span class="n">mis_mask</span><span class="p">[:,</span> <span class="n">j</span><span class="p">]</span>
+            <span class="n">obs_parent_values</span> <span class="o">=</span> <span class="n">x</span><span class="p">[</span><span class="n">mask</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">tree</span><span class="p">[</span><span class="n">j</span><span class="p">]]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">)</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="n">j</span><span class="p">,</span> <span class="n">obs_parent_values</span><span class="p">]</span> <span class="o">+</span> <span class="n">messages</span><span class="p">[</span><span class="n">j</span><span class="p">,</span> <span class="n">mask</span><span class="p">]</span>
+            <span class="n">x</span><span class="p">[</span><span class="n">mask</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">x</span></div>
+
+<div class="viewcode-block" id="BinaryCLT.sample"><a class="viewcode-back" href="../../../../api/deeprob.spn.structure.html#deeprob.spn.structure.cltree.BinaryCLT.sample">[docs]</a>    <span class="k">def</span> <span class="nf">sample</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+        <span class="n">mis_mask</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+        <span class="n">obs_mask</span> <span class="o">=</span> <span class="o">~</span><span class="n">mis_mask</span>
+
+        <span class="c1"># Semi-vectorized implementation of conditional sampling</span>
+        <span class="n">messages</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">message_passing</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">obs_mask</span><span class="p">,</span> <span class="n">return_lls</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">reduce</span><span class="o">=</span><span class="s1">&#39;mar&#39;</span><span class="p">)</span>
+
+        <span class="c1"># Sample the root feature</span>
+        <span class="n">mask</span> <span class="o">=</span> <span class="n">mis_mask</span><span class="p">[:,</span> <span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="p">]</span>
+        <span class="n">log_probs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">messages</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="p">,</span> <span class="n">mask</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>
+        <span class="n">x</span><span class="p">[</span><span class="n">mask</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="p">]</span> <span class="o">=</span> <span class="n">ss</span><span class="o">.</span><span class="n">bernoulli</span><span class="o">.</span><span class="n">rvs</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">log_probs</span><span class="p">))</span>
+
+        <span class="c1"># Sample the other features, by using the accumulated messages</span>
+        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">bfs</span><span class="p">[</span><span class="mi">1</span><span class="p">:]:</span>
+            <span class="n">mask</span> <span class="o">=</span> <span class="n">mis_mask</span><span class="p">[:,</span> <span class="n">j</span><span class="p">]</span>
+            <span class="n">obs_parent_values</span> <span class="o">=</span> <span class="n">x</span><span class="p">[</span><span class="n">mask</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">tree</span><span class="p">[</span><span class="n">j</span><span class="p">]]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">)</span>
+            <span class="n">log_probs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="n">j</span><span class="p">,</span> <span class="n">obs_parent_values</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">messages</span><span class="p">[</span><span class="n">j</span><span class="p">,</span> <span class="n">mask</span><span class="p">,</span> <span class="n">obs_parent_values</span><span class="p">]</span>
+            <span class="n">x</span><span class="p">[</span><span class="n">mask</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">ss</span><span class="o">.</span><span class="n">bernoulli</span><span class="o">.</span><span class="n">rvs</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">log_probs</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">x</span></div>
+
+<div class="viewcode-block" id="BinaryCLT.moment"><a class="viewcode-back" href="../../../../api/deeprob.spn.structure.html#deeprob.spn.structure.cltree.BinaryCLT.moment">[docs]</a>    <span class="k">def</span> <span class="nf">moment</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">k</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;Computation of moments on Binary CLTs not yet implemented&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="BinaryCLT.params_count"><a class="viewcode-back" href="../../../../api/deeprob.spn.structure.html#deeprob.spn.structure.cltree.BinaryCLT.params_count">[docs]</a>    <span class="k">def</span> <span class="nf">params_count</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+        <span class="k">return</span> <span class="mi">1</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tree</span><span class="p">)</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">size</span></div>
+
+<div class="viewcode-block" id="BinaryCLT.params_dict"><a class="viewcode-back" href="../../../../api/deeprob.spn.structure.html#deeprob.spn.structure.cltree.BinaryCLT.params_dict">[docs]</a>    <span class="k">def</span> <span class="nf">params_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="s1">&#39;root&#39;</span><span class="p">:</span> <span class="kc">None</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">root</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">scope</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="p">],</span>
+            <span class="s1">&#39;tree&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">tree</span><span class="p">,</span>
+            <span class="s1">&#39;params&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span>
+        <span class="p">}</span></div>
+
+<div class="viewcode-block" id="BinaryCLT.to_pc"><a class="viewcode-back" href="../../../../api/deeprob.spn.structure.html#deeprob.spn.structure.cltree.BinaryCLT.to_pc">[docs]</a>    <span class="k">def</span> <span class="nf">to_pc</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Node</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Convert a Chow-Liu Tree into a smooth, deterministic and structured-decomposable PC</span>
+
+<span class="sd">        :return: A smooth, deterministic and structured-decomposable PC.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Build the tree structure</span>
+        <span class="n">root</span> <span class="o">=</span> <span class="n">build_tree_structure</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tree</span><span class="p">,</span> <span class="n">scope</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">scope</span><span class="p">)</span>
+
+        <span class="c1"># Build the factors dictionary</span>
+        <span class="n">factors</span> <span class="o">=</span> <span class="p">{</span><span class="bp">self</span><span class="o">.</span><span class="n">scope</span><span class="p">[</span><span class="n">i</span><span class="p">]:</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tree</span><span class="p">))}</span>
+
+        <span class="c1"># Post-Order exploration</span>
+        <span class="n">neg_buffer</span><span class="p">,</span> <span class="n">pos_buffer</span> <span class="o">=</span> <span class="p">[],</span> <span class="p">[]</span>
+        <span class="n">nodes_stack</span> <span class="o">=</span> <span class="p">[</span><span class="n">root</span><span class="p">]</span>
+        <span class="n">last_node_visited</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">while</span> <span class="n">nodes_stack</span><span class="p">:</span>
+            <span class="n">node</span> <span class="o">=</span> <span class="n">nodes_stack</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">node</span><span class="o">.</span><span class="n">is_leaf</span><span class="p">()</span> <span class="ow">or</span> <span class="p">(</span><span class="n">last_node_visited</span> <span class="ow">in</span> <span class="n">node</span><span class="o">.</span><span class="n">get_children</span><span class="p">()):</span>
+                <span class="n">leaves</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">Bernoulli</span><span class="p">,</span> <span class="n">Sum</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span>
+                    <span class="n">Bernoulli</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">get_id</span><span class="p">(),</span> <span class="n">p</span><span class="o">=</span><span class="mf">0.0</span><span class="p">),</span>
+                    <span class="n">Bernoulli</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">get_id</span><span class="p">(),</span> <span class="n">p</span><span class="o">=</span><span class="mf">1.0</span><span class="p">)</span>
+                <span class="p">]</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">node</span><span class="o">.</span><span class="n">is_leaf</span><span class="p">():</span>
+                    <span class="n">neg_prod</span> <span class="o">=</span> <span class="n">Product</span><span class="p">(</span><span class="n">children</span><span class="o">=</span><span class="p">[</span><span class="n">leaves</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span> <span class="o">+</span> <span class="n">neg_buffer</span><span class="p">[</span><span class="o">-</span><span class="nb">len</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">get_children</span><span class="p">()):])</span>
+                    <span class="n">pos_prod</span> <span class="o">=</span> <span class="n">Product</span><span class="p">(</span><span class="n">children</span><span class="o">=</span><span class="p">[</span><span class="n">leaves</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span> <span class="o">+</span> <span class="n">pos_buffer</span><span class="p">[</span><span class="o">-</span><span class="nb">len</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">get_children</span><span class="p">()):])</span>
+                    <span class="k">del</span> <span class="n">neg_buffer</span><span class="p">[</span><span class="o">-</span><span class="nb">len</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">get_children</span><span class="p">()):]</span>
+                    <span class="k">del</span> <span class="n">pos_buffer</span><span class="p">[</span><span class="o">-</span><span class="nb">len</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">get_children</span><span class="p">()):]</span>
+                    <span class="n">sum_children</span> <span class="o">=</span> <span class="p">[</span><span class="n">neg_prod</span><span class="p">,</span> <span class="n">pos_prod</span><span class="p">]</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">sum_children</span> <span class="o">=</span> <span class="n">leaves</span>
+                <span class="n">weights</span> <span class="o">=</span> <span class="n">factors</span><span class="p">[</span><span class="n">node</span><span class="o">.</span><span class="n">get_id</span><span class="p">()]</span>
+                <span class="n">neg_buffer</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                    <span class="n">Sum</span><span class="p">(</span><span class="n">children</span><span class="o">=</span><span class="n">sum_children</span><span class="p">,</span> <span class="n">weights</span><span class="o">=</span><span class="n">weights</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+                <span class="p">)</span>
+                <span class="n">pos_buffer</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                    <span class="n">Sum</span><span class="p">(</span><span class="n">children</span><span class="o">=</span><span class="n">sum_children</span><span class="p">,</span> <span class="n">weights</span><span class="o">=</span><span class="n">weights</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+                <span class="p">)</span>
+                <span class="n">last_node_visited</span> <span class="o">=</span> <span class="n">nodes_stack</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">nodes_stack</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">get_children</span><span class="p">())</span>
+        <span class="c1"># Equivalently, pos = neg_buffer[0]</span>
+        <span class="n">pc</span> <span class="o">=</span> <span class="n">pos_buffer</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">assign_ids</span><span class="p">(</span><span class="n">pc</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="BinaryCLT.get_scopes"><a class="viewcode-back" href="../../../../api/deeprob.spn.structure.html#deeprob.spn.structure.cltree.BinaryCLT.get_scopes">[docs]</a>    <span class="k">def</span> <span class="nf">get_scopes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return a list containing the scope of every node in the PC equivalent to the</span>
+<span class="sd">        current CLTree (see to_pc() method). Every scope occurs once in the list.</span>
+
+<span class="sd">        :return: The list of scopes.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">scopes</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">scopes_stack</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="c1"># Post-Order exploration</span>
+        <span class="n">root</span> <span class="o">=</span> <span class="n">build_tree_structure</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tree</span><span class="p">,</span> <span class="n">scope</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">scope</span><span class="p">)</span>
+        <span class="n">nodes_stack</span> <span class="o">=</span> <span class="p">[</span><span class="n">root</span><span class="p">]</span>
+        <span class="n">last_node_visited</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">while</span> <span class="n">nodes_stack</span><span class="p">:</span>
+            <span class="n">node</span> <span class="o">=</span> <span class="n">nodes_stack</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">node</span><span class="o">.</span><span class="n">is_leaf</span><span class="p">()</span> <span class="ow">or</span> <span class="p">(</span><span class="n">last_node_visited</span> <span class="ow">in</span> <span class="n">node</span><span class="o">.</span><span class="n">get_children</span><span class="p">()):</span>
+                <span class="k">if</span> <span class="n">node</span><span class="o">.</span><span class="n">is_leaf</span><span class="p">():</span>
+                    <span class="n">scopes_stack</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">node</span><span class="o">.</span><span class="n">get_id</span><span class="p">()])</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">scopes_temp</span> <span class="o">=</span> <span class="n">scopes_stack</span><span class="p">[</span><span class="o">-</span><span class="nb">len</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">get_children</span><span class="p">()):]</span>
+                    <span class="k">del</span> <span class="n">scopes_stack</span><span class="p">[</span><span class="o">-</span><span class="nb">len</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">get_children</span><span class="p">()):]</span>
+                    <span class="n">scopes_temp</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">node</span><span class="o">.</span><span class="n">get_id</span><span class="p">()])</span>
+                    <span class="n">merged_scope</span> <span class="o">=</span> <span class="p">[</span><span class="n">var</span> <span class="k">for</span> <span class="n">scope</span> <span class="ow">in</span> <span class="n">scopes_temp</span> <span class="k">for</span> <span class="n">var</span> <span class="ow">in</span> <span class="n">scope</span><span class="p">]</span>
+                    <span class="n">scopes_stack</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">merged_scope</span><span class="p">)</span>
+                    <span class="n">scopes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">merged_scope</span><span class="p">)</span>
+                <span class="n">last_node_visited</span> <span class="o">=</span> <span class="n">nodes_stack</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">nodes_stack</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">get_children</span><span class="p">())</span>
+
+        <span class="k">return</span> <span class="n">scopes</span></div></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, Lorenzo Loconte, Gennaro Gala.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    <span class="fa fa-book"> Other Versions</span>
+    v: main
+    <span class="fa fa-caret-down"></span>
+  </span>
+  <div class="rst-other-versions">
+    <dl>
+      <dt>Tags</dt>
+      <dd><a href="../../../../../v1.0.0/index.html">v1.0.0</a></dd>
+      <dd><a href="../../../../../v1.1.0/index.html">v1.1.0</a></dd>
+    </dl>
+    <dl>
+      <dt>Branches</dt>
+      <dd><a href="cltree.html">main</a></dd>
+    </dl>
+  </div>
+</div><script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

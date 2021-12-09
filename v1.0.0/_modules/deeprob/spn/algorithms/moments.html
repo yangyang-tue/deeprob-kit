@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>deeprob.spn.algorithms.moments &mdash; DeeProb-kit 0.6.4 documentation</title>
+      <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../../_static/css/custom.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js"></script>
+        <script src="../../../../_static/jquery.js"></script>
+        <script src="../../../../_static/underscore.js"></script>
+        <script src="../../../../_static/doctools.js"></script>
+    <script src="../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../../../index.html" class="icon icon-home"> DeeProb-kit
+            <img src="../../../../_static/deeprob-logo-minimal.svg" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Read Me</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../home.html">Abstract</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../home.html#features">Features</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../home.html#installation-documentation">Installation &amp; Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../home.html#datasets-and-experiments">Datasets and Experiments</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../home.html#code-examples">Code Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../home.html#related-repositories">Related Repositories</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../home.html#references">References</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Modules</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../api/deeprob.html">deeprob package</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">DeeProb-kit</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="../../../index.html">Module code</a> &raquo;</li>
+      <li>deeprob.spn.algorithms.moments</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for deeprob.spn.algorithms.moments</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="kn">from</span> <span class="nn">deeprob.spn.structure.node</span> <span class="kn">import</span> <span class="n">Node</span>
+<span class="kn">from</span> <span class="nn">deeprob.spn.structure.leaf</span> <span class="kn">import</span> <span class="n">Leaf</span>
+<span class="kn">from</span> <span class="nn">deeprob.spn.algorithms.inference</span> <span class="kn">import</span> <span class="n">node_likelihood</span>
+<span class="kn">from</span> <span class="nn">deeprob.spn.algorithms.evaluation</span> <span class="kn">import</span> <span class="n">eval_bottom_up</span>
+
+
+<div class="viewcode-block" id="moment"><a class="viewcode-back" href="../../../../api/deeprob.spn.algorithms.html#deeprob.spn.algorithms.moments.moment">[docs]</a><span class="k">def</span> <span class="nf">moment</span><span class="p">(</span><span class="n">root</span><span class="p">:</span> <span class="n">Node</span><span class="p">,</span> <span class="n">order</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Compute non-central moments of a given order of a smooth and decomposable SPN.</span>
+
+<span class="sd">    :param root: The root of the SPN.</span>
+<span class="sd">    :param order: The order of the moment. If scalar, it will be used for all the random variables.</span>
+<span class="sd">                  It can also be a sequence of moment orders, one for each random variable.</span>
+<span class="sd">    :return: The non-central moments with respect to each variable in the scope.</span>
+<span class="sd">    :raises ValueError: If the order of the moment is negative.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">scope</span> <span class="o">=</span> <span class="n">root</span><span class="o">.</span><span class="n">scope</span>
+    <span class="k">if</span> <span class="n">order</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;The order of the moment must be non-negative&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">order</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>  <span class="c1"># Completely skip computation for 0-order moments</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">scope</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
+
+    <span class="c1"># Compute the moments w.r.t. each random variable by proceeding bottom-up</span>
+    <span class="n">moments</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">scope</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">scope</span><span class="p">)],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">eval_bottom_up</span><span class="p">(</span>
+        <span class="n">root</span><span class="p">,</span> <span class="n">moments</span><span class="p">,</span>
+        <span class="n">leaf_func</span><span class="o">=</span><span class="n">leaf_moment</span><span class="p">,</span>
+        <span class="n">node_func</span><span class="o">=</span><span class="n">node_likelihood</span><span class="p">,</span>
+        <span class="n">leaf_func_kwargs</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;order&#39;</span><span class="p">:</span> <span class="n">order</span><span class="p">}</span>
+    <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="leaf_moment"><a class="viewcode-back" href="../../../../api/deeprob.spn.algorithms.html#deeprob.spn.algorithms.moments.leaf_moment">[docs]</a><span class="k">def</span> <span class="nf">leaf_moment</span><span class="p">(</span><span class="n">node</span><span class="p">:</span> <span class="n">Leaf</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">order</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Compute the moment of a leaf node.</span>
+
+<span class="sd">    :param node: The leaf node.</span>
+<span class="sd">    :param x: The inputs of the leaf. Actually, it&#39;s used only to infer the output shape.</span>
+<span class="sd">    :param order: The order of the moment.</span>
+<span class="sd">    :return: The moment of the leaf node.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">m</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
+    <span class="n">m</span><span class="p">[</span><span class="n">node</span><span class="o">.</span><span class="n">scope</span><span class="p">]</span> <span class="o">=</span> <span class="n">node</span><span class="o">.</span><span class="n">moment</span><span class="p">(</span><span class="n">k</span><span class="o">=</span><span class="n">order</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">m</span></div>
+
+
+<div class="viewcode-block" id="expectation"><a class="viewcode-back" href="../../../../api/deeprob.spn.algorithms.html#deeprob.spn.algorithms.moments.expectation">[docs]</a><span class="k">def</span> <span class="nf">expectation</span><span class="p">(</span><span class="n">root</span><span class="p">:</span> <span class="n">Node</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Compute the expectation values of a SPN w.r.t. each of the random variables.</span>
+
+<span class="sd">    :param root: The root of the SPN.</span>
+<span class="sd">    :return: The expectation w.r.t. each of the random variables.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">moment</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="variance"><a class="viewcode-back" href="../../../../api/deeprob.spn.algorithms.html#deeprob.spn.algorithms.moments.variance">[docs]</a><span class="k">def</span> <span class="nf">variance</span><span class="p">(</span><span class="n">root</span><span class="p">:</span> <span class="n">Node</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Compute the variance values of a SPN w.r.t. each of the random variables.</span>
+
+<span class="sd">    :param root: The root of the SPN.</span>
+<span class="sd">    :return: The variance w.r.t. each of the random variables.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">fst_moment</span> <span class="o">=</span> <span class="n">moment</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">snd_moment</span> <span class="o">=</span> <span class="n">moment</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">snd_moment</span> <span class="o">-</span> <span class="n">fst_moment</span> <span class="o">**</span> <span class="mf">2.0</span></div>
+
+
+<div class="viewcode-block" id="skewness"><a class="viewcode-back" href="../../../../api/deeprob.spn.algorithms.html#deeprob.spn.algorithms.moments.skewness">[docs]</a><span class="k">def</span> <span class="nf">skewness</span><span class="p">(</span><span class="n">root</span><span class="p">:</span> <span class="n">Node</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Compute the skewness values of a SPN w.r.t. each of the random variables.</span>
+
+<span class="sd">    :param root: The root of the SPN.</span>
+<span class="sd">    :return: The skewness w.r.t. each of the random variables.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># This implementation is derived by expanding the third central moment</span>
+    <span class="c1"># and obtaining a definition based on non-central moments</span>
+    <span class="n">fst_moment</span> <span class="o">=</span> <span class="n">moment</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">snd_moment</span> <span class="o">=</span> <span class="n">moment</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+    <span class="n">thd_moment</span> <span class="o">=</span> <span class="n">moment</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+    <span class="n">g1</span> <span class="o">=</span> <span class="n">fst_moment</span> <span class="o">**</span> <span class="mf">2.0</span>
+    <span class="n">g2</span> <span class="o">=</span> <span class="n">snd_moment</span> <span class="o">-</span> <span class="n">g1</span>
+    <span class="n">g3</span> <span class="o">=</span> <span class="mf">3.0</span> <span class="o">*</span> <span class="n">snd_moment</span> <span class="o">+</span> <span class="mf">2.0</span> <span class="o">*</span> <span class="n">g1</span>
+    <span class="k">return</span> <span class="p">(</span><span class="n">thd_moment</span> <span class="o">-</span> <span class="n">fst_moment</span> <span class="o">*</span> <span class="n">g3</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">g2</span> <span class="o">**</span> <span class="mf">1.5</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="kurtosis"><a class="viewcode-back" href="../../../../api/deeprob.spn.algorithms.html#deeprob.spn.algorithms.moments.kurtosis">[docs]</a><span class="k">def</span> <span class="nf">kurtosis</span><span class="p">(</span><span class="n">root</span><span class="p">:</span> <span class="n">Node</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Compute the kurtosis values of a SPN w.r.t. each of the random variables.</span>
+<span class="sd">    This function returns the kurtosis based on Fisher&#39;s definition, i.e.</span>
+<span class="sd">    3.0 is subtracted from the result to give 0.0 for a normal distribution.</span>
+
+<span class="sd">    :param root: The root of the SPN.</span>
+<span class="sd">    :return: The kurtosis w.r.t. each of the random variables.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># This implementation is derived from Moors&#39; interpretation</span>
+    <span class="c1"># (More @ https://en.wikipedia.org/wiki/Kurtosis#Moors&#39;_interpretation)</span>
+    <span class="c1"># by expanding Var[Z^2] + 1 and obtaining a definition based on non-central moments</span>
+    <span class="n">fst_moment</span> <span class="o">=</span> <span class="n">moment</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">snd_moment</span> <span class="o">=</span> <span class="n">moment</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+    <span class="n">thd_moment</span> <span class="o">=</span> <span class="n">moment</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+    <span class="n">fhd_moment</span> <span class="o">=</span> <span class="n">moment</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
+    <span class="n">g1</span> <span class="o">=</span> <span class="n">fst_moment</span> <span class="o">**</span> <span class="mf">2.0</span>
+    <span class="n">g2</span> <span class="o">=</span> <span class="n">snd_moment</span> <span class="o">-</span> <span class="n">g1</span>
+    <span class="n">g3</span> <span class="o">=</span> <span class="mf">4.0</span> <span class="o">*</span> <span class="p">(</span><span class="n">g1</span> <span class="o">**</span> <span class="mf">2.0</span> <span class="o">+</span> <span class="n">fst_moment</span> <span class="o">*</span> <span class="n">thd_moment</span><span class="p">)</span>
+    <span class="n">g4</span> <span class="o">=</span> <span class="n">snd_moment</span> <span class="o">*</span> <span class="p">(</span><span class="mf">8.0</span> <span class="o">*</span> <span class="n">g1</span> <span class="o">-</span> <span class="n">snd_moment</span><span class="p">)</span>
+    <span class="k">return</span> <span class="o">-</span><span class="mf">2.0</span> <span class="o">+</span> <span class="p">(</span><span class="n">fhd_moment</span> <span class="o">-</span> <span class="n">g3</span> <span class="o">+</span> <span class="n">g4</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">g2</span> <span class="o">**</span> <span class="mf">2.0</span><span class="p">)</span></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, Lorenzo Loconte, Gennaro Gala.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    <span class="fa fa-book"> Other Versions</span>
+    v: v1.0.0
+    <span class="fa fa-caret-down"></span>
+  </span>
+  <div class="rst-other-versions">
+    <dl>
+      <dt>Tags</dt>
+      <dd><a href="moments.html">v1.0.0</a></dd>
+      <dd><a href="../../../../../v1.1.0/index.html">v1.1.0</a></dd>
+    </dl>
+    <dl>
+      <dt>Branches</dt>
+      <dd><a href="../../../../../main/index.html">main</a></dd>
+    </dl>
+  </div>
+</div><script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
